@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CERTIFIKA 2026 — Study Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0e12;
+  --surface: #13141a;
+  --surface2: #1a1b23;
+  --surface3: #22232e;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.11);
+  --text: #e4e4ee;
+  --muted: #666780;
+  --muted2: #8888aa;
+  --accent: #e8c547;
+  --accent2: #5b7fff;
+  --green: #3ecf8e;
+  --red: #ff6b7a;
+  --purple: #9d7fff;
+  --teal: #2dd4bf;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px; min-height: 100vh; overflow-x: hidden; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+
+/* VIEWS */
+.view { display: none; min-height: 100vh; }
+.view.active { display: block; }
+
+/* ═══════════════════════════════════════
+   HOME VIEW
+═══════════════════════════════════════ */
+.home-header {
+  padding: 40px 32px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+}
+.home-logo { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; color: var(--text); line-height: 1; }
+.home-logo span { color: var(--accent); }
+.home-meta { text-align: right; }
+.deadline-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(232,197,71,0.08); border: 1px solid rgba(232,197,71,0.2);
+  border-radius: 4px; padding: 6px 12px; font-size: 11px; color: var(--accent);
+}
+.days-left { font-size: 20px; font-weight: 500; color: var(--accent); margin-top: 4px; font-family: 'Fraunces', serif; }
+
+/* GLOBAL STATS */
+.global-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border-bottom: 1px solid var(--border); }
+.g-stat { background: var(--bg); padding: 20px 24px; }
+.g-stat-val { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 300; color: var(--text); line-height: 1; }
+.g-stat-lbl { font-size: 10px; color: var(--muted); margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* GLOBAL PROGRESS */
+.global-progress { padding: 20px 32px; border-bottom: 1px solid var(--border); }
+.gp-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.gp-label { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+.gp-pct { font-family: 'Fraunces', serif; font-size: 18px; color: var(--accent); }
+.gp-bar { height: 2px; background: var(--surface3); border-radius: 1px; }
+.gp-fill { height: 100%; border-radius: 1px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.8s ease; }
+
+/* COURSE GRID */
+.courses-section { padding: 24px 32px; }
+.section-label { font-size: 10px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 16px; }
+.courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+
+.course-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px; cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+  position: relative; overflow: hidden;
+}
+.course-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--card-accent, var(--muted)); opacity: 0.6;
+}
+.course-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+.card-num { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 6px; }
+.card-title-wrap { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 14px; }
+.card-title { font-family: 'Fraunces', serif; font-size: 14px; font-weight: 400; color: var(--text); line-height: 1.4; flex: 1; cursor: text; }
+.card-title[contenteditable="true"] { outline: none; border-bottom: 1px dashed var(--muted); }
+.edit-btn { font-size: 10px; color: var(--muted); cursor: pointer; padding: 2px 4px; border-radius: 3px; flex-shrink: 0; transition: color 0.15s; margin-top: 2px; }
+.edit-btn:hover { color: var(--accent); }
+.card-progress-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.card-pct { font-size: 11px; color: var(--text); }
+.card-target { font-size: 10px; color: var(--muted); }
+.card-bar { height: 2px; background: var(--surface3); border-radius: 1px; margin-bottom: 12px; }
+.card-bar-fill { height: 100%; border-radius: 1px; transition: width 0.5s ease; }
+.card-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+.card-tag { font-size: 10px; padding: 2px 7px; border-radius: 3px; border: 1px solid; }
+.tag-cisco { color: #60a5fa; border-color: rgba(96,165,250,0.25); background: rgba(96,165,250,0.06); }
+.tag-ms { color: #34d399; border-color: rgba(52,211,153,0.25); background: rgba(52,211,153,0.06); }
+.tag-hours { color: var(--muted2); border-color: rgba(136,136,170,0.2); background: rgba(136,136,170,0.04); }
+.tag-inprogress { color: var(--accent); border-color: rgba(232,197,71,0.25); background: rgba(232,197,71,0.06); }
+.tag-done { color: var(--green); border-color: rgba(62,207,142,0.25); background: rgba(62,207,142,0.06); }
+
+/* ═══════════════════════════════════════
+   COURSE VIEW
+═══════════════════════════════════════ */
+.course-nav {
+  padding: 0 32px; height: 52px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0; position: sticky; top: 0;
+  background: rgba(13,14,18,0.95); backdrop-filter: blur(8px); z-index: 100;
+}
+.back-btn { font-size: 11px; color: var(--muted); cursor: pointer; padding: 6px 0; transition: color 0.15s; margin-right: 20px; }
+.back-btn:hover { color: var(--accent); }
+.course-tabs { display: flex; gap: 0; height: 100%; }
+.ctab {
+  font-size: 11px; color: var(--muted); padding: 0 16px; cursor: pointer;
+  border-bottom: 2px solid transparent; transition: all 0.2s; display: flex; align-items: center;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.ctab:hover { color: var(--text); }
+.ctab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.course-content { padding: 28px 32px; max-width: 800px; margin: 0 auto; }
+.cpanel { display: none; }
+.cpanel.active { display: block; }
+
+/* PLAN TAB */
+.course-hero { margin-bottom: 24px; }
+.ch-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; color: var(--text); margin-bottom: 6px; line-height: 1.3; }
+.ch-sub { font-size: 11px; color: var(--muted); }
+.ch-progress { margin-top: 16px; }
+.ch-prow { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.ch-plabel { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+.ch-ppct { font-family: 'Fraunces', serif; font-size: 16px; color: var(--accent); }
+.ch-bar { height: 2px; background: var(--surface3); border-radius: 1px; }
+.ch-fill { height: 100%; border-radius: 1px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.5s; }
+
+/* WEEK BLOCKS */
+.week-block { border: 1px solid var(--border); border-radius: 6px; margin-bottom: 10px; overflow: hidden; }
+.wk-header {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+  background: var(--surface); cursor: pointer; user-select: none; flex-wrap: wrap;
+}
+.wk-tag { font-size: 10px; padding: 2px 8px; border-radius: 3px; letter-spacing: 0.06em; }
+.wt1 { background: rgba(96,165,250,0.12); color: #60a5fa; }
+.wt2 { background: rgba(52,211,153,0.12); color: #34d399; }
+.wt3 { background: rgba(232,197,71,0.12); color: var(--accent); }
+.wt4 { background: rgba(157,127,255,0.12); color: var(--purple); }
+.wt5 { background: rgba(255,107,122,0.12); color: var(--red); }
+.wk-name { font-size: 12px; color: var(--text); flex: 1; }
+.wk-dates { font-size: 10px; color: var(--muted); margin-left: auto; font-family: 'DM Mono', monospace; }
+.wk-body { padding: 4px 0; background: var(--surface2); display: none; }
+.wk-body.open { display: block; }
+
+.mod-item { display: flex; align-items: flex-start; gap: 12px; padding: 9px 16px; cursor: pointer; transition: background 0.1s; }
+.mod-item:hover { background: rgba(255,255,255,0.02); }
+.mod-check {
+  width: 15px; height: 15px; border-radius: 3px; border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: all 0.2s;
+}
+.mod-check.done { background: var(--green); border-color: var(--green); }
+.mod-check.done::after { content: '✓'; font-size: 9px; color: #000; font-weight: 700; }
+.mod-check.partial { background: rgba(232,197,71,0.15); border-color: var(--accent); }
+.mod-check.partial::after { content: '~'; font-size: 10px; color: var(--accent); }
+.mod-check.exam-check { border-color: rgba(255,107,122,0.4); }
+.mod-check.exam-check.done { background: var(--red); border-color: var(--red); }
+.mod-info { flex: 1; }
+.mod-name { font-size: 12px; color: var(--text); line-height: 1.4; }
+.mod-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.mod-day { font-size: 10px; color: var(--muted); margin-left: auto; flex-shrink: 0; padding-top: 1px; }
+.exam-item .mod-name { color: var(--red); }
+.wk-tip { font-size: 11px; color: var(--muted); padding: 10px 16px 12px; border-top: 1px solid var(--border); line-height: 1.6; margin-top: 4px; }
+
+/* WEEK PROGRESS */
+.wk-prog-wrap { padding: 8px 16px 12px; }
+.wk-prog-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.wk-prog-lbl { font-size: 10px; color: var(--muted); }
+.wk-prog-pct { font-size: 10px; color: var(--muted2); }
+.wk-prog-bar { height: 2px; background: var(--border); border-radius: 1px; }
+.wk-prog-fill { height: 100%; border-radius: 1px; background: var(--accent2); transition: width 0.4s; }
+
+/* STUDY TAB */
+.study-modes { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+.smode {
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 6px 14px; border-radius: 3px; border: 1px solid var(--border2);
+  background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s;
+}
+.smode:hover { color: var(--text); }
+.smode.active { background: rgba(232,197,71,0.1); color: var(--accent); border-color: rgba(232,197,71,0.3); }
+
+.mod-selector { display: flex; gap: 5px; margin-bottom: 20px; flex-wrap: wrap; }
+.msel { font-size: 10px; padding: 4px 10px; border-radius: 3px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+.msel:hover { color: var(--text); }
+.msel.active { background: rgba(91,127,255,0.12); color: var(--accent2); border-color: rgba(91,127,255,0.3); }
+
+.sview { display: none; }
+.sview.active { display: block; }
+
+.gen-btn {
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 8px 16px; border-radius: 3px; border: 1px solid rgba(232,197,71,0.3);
+  background: rgba(232,197,71,0.07); color: var(--accent); cursor: pointer;
+  transition: all 0.2s; margin-bottom: 16px; display: inline-block;
+}
+.gen-btn:hover { background: rgba(232,197,71,0.13); }
+.gen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.ai-box {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+  padding: 20px; min-height: 180px; position: relative;
+}
+.ai-box.loading::after {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  width: 18px; height: 18px; border: 2px solid var(--border2);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.7s linear infinite; transform: translate(-50%, -50%);
+}
+@keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+.ai-content { font-size: 12px; line-height: 1.8; color: var(--text); }
+.ai-content h3 { font-family: 'Fraunces', serif; font-size: 14px; font-weight: 400; color: var(--accent); margin: 16px 0 6px; }
+.ai-content h3:first-child { margin-top: 0; }
+.ai-content ul { padding-left: 16px; margin-bottom: 10px; }
+.ai-content li { margin-bottom: 3px; }
+.ai-content strong { color: var(--teal); }
+.ai-content p { margin-bottom: 8px; }
+.empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 12px; }
+.empty-icon { font-size: 28px; margin-bottom: 10px; opacity: 0.3; display: block; }
+
+/* FLASHCARD */
+.fc-wrap { perspective: 1000px; margin-bottom: 16px; }
+.fc { width: 100%; min-height: 160px; position: relative; transform-style: preserve-3d; transition: transform 0.45s ease; cursor: pointer; }
+.fc.flipped { transform: rotateY(180deg); }
+.fc-face { position: absolute; width: 100%; min-height: 160px; backface-visibility: hidden; border-radius: 6px; padding: 24px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px solid var(--border); }
+.fc-front { background: var(--surface); }
+.fc-back { background: var(--surface2); transform: rotateY(180deg); border-color: rgba(232,197,71,0.2); }
+.fc-label { font-size: 9px; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 10px; }
+.fc-term { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 300; color: var(--text); }
+.fc-def { font-size: 12px; color: var(--text); line-height: 1.7; }
+.fc-hint { font-size: 10px; color: var(--muted); margin-top: 10px; }
+.fc-nav { display: flex; gap: 8px; align-items: center; justify-content: center; }
+.fnav { font-size: 10px; padding: 6px 14px; border-radius: 3px; border: 1px solid var(--border2); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.fnav:hover { color: var(--text); border-color: var(--muted); }
+.fc-counter { font-size: 10px; color: var(--muted); }
+
+/* QUIZ */
+.score-bar { display: flex; align-items: center; gap: 10px; padding: 9px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 5px; margin-bottom: 16px; font-size: 11px; color: var(--muted); }
+.score-val { font-family: 'Fraunces', serif; font-size: 16px; color: var(--accent); }
+.q-block { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 18px; margin-bottom: 12px; }
+.q-num { font-size: 9px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.q-text { font-size: 13px; line-height: 1.6; color: var(--text); margin-bottom: 14px; font-family: 'Fraunces', serif; font-weight: 300; }
+.options { display: flex; flex-direction: column; gap: 6px; }
+.opt { padding: 9px 12px; border-radius: 4px; border: 1px solid var(--border2); cursor: pointer; font-size: 11px; transition: all 0.15s; display: flex; gap: 10px; align-items: flex-start; line-height: 1.4; }
+.opt:hover:not(.disabled) { border-color: var(--accent2); background: rgba(91,127,255,0.06); }
+.opt.correct { border-color: var(--green); background: rgba(62,207,142,0.08); color: var(--green); }
+.opt.wrong { border-color: var(--red); background: rgba(255,107,122,0.08); color: var(--red); }
+.opt.disabled { cursor: default; }
+.opt-l { font-size: 10px; color: var(--muted); flex-shrink: 0; margin-top: 1px; }
+.expl { font-size: 11px; color: var(--muted2); background: var(--surface2); border-radius: 4px; padding: 9px 12px; margin-top: 10px; line-height: 1.6; border-left: 2px solid var(--accent2); display: none; }
+.expl.show { display: block; }
+hr.div { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+/* ═══════════════════════════════════════
+   TRACKING DASHBOARD
+═══════════════════════════════════════ */
+.dashboard {
+  margin: 0; padding: 20px 32px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.dash-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+.dash-label { font-size: 10px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+.dash-date { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+/* TODAY STATUS BANNER */
+.today-banner {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 18px; border-radius: 6px; margin-bottom: 16px;
+  border: 1px solid; flex-wrap: wrap;
+}
+.today-banner.ahead   { background: rgba(62,207,142,0.06);  border-color: rgba(62,207,142,0.2);  }
+.today-banner.on-track{ background: rgba(91,127,255,0.06);  border-color: rgba(91,127,255,0.2);  }
+.today-banner.behind  { background: rgba(255,107,122,0.06); border-color: rgba(255,107,122,0.2); }
+.today-banner.done    { background: rgba(62,207,142,0.06);  border-color: rgba(62,207,142,0.2);  }
+.tb-icon { font-size: 22px; flex-shrink: 0; }
+.tb-main { flex: 1; }
+.tb-status { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+.ahead    .tb-status { color: var(--green); }
+.on-track .tb-status { color: var(--accent2); }
+.behind   .tb-status { color: var(--red); }
+.done     .tb-status { color: var(--green); }
+.tb-detail { font-size: 11px; color: var(--muted2); line-height: 1.5; }
+.tb-nums { text-align: right; flex-shrink: 0; }
+.tb-big { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; line-height: 1; }
+.ahead    .tb-big { color: var(--green); }
+.on-track .tb-big { color: var(--accent2); }
+.behind   .tb-big { color: var(--red); }
+.done     .tb-big { color: var(--green); }
+.tb-small { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* DUAL PROGRESS BAR */
+.dual-bar-wrap { margin-bottom: 16px; }
+.dual-bar-labels { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.dual-bar-lbl { font-size: 10px; color: var(--muted); }
+.dual-bar { height: 6px; background: var(--surface3); border-radius: 3px; position: relative; overflow: visible; }
+.dual-bar-expected { height: 100%; border-radius: 3px; background: var(--border2); position: absolute; top: 0; left: 0; transition: width 0.5s; }
+.dual-bar-actual { height: 100%; border-radius: 3px; position: absolute; top: 0; left: 0; transition: width 0.5s; z-index: 1; }
+.dual-bar-marker { position: absolute; top: -3px; width: 2px; height: 12px; background: var(--muted); border-radius: 1px; z-index: 2; transition: left 0.5s; }
+.dual-bar-marker::after { content: 'today'; position: absolute; top: 14px; left: 50%; transform: translateX(-50%); font-size: 9px; color: var(--muted); white-space: nowrap; }
+.dual-legend { display: flex; gap: 16px; margin-top: 18px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+/* COURSE TRACK ROWS */
+.course-tracks { display: flex; flex-direction: column; gap: 8px; }
+.ctrack {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; border-radius: 5px; border: 1px solid var(--border);
+  background: var(--surface2); cursor: pointer; transition: border-color 0.15s;
+}
+.ctrack:hover { border-color: var(--border2); }
+.ctrack-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.ctrack-name { font-size: 11px; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ctrack-bar-wrap { width: 120px; flex-shrink: 0; position: relative; }
+.ctrack-bar-bg { height: 4px; background: var(--surface3); border-radius: 2px; position: relative; overflow: hidden; }
+.ctrack-bar-exp { height: 100%; background: var(--border2); position: absolute; top: 0; left: 0; border-radius: 2px; }
+.ctrack-bar-act { height: 100%; position: absolute; top: 0; left: 0; border-radius: 2px; transition: width 0.4s; }
+.ctrack-badge { font-size: 9px; padding: 2px 7px; border-radius: 3px; border: 1px solid; flex-shrink: 0; letter-spacing: 0.04em; white-space: nowrap; }
+.badge-ahead    { color: var(--green);   border-color: rgba(62,207,142,0.3);  background: rgba(62,207,142,0.08);  }
+.badge-ontrack  { color: var(--accent2); border-color: rgba(91,127,255,0.3);  background: rgba(91,127,255,0.08);  }
+.badge-behind   { color: var(--red);     border-color: rgba(255,107,122,0.3); background: rgba(255,107,122,0.08); }
+.badge-done     { color: var(--green);   border-color: rgba(62,207,142,0.3);  background: rgba(62,207,142,0.08);  }
+.badge-notstarted { color: var(--muted); border-color: var(--border);         background: transparent; }
+.ctrack-pct { font-size: 10px; color: var(--muted2); width: 32px; text-align: right; flex-shrink: 0; }
+
+/* COURSE PLAN TRACK BANNER */
+.plan-track-banner {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-radius: 6px; margin-bottom: 20px;
+  border: 1px solid; flex-wrap: wrap;
+}
+.plan-track-banner.ahead    { background: rgba(62,207,142,0.06);  border-color: rgba(62,207,142,0.2);  }
+.plan-track-banner.on-track { background: rgba(91,127,255,0.06);  border-color: rgba(91,127,255,0.2);  }
+.plan-track-banner.behind   { background: rgba(255,107,122,0.06); border-color: rgba(255,107,122,0.2); }
+.plan-track-banner.done     { background: rgba(62,207,142,0.06);  border-color: rgba(62,207,142,0.2);  }
+.ptb-icon { font-size: 18px; }
+.ptb-text { flex: 1; }
+.ptb-title { font-size: 12px; font-weight: 500; }
+.ahead    .ptb-title { color: var(--green); }
+.on-track .ptb-title { color: var(--accent2); }
+.behind   .ptb-title { color: var(--red); }
+.done     .ptb-title { color: var(--green); }
+.ptb-sub { font-size: 11px; color: var(--muted2); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HOME VIEW ═══════════ -->
+<div class="view active" id="view-home">
+  <div class="home-header">
+    <div>
+      <div class="home-logo">CERTIFIKA<span>·</span>2026</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">Study Hub — DuocUC CCST + Microsoft Learn</div>
+    </div>
+    <div class="home-meta">
+      <div class="deadline-badge">⏱ Deadline: Jun 30, 2026</div>
+      <div class="days-left" id="days-left-val">-- days left</div>
+    </div>
+  </div>
+
+  <div class="global-stats">
+    <div class="g-stat"><div class="g-stat-val" id="gs-courses">9</div><div class="g-stat-lbl">Courses</div></div>
+    <div class="g-stat"><div class="g-stat-val" id="gs-done">0</div><div class="g-stat-lbl">Completed</div></div>
+    <div class="g-stat"><div class="g-stat-val">Jun 10</div><div class="g-stat-lbl">Target finish</div></div>
+    <div class="g-stat"><div class="g-stat-val">2.5h</div><div class="g-stat-lbl">Per day</div></div>
+  </div>
+
+  <div class="global-progress">
+    <div class="gp-row">
+      <span class="gp-label">Overall progress</span>
+      <span class="gp-pct" id="gp-pct-val">0%</span>
+    </div>
+    <div class="gp-bar"><div class="gp-fill" id="gp-fill" style="width:0%"></div></div>
+  </div>
+
+  <!-- TRACKING DASHBOARD -->
+  <div class="dashboard">
+    <div class="dash-top">
+      <span class="dash-label">Today's tracking — target: Jun 10</span>
+      <span class="dash-date" id="dash-today-date"></span>
+    </div>
+
+    <!-- TODAY BANNER -->
+    <div class="today-banner" id="today-banner">
+      <div class="tb-icon" id="tb-icon">⏳</div>
+      <div class="tb-main">
+        <div class="tb-status" id="tb-status">Calculando...</div>
+        <div class="tb-detail" id="tb-detail"></div>
+      </div>
+      <div class="tb-nums">
+        <div class="tb-big" id="tb-big">—</div>
+        <div class="tb-small" id="tb-small"></div>
+      </div>
+    </div>
+
+    <!-- DUAL PROGRESS BAR -->
+    <div class="dual-bar-wrap">
+      <div class="dual-bar-labels">
+        <span class="dual-bar-lbl">0%</span>
+        <span class="dual-bar-lbl" id="dbl-center"></span>
+        <span class="dual-bar-lbl">100%</span>
+      </div>
+      <div class="dual-bar" id="dual-bar">
+        <div class="dual-bar-expected" id="dbar-expected"></div>
+        <div class="dual-bar-actual" id="dbar-actual"></div>
+        <div class="dual-bar-marker" id="dbar-marker"></div>
+      </div>
+      <div class="dual-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--border2)"></div>Expected today</div>
+        <div class="legend-item"><div class="legend-dot" id="legend-actual-dot" style="background:var(--accent2)"></div>Actual progress</div>
+      </div>
+    </div>
+
+    <!-- PER-COURSE TRACKS -->
+    <div class="section-label" style="margin-bottom:10px;">Per course</div>
+    <div class="course-tracks" id="course-tracks"></div>
+  </div>
+
+  <div class="courses-section">
+    <div class="section-label">Your courses — click to study</div>
+    <div class="courses-grid" id="courses-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════════ COURSE VIEW ═══════════ -->
+<div class="view" id="view-course">
+  <nav class="course-nav">
+    <div class="back-btn" onclick="goHome()">← All courses</div>
+    <div class="course-tabs">
+      <div class="ctab active" onclick="switchCTab('plan',this)">Plan</div>
+      <div class="ctab" onclick="switchCTab('study',this)">Study</div>
+    </div>
+  </nav>
+  <div class="course-content">
+    <div class="cpanel active" id="cpanel-plan">
+      <div class="course-hero">
+        <div class="ch-title" id="ch-title"></div>
+        <div class="ch-sub" id="ch-sub"></div>
+        <div class="ch-progress">
+          <div class="ch-prow"><span class="ch-plabel">Course progress</span><span class="ch-ppct" id="ch-ppct">0%</span></div>
+          <div class="ch-bar"><div class="ch-fill" id="ch-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div id="weeks-container"></div>
+    </div>
+    <div class="cpanel" id="cpanel-study">
+      <div class="study-modes">
+        <button class="smode active" onclick="switchSMode('resumen',this)">Resumen</button>
+        <button class="smode" onclick="switchSMode('flashcards',this)">Flashcards</button>
+        <button class="smode" onclick="switchSMode('quiz',this)">Quiz</button>
+      </div>
+      <div class="mod-selector" id="study-mod-selector"></div>
+      <div class="sview active" id="sview-resumen">
+        <button class="gen-btn" id="btn-resumen" onclick="generateResumen()">▶ Generar resumen</button>
+        <div class="ai-box" id="box-resumen"><div class="empty-state"><span class="empty-icon">📋</span>Selecciona un módulo y genera el resumen.</div></div>
+      </div>
+      <div class="sview" id="sview-flashcards">
+        <button class="gen-btn" id="btn-flash" onclick="generateFlashcards()">▶ Generar flashcards</button>
+        <div id="fc-area"><div class="empty-state"><span class="empty-icon">🃏</span>Genera flashcards para repasar términos clave.</div></div>
+      </div>
+      <div class="sview" id="sview-quiz">
+        <button class="gen-btn" id="btn-quiz" onclick="generateQuiz()">▶ Generar quiz</button>
+        <div class="score-bar" id="score-bar" style="display:none">Puntaje: <span class="score-val" id="score-val">0/0</span></div>
+        <div id="quiz-area"><div class="empty-state"><span class="empty-icon">🎯</span>Genera un quiz para testear tus conocimientos.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// TRACKING LOGIC
+// ═══════════════════════════════════════
+const TARGET_DATE = new Date('2026-06-10T23:59:59');
+const START_DATE  = new Date('2026-05-12T00:00:00'); // course start
+
+function getDayProgress() {
+  const now = new Date();
+  const totalMs  = TARGET_DATE - START_DATE;
+  const elapsedMs = Math.min(now - START_DATE, totalMs);
+  const ratio = Math.max(0, Math.min(1, elapsedMs / totalMs));
+  return ratio; // 0 → 1
+}
+
+function getTotalItems() {
+  let total = 0;
+  COURSES.forEach(c => c.weeks.forEach(w => { total += w.items.length; }));
+  return total;
+}
+
+function getDoneItems() {
+  let done = 0;
+  COURSES.forEach(c => {
+    c.weeks.forEach((w, wi) => {
+      w.items.forEach((_, ii) => {
+        if (state[`${c.id}_w${wi}_i${ii}`] === 'done') done++;
+      });
+    });
+  });
+  return done;
+}
+
+function getTrackStatus(actualPct, expectedPct) {
+  const diff = actualPct - expectedPct;
+  if (actualPct >= 100) return 'done';
+  if (diff >= 5)  return 'ahead';
+  if (diff >= -5) return 'on-track';
+  return 'behind';
+}
+
+function renderDashboard() {
+  const now = new Date();
+  const dayRatio    = getDayProgress();
+  const totalItems  = getTotalItems();
+  const doneItems   = getDoneItems();
+  const actualPct   = totalItems ? Math.round((doneItems / totalItems) * 100) : 0;
+  const expectedPct = Math.round(dayRatio * 100);
+  const expectedItems = Math.round(dayRatio * totalItems);
+  const diff = doneItems - expectedItems;
+  const status = getTrackStatus(actualPct, expectedPct);
+
+  // Date label
+  document.getElementById('dash-today-date').textContent =
+    now.toLocaleDateString('es-CL', { weekday:'long', day:'numeric', month:'long' });
+
+  // Banner
+  const banner = document.getElementById('today-banner');
+  banner.className = 'today-banner ' + status;
+  const icons   = { ahead:'🚀', 'on-track':'✅', behind:'⚠️', done:'🎉' };
+  const titles  = { ahead:'Vas adelantado', 'on-track':'Vas al día', behind:'Estás atrasado', done:'¡Todo completado!' };
+  document.getElementById('tb-icon').textContent   = icons[status];
+  document.getElementById('tb-status').textContent = titles[status];
+
+  let detail = '';
+  if (status === 'done') {
+    detail = '¡Completaste todos los cursos antes del deadline!';
+  } else if (status === 'ahead') {
+    detail = `Llevas ${diff} ítem${diff !== 1 ? 's' : ''} más de lo esperado para hoy. A este ritmo terminas antes del 10 de junio.`;
+  } else if (status === 'on-track') {
+    detail = `Estás justo donde deberías estar hoy. Se esperaban ${expectedItems} ítems completados — llevas ${doneItems}.`;
+  } else {
+    const behind = Math.abs(diff);
+    detail = `Llevas ${behind} ítem${behind !== 1 ? 's' : ''} menos de lo esperado. Completa ${behind} más hoy para ponerte al día.`;
+  }
+  document.getElementById('tb-detail').textContent = detail;
+
+  // Big number
+  const bigNum = status === 'behind' ? Math.abs(diff) : (status === 'ahead' ? diff : doneItems);
+  const smallLbl = status === 'behind' ? 'ítems pendientes hoy' : (status === 'ahead' ? 'ítems de ventaja' : 'ítems completados');
+  document.getElementById('tb-big').textContent  = status === 'done' ? '✓' : bigNum;
+  document.getElementById('tb-small').textContent = status === 'done' ? 'completado' : smallLbl;
+
+  // Dual bar
+  const barColors = { ahead:'#3ecf8e', 'on-track':'#5b7fff', behind:'#ff6b7a', done:'#3ecf8e' };
+  document.getElementById('dbar-expected').style.width = expectedPct + '%';
+  document.getElementById('dbar-actual').style.width   = actualPct + '%';
+  document.getElementById('dbar-actual').style.background = barColors[status];
+  document.getElementById('dbar-marker').style.left   = expectedPct + '%';
+  document.getElementById('dbl-center').textContent   = `Expected: ${expectedPct}% · Actual: ${actualPct}%`;
+  document.getElementById('legend-actual-dot').style.background = barColors[status];
+
+  // Per-course tracks
+  renderCourseTracks(barColors[status]);
+}
+
+function renderCourseTracks(globalColor) {
+  const container = document.getElementById('course-tracks');
+  container.innerHTML = '';
+  const dayRatio = getDayProgress();
+
+  COURSES.forEach(c => {
+    let total = 0, done = 0;
+    c.weeks.forEach((w, wi) => {
+      w.items.forEach((_, ii) => {
+        total++;
+        if (state[`${c.id}_w${wi}_i${ii}`] === 'done') done++;
+      });
+    });
+    const actualPct   = total ? Math.round((done / total) * 100) : 0;
+    const expectedPct = Math.round(dayRatio * 100);
+    const status = getTrackStatus(actualPct, expectedPct);
+
+    const badgeMap = {
+      ahead:'badge-ahead', 'on-track':'badge-ontrack',
+      behind:'badge-behind', done:'badge-done'
+    };
+    const badgeText = {
+      ahead:'Adelantado', 'on-track':'Al día',
+      behind:'Atrasado', done:'Completo'
+    };
+    const barColor = {
+      ahead:'#3ecf8e', 'on-track':'#5b7fff',
+      behind:'#ff6b7a', done:'#3ecf8e'
+    };
+
+    const row = document.createElement('div');
+    row.className = 'ctrack';
+    row.onclick = () => openCourse(c.id);
+    row.innerHTML = `
+      <div class="ctrack-dot" style="background:${c.accent}"></div>
+      <div class="ctrack-name">${getSavedTitle(c.id) || c.title}</div>
+      <div class="ctrack-bar-wrap">
+        <div class="ctrack-bar-bg">
+          <div class="ctrack-bar-exp" style="width:${Math.min(expectedPct,100)}%"></div>
+          <div class="ctrack-bar-act" style="width:${actualPct}%;background:${barColor[status]}"></div>
+        </div>
+      </div>
+      <div class="ctrack-badge ${badgeMap[status]}">${badgeText[status]}</div>
+      <div class="ctrack-pct">${actualPct}%</div>`;
+    container.appendChild(row);
+  });
+}
+
+function renderPlanTrackBanner(c) {
+  const dayRatio = getDayProgress();
+  let total = 0, done = 0;
+  c.weeks.forEach((w, wi) => {
+    w.items.forEach((_, ii) => {
+      total++;
+      if (state[`${c.id}_w${wi}_i${ii}`] === 'done') done++;
+    });
+  });
+  const actualPct   = total ? Math.round((done / total) * 100) : 0;
+  const expectedPct = Math.round(dayRatio * 100);
+  const expectedItems = Math.round(dayRatio * total);
+  const diff = done - expectedItems;
+  const status = getTrackStatus(actualPct, expectedPct);
+
+  const icons  = { ahead:'🚀', 'on-track':'✅', behind:'⚠️', done:'🎉' };
+  const titles = { ahead:'Vas adelantado en este curso', 'on-track':'Vas al día en este curso', behind:'Estás atrasado en este curso', done:'Curso completado' };
+  let sub = '';
+  if (status === 'done') sub = '¡Completado antes del deadline!';
+  else if (status === 'ahead') sub = `${diff} ítem${diff!==1?'s':''} de ventaja sobre lo esperado (${expectedPct}% esperado · ${actualPct}% actual)`;
+  else if (status === 'on-track') sub = `${done} de ${total} ítems · se esperaban ~${expectedItems} para hoy`;
+  else sub = `${Math.abs(diff)} ítem${Math.abs(diff)!==1?'s':''} por debajo de lo esperado — se esperaban ${expectedItems}, llevas ${done}`;
+
+  return `<div class="plan-track-banner ${status}">
+    <div class="ptb-icon">${icons[status]}</div>
+    <div class="ptb-text">
+      <div class="ptb-title">${titles[status]}</div>
+      <div class="ptb-sub">${sub}</div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════
+// COURSE DATA
+// ═══════════════════════════════════════
+const COURSES = [
+  {
+    id: 'c01', num: '01', tag: 'cisco',
+    title: 'Introducción a Ciberseguridad',
+    hours: '~6h', type: 'CCST Ciberseguridad',
+    accent: '#60a5fa',
+    studyTopics: ['Módulo 2: Ataques y malware','Módulo 3: Protección de datos','Módulo 4: Protegiendo la organización','Módulo 5: Futuro en ciberseguridad'],
+    weeks: [
+      { tag:'wt1', label:'Semana 1', name:'Módulo 2 — Ataques, conceptos y técnicas', dates:'May 12–18',
+        items:[
+          {name:'Módulo 1 — Introducción a la Ciberseguridad', sub:'✓ Completado', day:'', done:true},
+          {name:'2.1 Analizando un ciberataque', sub:'En progreso · 2/3 secciones', day:'Lun–Mar', partial:true},
+          {name:'2.2 Métodos de infiltración', sub:'3/11 lecciones', day:'Mié–Jue'},
+          {name:'2.3 Aprovechamiento de vulnerabilidades', sub:'', day:'Vie'},
+          {name:'2.4 El panorama de la ciberseguridad', sub:'', day:'Sáb'},
+          {name:'2.5 Cuestionario Módulo 2', sub:'', day:'Sáb', exam:true},
+        ], tip:'Módulo 2 es el más denso. Completarlo esta semana te da margen para el resto.'},
+      { tag:'wt2', label:'Semana 2', name:'Módulo 3 — Protegiendo sus datos y privacidad', dates:'May 19–25',
+        items:[
+          {name:'Módulo 3 completo', sub:'Lun–Vie, cuestionario el viernes', day:'Lun–Vie'},
+          {name:'Cuestionario Módulo 3', sub:'', day:'Vie', exam:true},
+        ], tip:'Módulo 3 suele ser más corto. Si terminas antes, empieza el Módulo 4.'},
+      { tag:'wt3', label:'Semana 3', name:'Módulos 4 & 5 + Examen final', dates:'May 26–Jun 1',
+        items:[
+          {name:'Módulo 4 — Protegiendo a la organización', sub:'Lun–Mié', day:'Lun–Mié'},
+          {name:'Módulo 5 — ¿Tu futuro en ciberseguridad?', sub:'Jue · no te lo saltes', day:'Jue'},
+          {name:'Encuesta de fin de curso', sub:'', day:'Vie'},
+          {name:'Repaso general todos los módulos', sub:'', day:'Vie'},
+          {name:'Examen final del curso', sub:'~25–30 preguntas', day:'Sáb', exam:true},
+        ], tip:'Reserva el viernes para repasar. No dejes el examen para el último momento.'},
+    ]
+  },
+  {
+    id: 'c02', num: '02', tag: 'cisco',
+    title: 'Conceptos Básicos de Redes',
+    hours: '~10h', type: 'CCST Ciberseguridad',
+    accent: '#34d399',
+    studyTopics: ['Módulo 1–4: Fundamentos y redes domésticas','Módulo 5–11: Protocolos e IP','Módulo 12–17: Enrutamiento y protocolos de aplicación'],
+    weeks: [
+      { tag:'wt1', label:'Semana 1', name:'Módulos 1–4 — Fundamentos y redes domésticas', dates:'May 19–25',
+        items:[
+          {name:'Introducción del curso', sub:'Ya tienes 33%', day:'Lun'},
+          {name:'Módulo 1 — Comunicación en un Mundo Conectado', sub:'Tipos de red, ancho de banda', day:'Lun–Mar'},
+          {name:'Módulo 2 — Componentes, tipos y conexiones de red', sub:'Clientes/servidores, ISP', day:'Mié'},
+          {name:'Módulo 3 — Redes inalámbricas y móviles', sub:'WiFi, conectividad móvil', day:'Jue'},
+          {name:'Módulo 4 — Crear una Red Doméstica', sub:'Estándares WiFi, configurar router', day:'Vie–Sáb'},
+          {name:'Examen parcial: Construir una red pequeña', sub:'Cubre módulos 1–4', day:'Sáb', exam:true},
+        ], tip:'Semana introductoria — vocabulario base antes de entrar a IP.'},
+      { tag:'wt2', label:'Semana 2', name:'Módulos 5–11 — Protocolos e IP ⚠️', dates:'May 26–Jun 1',
+        items:[
+          {name:'Módulo 5 — Principios de Comunicación', sub:'Modelos OSI/TCP-IP', day:'Lun'},
+          {name:'Módulo 6 — Medios de red', sub:'Cable, fibra, inalámbrico', day:'Lun'},
+          {name:'Módulo 7 — La capa de acceso', sub:'Ethernet, tramas', day:'Mar'},
+          {name:'Examen parcial: Acceso a la red', sub:'Cubre módulos 5–7', day:'Mar', exam:true},
+          {name:'Módulo 8 — El Protocolo de Internet (IPv4)', sub:'Estructura de dirección', day:'Mié'},
+          {name:'Módulo 9 — IPv4 y segmentación de redes', sub:'Subnetting — el más difícil', day:'Jue'},
+          {name:'Módulo 10 — Formatos y reglas de IPv6', sub:'Por qué IPv6, notación', day:'Vie'},
+          {name:'Módulo 11 — Direccionamiento Dinámico con DHCP', sub:'', day:'Sáb'},
+          {name:'Examen parcial: El Protocolo de Internet', sub:'Cubre módulos 8–11', day:'Sáb', exam:true},
+        ], tip:'⚠️ Semana más difícil. No avances si no entiendes la máscara de subred.'},
+      { tag:'wt3', label:'Semana 3', name:'Módulos 12–17 — Enrutamiento y protocolos', dates:'Jun 2–7',
+        items:[
+          {name:'Módulo 12 — Puertas de enlace y NAT', sub:'', day:'Lun'},
+          {name:'Módulo 13 — El proceso ARP', sub:'MAC vs IP, ARP', day:'Lun'},
+          {name:'Módulo 14 — Enrutamiento entre Redes', sub:'Tablas de enrutamiento', day:'Mar'},
+          {name:'Examen parcial: Comunicación entre Redes', sub:'', day:'Mar', exam:true},
+          {name:'Módulo 15 — TCP y UDP', sub:'Puertos, diferencias', day:'Mié'},
+          {name:'Módulo 16 — Servicios de la Capa de Aplicación', sub:'DNS, HTTP, FTP, SSH, email', day:'Jue–Vie'},
+          {name:'Módulo 17 — Utilidades de prueba de red', sub:'ping, traceroute, ipconfig', day:'Sáb'},
+          {name:'Examen parcial: Protocolos para Tareas Específicas', sub:'', day:'Sáb', exam:true},
+        ], tip:'Módulo 16 tiene 8 subsecciones — dale dos días. Módulo 17 es práctico y corto.'},
+      { tag:'wt4', label:'Semana 4', name:'Repaso + Examen final', dates:'Jun 8–14',
+        items:[
+          {name:'Repaso módulos 1–11', sub:'', day:'Lun–Mar'},
+          {name:'Repaso módulos 12–17', sub:'', day:'Mié'},
+          {name:'Examen final del curso', sub:'Cubre todo', day:'Jue–Vie', exam:true},
+          {name:'Encuesta final', sub:'', day:'Vie'},
+        ], tip:'Terminas el 14 de junio — 16 días antes del deadline.'},
+    ]
+  },
+  {
+    id: 'c04', num: '04', tag: 'cisco',
+    title: 'Seguridad de Terminales',
+    hours: '~8h', type: 'CCST Ciberseguridad',
+    accent: '#f97316',
+    studyTopics: ['Módulo 1: Amenazas y ataques','Módulo 2–6: Protección de redes','Módulo 7–8: Windows y Linux','Módulo 9–10: Protección de terminales'],
+    weeks: [
+      { tag:'wt1', label:'Semana 1', name:'Módulos 1–6 — Amenazas y seguridad de redes', dates:'May 19–25',
+        items:[
+          {name:'Módulo 1 — Amenazas, vulnerabilidades y ataques', sub:'Malware, engaño, ataques móviles', day:'Lun–Mar'},
+          {name:'Cuestionario Módulo 1', sub:'', day:'Mar', exam:true},
+          {name:'Módulo 2 — Protección de redes', sub:'Estado actual, quién ataca', day:'Mié'},
+          {name:'Módulo 3 — Ataque a los fundamentos', sub:'PDU IP, vulnerabilidades TCP/UDP', day:'Jue'},
+          {name:'Módulo 4 — Atacando lo que hacemos', sub:'Servicios IP, mitigación', day:'Vie'},
+          {name:'Módulo 5 — Comunicación inalámbrica', sub:'WLAN, amenazas, seguridad', day:'Sáb'},
+          {name:'Módulo 6 — Infraestructura de seguridad', sub:'Dispositivos y servicios de seguridad', day:'Sáb'},
+          {name:'Examen parcial: Seguridad de la red', sub:'Cubre módulos 1–6', day:'Sáb', exam:true},
+        ], tip:'Primera semana densa. El módulo 1 conecta directamente con el curso de Intro a Ciberseguridad.'},
+      { tag:'wt2', label:'Semana 2', name:'Módulos 7–10 — Sistemas operativos y terminales', dates:'May 26–Jun 1',
+        items:[
+          {name:'Módulo 7 — El sistema operativo Windows', sub:'Arquitectura, configuración, seguridad', day:'Lun–Mar'},
+          {name:'Módulo 8 — Descripción general de Linux', sub:'Shell, servidores, sistema de archivos', day:'Mié–Jue'},
+          {name:'Módulo 9 — Protección de terminales', sub:'Antimalware, IPS basado en host', day:'Vie'},
+          {name:'Módulo 10 — Principios de ciberseguridad', sub:'Las tres dimensiones, contramedidas', day:'Sáb'},
+          {name:'Examen parcial: SO y seguridad de punto final', sub:'Cubre módulos 7–10', day:'Sáb', exam:true},
+        ], tip:'Módulo 8 (Linux) es el más extenso — tiene 8 subsecciones. No lo dejes para el último día.'},
+      { tag:'wt3', label:'Semana 3', name:'Repaso + Examen final', dates:'Jun 2–4',
+        items:[
+          {name:'Repaso general', sub:'', day:'Lun–Mar'},
+          {name:'Examen final del curso', sub:'', day:'Mié', exam:true},
+          {name:'Encuesta final', sub:'', day:'Mié'},
+        ], tip:''},
+    ]
+  },
+  {
+    id: 'c05', num: '05', tag: 'cisco',
+    title: 'Defensa de la Red',
+    hours: '~12h', type: 'CCST Ciberseguridad',
+    accent: '#a78bfa',
+    studyTopics: ['Módulo 1–3: Defensa y control de acceso','Módulo 4–8: Firewalls, nube y criptografía','Módulo 9–11: Tecnologías y alertas'],
+    weeks: [
+      { tag:'wt1', label:'Semana 1', name:'Módulos 1–3 — Defensa y control de acceso', dates:'May 26–Jun 1',
+        items:[
+          {name:'Introducción + Packet Tracer', sub:'Instalar si no lo tienes', day:'Lun'},
+          {name:'Módulo 1 — Comprendiendo qué es Defensa', sub:'Defensa en profundidad, políticas', day:'Lun–Mar'},
+          {name:'Módulo 2 — Defensa del sistema y la red', sub:'Seguridad física, endurecimiento, IoT', day:'Mié–Jue'},
+          {name:'Módulo 3 — Control de Acceso', sub:'AAA, administración de cuentas', day:'Vie'},
+          {name:'Examen parcial: Principios de Defensa', sub:'Cubre módulos 1–3', day:'Sáb', exam:true},
+        ], tip:'Módulo 2 tiene 8 subsecciones — uno de los más largos del curso.'},
+      { tag:'wt2', label:'Semana 2', name:'Módulos 4–8 — ACL, Firewalls, Nube y Criptografía', dates:'Jun 2–8',
+        items:[
+          {name:'Módulo 4 — Listas de control de acceso (ACL)', sub:'Wildcard, ACL IPv4/IPv6', day:'Lun–Mar'},
+          {name:'Módulo 5 — Tecnologías de firewall', sub:'Tipos de firewall, diseño de redes', day:'Mié'},
+          {name:'Módulo 6 — Firewalls de política basados en zonas (ZPF)', sub:'Configurar ZPF', day:'Jue'},
+          {name:'Módulo 7 — Seguridad en la nube', sub:'Virtualización, dominios, VMs', day:'Vie'},
+          {name:'Módulo 8 — Criptografía', sub:'Hash, PKI, cifrado, aplicaciones', day:'Sáb'},
+          {name:'Examen parcial: Firewalls, Criptografía y Nube', sub:'', day:'Sáb', exam:true},
+        ], tip:'Módulo 8 (Criptografía) es conceptualmente denso — tómate tu tiempo con PKI y hashes.'},
+      { tag:'wt3', label:'Semana 3', name:'Módulos 9–11 + Examen final', dates:'Jun 9–14',
+        items:[
+          {name:'Módulo 9 — Tecnologías y protocolos', sub:'Monitoreo, tecnologías de seguridad', day:'Lun'},
+          {name:'Módulo 10 — Datos de seguridad de red', sub:'Logs de terminales y redes', day:'Mar'},
+          {name:'Módulo 11 — Evaluar alertas', sub:'Fuentes, evaluación', day:'Mié'},
+          {name:'Examen parcial: Evaluación de alertas', sub:'', day:'Mié', exam:true},
+          {name:'Repaso general', sub:'', day:'Jue'},
+          {name:'Examen final del curso', sub:'', day:'Vie', exam:true},
+          {name:'Encuesta final', sub:'', day:'Vie'},
+        ], tip:'El curso más largo. Protege los días de repaso — no los comprimas.'},
+    ]
+  },
+  {
+    id: 'c06', num: '06', tag: 'cisco',
+    title: 'Administración de Amenazas Cibernéticas',
+    hours: '~6h', type: 'CCST Ciberseguridad',
+    accent: '#2dd4bf',
+    studyTopics: ['Módulo 1–3: Gobernanza y threat intelligence','Módulo 4–5: Vulnerabilidades y riesgos','Módulo 6: Forense e incidentes'],
+    weeks: [
+      { tag:'wt1', label:'Semana 1', name:'Módulos 1–5 — Gobernanza, pruebas y riesgos', dates:'May 26–Jun 1',
+        items:[
+          {name:'Módulo 1 — Gestión y Cumplimiento', sub:'Gobernanza, ética, marcos de seguridad', day:'Lun'},
+          {name:'Módulo 2 — Pruebas de Seguridad de la Red', sub:'Evaluaciones, pen testing, herramientas', day:'Mar'},
+          {name:'Módulo 3 — Inteligencia contra las Amenazas', sub:'Fuentes, servicios de inteligencia', day:'Mié'},
+          {name:'Módulo 4 — Evaluación de vulnerabilidades', sub:'Perfiles, CVSS, gestión segura', day:'Jue'},
+          {name:'Módulo 5 — Administración de Riesgos', sub:'Evaluación, controles de seguridad', day:'Vie'},
+          {name:'Examen parcial: Vulnerabilidad y Riesgos', sub:'', day:'Vie', exam:true},
+        ], tip:'Este curso es más conceptual que técnico — ideal para leer con atención y tomar notas.'},
+      { tag:'wt2', label:'Semana 2', name:'Módulo 6 + Examen final', dates:'Jun 2–4',
+        items:[
+          {name:'Módulo 6 — Análisis Forense y Respuesta a Incidentes', sub:'Cadena de custodia, Diamond Model, IR', day:'Lun–Mar'},
+          {name:'Examen parcial: Respuesta a incidentes', sub:'', day:'Mar', exam:true},
+          {name:'Repaso general', sub:'', day:'Mié'},
+          {name:'Examen final del curso', sub:'', day:'Mié', exam:true},
+          {name:'Encuesta final', sub:'', day:'Mié'},
+        ], tip:'Módulo 6 es el más rico en conceptos — Cyber Kill Chain y Diamond Model son favoritos del examen.'},
+    ]
+  },
+  {
+    id: 'c07', num: '07', tag: 'ms',
+    title: 'Intro a Aplicaciones y Agentes de IA en Azure',
+    hours: '~5.5h', type: 'Microsoft Learn',
+    accent: '#34d399',
+    studyTopics: ['IA en Azure','IA Generativa y Agentes','Análisis de Texto','Servicios de Voz','Computer Vision','Extracción de Información'],
+    weeks: [
+      { tag:'wt1', label:'Bloque único', name:'6 módulos — completar en 2–3 días', dates:'Jun 1–3',
+        items:[
+          {name:'Introducción a la IA en Azure', sub:'56 min · Azure, Foundry, endpoints', day:'Día 1'},
+          {name:'IA Generativa y Agentes en Azure', sub:'58 min · modelos generativos, crear agente', day:'Día 1'},
+          {name:'Análisis de texto en Azure', sub:'45 min · Azure Language, app Python', day:'Día 2'},
+          {name:'Servicios de voz en Azure', sub:'47 min · reconocimiento, síntesis', day:'Día 2'},
+          {name:'Computer Vision en Azure', sub:'50 min · multimodal, generación de imágenes', day:'Día 3'},
+          {name:'Extracción de información con IA', sub:'43 min · Content Understanding, Foundry', day:'Día 3'},
+        ], tip:'Cada módulo incluye un ejercicio práctico de ~25–30 min en Microsoft Foundry. Necesitas cuenta Azure.'},
+    ]
+  },
+  {
+    id: 'c08', num: '08', tag: 'ms',
+    title: 'Conceptos de IA para Desarrolladores',
+    hours: '~3.3h', type: 'Microsoft Learn',
+    accent: '#f472b6',
+    studyTopics: ['Fundamentos de IA','IA Generativa y LLMs','NLP','Voz','Computer Vision','Extracción de información'],
+    weeks: [
+      { tag:'wt1', label:'Bloque único', name:'6 módulos — completar en 1–2 días', dates:'May 19–20',
+        items:[
+          {name:'Introducción a los conceptos de IA', sub:'40 min · fundamentos, visión general', day:'Día 1'},
+          {name:'Intro a IA generativa y agentes', sub:'37 min · LLMs, prompts, agentes', day:'Día 1'},
+          {name:'Conceptos de procesamiento de lenguaje natural', sub:'30 min · tokenización, modelos semánticos', day:'Día 1'},
+          {name:'Conceptos de voz de IA', sub:'28 min · reconocimiento, síntesis', day:'Día 2'},
+          {name:'Conceptos de Computer Vision', sub:'34 min · CNN, transformadores de visión', day:'Día 2'},
+          {name:'Extracción de información con IA', sub:'28 min · OCR, mapeo de campos', day:'Día 2'},
+        ], tip:'El más corto de todos — ~3 horas en total. Ideal para empezar y ganar momentum rápido.'},
+    ]
+  },
+  {
+    id: 'c09', num: '09', tag: 'ms',
+    title: 'Introducción a la Infraestructura en la Nube',
+    hours: '~5.5h', type: 'Microsoft Learn · AZ-900',
+    accent: '#60a5fa',
+    studyTopics: ['Conceptos de la nube','Arquitectura y servicios de Azure','Administración y gobernanza de Azure'],
+    weeks: [
+      { tag:'wt1', label:'Parte 1', name:'Descripción de los conceptos de la nube (~1h)', dates:'May 21',
+        items:[
+          {name:'Descripción de la informática en la nube', sub:'1/8 unidades completadas · modelos, responsabilidad', day:''},
+          {name:'Ventajas de usar servicios en la nube', sub:'Alta disponibilidad, sostenibilidad', day:''},
+          {name:'Tipos de servicio en la nube', sub:'IaaS, PaaS, SaaS', day:''},
+        ], tip:''},
+      { tag:'wt2', label:'Parte 2', name:'Arquitectura y servicios de Azure (~3h)', dates:'May 22–23',
+        items:[
+          {name:'Componentes arquitectónicos principales de Azure', sub:'Regiones, zonas, suscripciones', day:''},
+          {name:'Servicios de proceso de Azure', sub:'VMs, contenedores, Functions, AI/ML', day:''},
+          {name:'Servicios de red de Azure', sub:'VNet, VPN, ExpressRoute, DNS', day:''},
+          {name:'Servicios de almacenamiento de Azure', sub:'Cuentas, redundancia, migración', day:''},
+          {name:'Identidad, acceso y seguridad de Azure', sub:'AAD, RBAC, Zero Trust, Defender', day:''},
+        ], tip:'La parte más larga. El módulo de identidad y seguridad conecta directo con los cursos CCST.'},
+      { tag:'wt3', label:'Parte 3', name:'Administración y gobernanza de Azure (~1.5h)', dates:'May 24',
+        items:[
+          {name:'Administración de costos en Azure', sub:'Calculadora de precios, Cost Management', day:''},
+          {name:'Gobernanza y cumplimiento', sub:'Purview, Azure Policy, bloqueos', day:''},
+          {name:'Administrar e implementar recursos', sub:'Portal, Arc, ARM templates', day:''},
+          {name:'Herramientas de supervisión de Azure', sub:'Advisor, Service Health, Monitor', day:''},
+        ], tip:''},
+    ]
+  },
+  {
+    id: 'c10', num: '10', tag: 'ms',
+    title: 'Introducción a los Datos de Microsoft Azure',
+    hours: '~6h', type: 'Microsoft Learn · DP-900',
+    accent: '#fb923c',
+    studyTopics: ['Conceptos de datos','Datos relacionales','Datos no relacionales','Análisis de datos'],
+    weeks: [
+      { tag:'wt1', label:'Parte 1', name:'Conceptos de datos principales', dates:'May 25',
+        items:[
+          {name:'Exploración de los conceptos de los datos principales', sub:'2/8 unidades completadas · formatos, BD, transaccional', day:''},
+          {name:'Exploración de roles y servicios de datos', sub:'Roles de trabajo, servicios Azure', day:''},
+        ], tip:''},
+      { tag:'wt2', label:'Parte 2', name:'Datos relacionales en Azure', dates:'May 26',
+        items:[
+          {name:'Fundamentos de datos relacionales', sub:'Normalización, SQL, objetos de BD', day:''},
+          {name:'Servicios de BD relacionales en Azure', sub:'Azure SQL, MySQL, PostgreSQL', day:''},
+        ], tip:''},
+      { tag:'wt3', label:'Parte 3', name:'Datos no relacionales en Azure', dates:'May 27',
+        items:[
+          {name:'Azure Storage para datos no relacionales', sub:'Blob, Data Lake, Files, Tables', day:''},
+          {name:'Aspectos básicos de Azure Cosmos DB', sub:'APIs, escalabilidad global', day:''},
+        ], tip:''},
+      { tag:'wt4', label:'Parte 4', name:'Análisis de datos en Azure', dates:'May 28',
+        items:[
+          {name:'Análisis a gran escala', sub:'Data warehouse, pipelines, Fabric', day:''},
+          {name:'Análisis en tiempo real', sub:'Streaming, Spark, Real-time Intelligence', day:''},
+          {name:'Visualización de datos', sub:'Power BI, modelado, dashboards', day:''},
+        ], tip:'La parte más práctica — incluye ejercicios con Microsoft Fabric y Power BI.'},
+    ]
+  },
+];
+
+// Load saved state
+function loadState() {
+  try { return JSON.parse(localStorage.getItem('certifika_state') || '{}'); } catch(e) { return {}; }
+}
+function saveState(state) {
+  try { localStorage.setItem('certifika_state', JSON.stringify(state)); } catch(e) {}
+}
+let state = loadState();
+let currentCourseId = null;
+let currentStudyMod = '';
+let flashcards = [], flashIdx = 0, flashFlipped = false;
+let quizData = [], quizScore = 0, quizAnswered = 0;
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+function init() {
+  updateDeadline();
+  renderCourseGrid();
+  updateGlobalProgress();
+  renderDashboard();
+}
+
+function updateDeadline() {
+  const deadline = new Date('2026-06-30');
+  const today = new Date();
+  const diff = Math.ceil((deadline - today) / (1000*60*60*24));
+  document.getElementById('days-left-val').textContent = diff + ' days left';
+}
+
+// ═══════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════
+function renderCourseGrid() {
+  const grid = document.getElementById('courses-grid');
+  grid.innerHTML = '';
+  COURSES.forEach(c => {
+    const pct = getCourseProgress(c);
+    const card = document.createElement('div');
+    card.className = 'course-card';
+    card.style.setProperty('--card-accent', c.accent);
+    const titleId = 'title-' + c.id;
+    card.innerHTML = `
+      <div class="card-num">${c.num} · ${c.type}</div>
+      <div class="card-title-wrap">
+        <div class="card-title" id="${titleId}" contenteditable="false"
+          onblur="saveTitle('${c.id}',this)"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
+        >${getSavedTitle(c.id) || c.title}</div>
+        <div class="edit-btn" title="Edit title" onclick="event.stopPropagation();toggleEdit('${titleId}',this)">✎</div>
+      </div>
+      <div class="card-progress-row">
+        <span class="card-pct">${pct}%</span>
+        <span class="card-target">${c.hours}</span>
+      </div>
+      <div class="card-bar"><div class="card-bar-fill" style="width:${pct}%;background:${c.accent}"></div></div>
+      <div class="card-meta">
+        <span class="card-tag ${c.tag === 'cisco' ? 'tag-cisco' : 'tag-ms'}">${c.tag === 'cisco' ? 'Cisco NetAcad' : 'Microsoft Learn'}</span>
+        <span class="card-tag tag-hours">${c.hours}</span>
+        ${pct > 0 && pct < 100 ? '<span class="card-tag tag-inprogress">In progress</span>' : ''}
+        ${pct === 100 ? '<span class="card-tag tag-done">✓ Done</span>' : ''}
+      </div>`;
+    card.addEventListener('click', (e) => {
+      if (e.target.classList.contains('edit-btn') || e.target.classList.contains('card-title')) return;
+      openCourse(c.id);
+    });
+    grid.appendChild(card);
+  });
+}
+
+function getSavedTitle(id) {
+  return state['title_' + id] || '';
+}
+function saveTitle(id, el) {
+  state['title_' + id] = el.textContent.trim();
+  saveState(state);
+  el.contentEditable = 'false';
+}
+function toggleEdit(titleId, btn) {
+  const el = document.getElementById(titleId);
+  if (el.contentEditable === 'true') {
+    el.blur();
+    btn.textContent = '✎';
+  } else {
+    el.contentEditable = 'true';
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    btn.textContent = '✓';
+  }
+}
+
+function getCourseProgress(c) {
+  const s = state;
+  let total = 0, done = 0;
+  c.weeks.forEach((w, wi) => {
+    w.items.forEach((item, ii) => {
+      total++;
+      const key = `${c.id}_w${wi}_i${ii}`;
+      if (s[key] === 'done') done++;
+    });
+  });
+  return total ? Math.round((done / total) * 100) : 0;
+}
+
+function updateGlobalProgress() {
+  let total = 0, done = 0;
+  COURSES.forEach(c => {
+    c.weeks.forEach((w, wi) => {
+      w.items.forEach((item, ii) => {
+        total++;
+        const key = `${c.id}_w${wi}_i${ii}`;
+        if (state[key] === 'done') done++;
+      });
+    });
+  });
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  document.getElementById('gp-pct-val').textContent = pct + '%';
+  document.getElementById('gp-fill').style.width = pct + '%';
+  const doneCourses = COURSES.filter(c => getCourseProgress(c) === 100).length;
+  document.getElementById('gs-done').textContent = doneCourses;
+}
+
+// ═══════════════════════════════════════
+// COURSE VIEW
+// ═══════════════════════════════════════
+function openCourse(id) {
+  currentCourseId = id;
+  const c = COURSES.find(x => x.id === id);
+  document.getElementById('view-home').classList.remove('active');
+  document.getElementById('view-course').classList.add('active');
+  // Reset tabs
+  document.querySelectorAll('.ctab').forEach((t,i) => t.classList.toggle('active', i===0));
+  document.querySelectorAll('.cpanel').forEach((p,i) => p.classList.toggle('active', i===0));
+  renderCoursePlan(c);
+  renderStudySelector(c);
+  resetStudy();
+  window.scrollTo(0,0);
+}
+
+function goHome() {
+  document.getElementById('view-course').classList.remove('active');
+  document.getElementById('view-home').classList.add('active');
+  renderCourseGrid();
+  updateGlobalProgress();
+  window.scrollTo(0,0);
+}
+
+function switchCTab(name, el) {
+  document.querySelectorAll('.ctab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.cpanel').forEach(p => p.classList.remove('active'));
+  document.getElementById('cpanel-' + name).classList.add('active');
+}
+
+function renderCoursePlan(c) {
+  document.getElementById('ch-title').textContent = getSavedTitle(c.id) || c.title;
+  document.getElementById('ch-sub').textContent = `${c.num} · ${c.type} · ${c.hours}`;
+  const pct = getCourseProgress(c);
+  document.getElementById('ch-ppct').textContent = pct + '%';
+  document.getElementById('ch-fill').style.width = pct + '%';
+  const container = document.getElementById('weeks-container');
+  container.innerHTML = renderPlanTrackBanner(c);
+  c.weeks.forEach((w, wi) => {
+    const block = document.createElement('div');
+    block.className = 'week-block';
+    let itemsHTML = w.items.map((item, ii) => {
+      const key = `${c.id}_w${wi}_i${ii}`;
+      const st = state[key] || (item.done ? 'done' : item.partial ? 'partial' : '');
+      const checkClass = st === 'done' ? 'done' : st === 'partial' ? 'partial' : '';
+      const examClass = item.exam ? 'exam-check' : '';
+      return `<div class="mod-item ${item.exam ? 'exam-item' : ''}" onclick="toggleItem('${c.id}',${wi},${ii},this)">
+        <div class="mod-check ${checkClass} ${examClass}" id="chk-${c.id}-${wi}-${ii}"></div>
+        <div class="mod-info">
+          <div class="mod-name">${item.exam ? '📝 ' : ''}${item.name}</div>
+          ${item.sub ? `<div class="mod-sub">${item.sub}</div>` : ''}
+        </div>
+        ${item.day ? `<div class="mod-day">${item.day}</div>` : ''}
+      </div>`;
+    }).join('');
+    const wPct = getWeekProgress(c, wi);
+    block.innerHTML = `
+      <div class="wk-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="wk-tag ${w.tag}">${w.label}</span>
+        <span class="wk-name">${w.name}</span>
+        ${w.dates ? `<span class="wk-dates">${w.dates}</span>` : ''}
+      </div>
+      <div class="wk-body open">
+        ${itemsHTML}
+        <div class="wk-prog-wrap">
+          <div class="wk-prog-row"><span class="wk-prog-lbl">Progreso</span><span class="wk-prog-pct" id="wpct-${c.id}-${wi}">${wPct}%</span></div>
+          <div class="wk-prog-bar"><div class="wk-prog-fill" id="wbar-${c.id}-${wi}" style="width:${wPct}%"></div></div>
+        </div>
+        ${w.tip ? `<div class="wk-tip">${w.tip}</div>` : ''}
+      </div>`;
+    container.appendChild(block);
+  });
+}
+
+function getWeekProgress(c, wi) {
+  const w = c.weeks[wi];
+  let total = w.items.length, done = 0;
+  w.items.forEach((_, ii) => {
+    if (state[`${c.id}_w${wi}_i${ii}`] === 'done') done++;
+  });
+  return total ? Math.round((done/total)*100) : 0;
+}
+
+function toggleItem(cid, wi, ii, row) {
+  const key = `${cid}_w${wi}_i${ii}`;
+  const chk = document.getElementById(`chk-${cid}-${wi}-${ii}`);
+  const cur = state[key] || '';
+  const next = cur === 'done' ? '' : 'done';
+  state[key] = next;
+  saveState(state);
+  chk.className = `mod-check ${next === 'done' ? 'done' : ''} ${row.querySelector('.mod-check').classList.contains('exam-check') ? 'exam-check' : ''}`;
+  const c = COURSES.find(x => x.id === cid);
+  const pct = getCourseProgress(c);
+  document.getElementById('ch-ppct').textContent = pct + '%';
+  document.getElementById('ch-fill').style.width = pct + '%';
+  const wPct = getWeekProgress(c, wi);
+  document.getElementById(`wpct-${cid}-${wi}`).textContent = wPct + '%';
+  document.getElementById(`wbar-${cid}-${wi}`).style.width = wPct + '%';
+  // refresh plan banner
+  const banner = document.querySelector('.plan-track-banner');
+  if (banner) banner.outerHTML = renderPlanTrackBanner(c);
+  else {
+    const container = document.getElementById('weeks-container');
+    container.insertAdjacentHTML('afterbegin', renderPlanTrackBanner(c));
+  }
+  // refresh home dashboard in background
+  updateGlobalProgress();
+  renderDashboard();
+}
+
+// ═══════════════════════════════════════
+// STUDY
+// ═══════════════════════════════════════
+function renderStudySelector(c) {
+  const sel = document.getElementById('study-mod-selector');
+  sel.innerHTML = '';
+  c.studyTopics.forEach((topic, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'msel' + (i === 0 ? ' active' : '');
+    btn.textContent = topic.split(':')[0].trim();
+    btn.dataset.topic = topic;
+    btn.onclick = () => {
+      document.querySelectorAll('.msel').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentStudyMod = topic;
+      resetStudy();
+    };
+    sel.appendChild(btn);
+  });
+  currentStudyMod = c.studyTopics[0];
+}
+
+function resetStudy() {
+  document.getElementById('box-resumen').innerHTML = '<div class="empty-state"><span class="empty-icon">📋</span>Selecciona un módulo y genera el resumen.</div>';
+  document.getElementById('fc-area').innerHTML = '<div class="empty-state"><span class="empty-icon">🃏</span>Genera flashcards para repasar términos clave.</div>';
+  document.getElementById('quiz-area').innerHTML = '<div class="empty-state"><span class="empty-icon">🎯</span>Genera un quiz para testear tus conocimientos.</div>';
+  document.getElementById('score-bar').style.display = 'none';
+  document.getElementById('btn-resumen').disabled = false;
+  document.getElementById('btn-resumen').textContent = '▶ Generar resumen';
+  document.getElementById('btn-flash').disabled = false;
+  document.getElementById('btn-flash').textContent = '▶ Generar flashcards';
+  document.getElementById('btn-quiz').disabled = false;
+  document.getElementById('btn-quiz').textContent = '▶ Generar quiz';
+  flashcards = []; quizData = [];
+}
+
+function switchSMode(name, el) {
+  document.querySelectorAll('.smode').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.sview').forEach(v => v.classList.remove('active'));
+  document.getElementById('sview-' + name).classList.add('active');
+}
+
+async function callClaude(prompt) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await res.json();
+  return data.content[0].text;
+}
+
+function getCourseContext() {
+  const c = COURSES.find(x => x.id === currentCourseId);
+  return c ? `${c.num} - ${c.title} (${c.type})` : '';
+}
+
+async function generateResumen() {
+  const btn = document.getElementById('btn-resumen');
+  const box = document.getElementById('box-resumen');
+  btn.disabled = true; btn.textContent = 'Generando...';
+  box.innerHTML = ''; box.classList.add('loading');
+  try {
+    const text = await callClaude(`Eres instructor del curso "${getCourseContext()}" de Cisco NetAcad / Microsoft Learn para la certificación CCST Ciberseguridad o Microsoft fundamentals.\nGenera un resumen de estudio conciso para: ${currentStudyMod}.\nUsa ### para títulos de secciones. Incluye conceptos clave con **negrita** para términos importantes, tipos/categorías y 3-4 puntos que aparecen en el examen. Responde en español. Sé concreto.`);
+    box.classList.remove('loading');
+    box.innerHTML = '<div class="ai-content">' + fmt(text) + '</div>';
+  } catch(e) { box.classList.remove('loading'); box.innerHTML = '<div class="empty-state">Error. Intenta de nuevo.</div>'; }
+  btn.disabled = false; btn.textContent = '↺ Regenerar';
+}
+
+async function generateFlashcards() {
+  const btn = document.getElementById('btn-flash');
+  const area = document.getElementById('fc-area');
+  btn.disabled = true; btn.textContent = 'Generando...';
+  area.innerHTML = '<div class="ai-box loading" style="min-height:80px"></div>';
+  try {
+    const text = await callClaude(`Genera exactamente 8 flashcards para el tema "${currentStudyMod}" del curso "${getCourseContext()}".\nResponde SOLO en JSON válido sin markdown ni backticks:\n[{"term":"término","def":"definición clara en 1-2 oraciones en español"}]\nLos términos deben ser los más importantes para el examen.`);
+    let clean = text.trim().replace(/\`\`\`json|\`\`\`/g, '').trim();
+    const start = clean.indexOf('['); const end = clean.lastIndexOf(']');
+    clean = clean.substring(start, end+1);
+    flashcards = JSON.parse(clean);
+    flashIdx = 0; flashFlipped = false;
+    renderFC();
+  } catch(e) { area.innerHTML = '<div class="empty-state">Error. Intenta de nuevo.</div>'; }
+  btn.disabled = false; btn.textContent = '↺ Nuevas flashcards';
+}
+
+function renderFC() {
+  const area = document.getElementById('fc-area');
+  if (!flashcards.length) return;
+  const card = flashcards[flashIdx];
+  flashFlipped = false;
+  area.innerHTML = `
+    <div class="fc-wrap">
+      <div class="fc" id="fc-card" onclick="flipFC()">
+        <div class="fc-face fc-front">
+          <div class="fc-label">Término · ${flashIdx+1}/${flashcards.length}</div>
+          <div class="fc-term">${card.term}</div>
+          <div class="fc-hint">clic para ver definición</div>
+        </div>
+        <div class="fc-face fc-back">
+          <div class="fc-label">Definición</div>
+          <div class="fc-def">${card.def}</div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-nav">
+      <button class="fnav" onclick="prevFC()">← Anterior</button>
+      <span class="fc-counter">${flashIdx+1} / ${flashcards.length}</span>
+      <button class="fnav" onclick="nextFC()">Siguiente →</button>
+    </div>`;
+}
+function flipFC() { const fc = document.getElementById('fc-card'); flashFlipped = !flashFlipped; fc.classList.toggle('flipped', flashFlipped); }
+function nextFC() { flashIdx = (flashIdx+1) % flashcards.length; renderFC(); }
+function prevFC() { flashIdx = (flashIdx-1+flashcards.length) % flashcards.length; renderFC(); }
+
+async function generateQuiz() {
+  const btn = document.getElementById('btn-quiz');
+  const area = document.getElementById('quiz-area');
+  btn.disabled = true; btn.textContent = 'Generando...';
+  area.innerHTML = '<div class="ai-box loading" style="min-height:80px"></div>';
+  document.getElementById('score-bar').style.display = 'none';
+  quizScore = 0; quizAnswered = 0;
+  try {
+    const text = await callClaude(`Genera 5 preguntas de opción múltiple para el examen del curso "${getCourseContext()}" sobre el tema: "${currentStudyMod}".\nResponde SOLO en JSON válido sin markdown:\n[{"q":"pregunta","opts":["A) op1","B) op2","C) op3","D) op4"],"correct":0,"exp":"explicación breve"}]\n"correct" es el índice 0-3 de la respuesta correcta. Nivel examen de certificación. Responde en español.`);
+    let clean = text.trim().replace(/\`\`\`json|\`\`\`/g, '').trim();
+    const start = clean.indexOf('['); const end = clean.lastIndexOf(']');
+    clean = clean.substring(start, end+1);
+    quizData = JSON.parse(clean);
+    renderQuiz();
+  } catch(e) { area.innerHTML = '<div class="empty-state">Error. Intenta de nuevo.</div>'; }
+  btn.disabled = false; btn.textContent = '↺ Nuevo quiz';
+}
+
+function renderQuiz() {
+  const area = document.getElementById('quiz-area');
+  document.getElementById('score-bar').style.display = 'flex';
+  document.getElementById('score-val').textContent = `0/${quizData.length}`;
+  area.innerHTML = quizData.map((q, qi) => `
+    <div class="q-block" id="qb-${qi}">
+      <div class="q-num">Pregunta ${qi+1} de ${quizData.length}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">${q.opts.map((o,oi) => `
+        <div class="opt" id="opt-${qi}-${oi}" onclick="answerQ(${qi},${oi})">
+          <span class="opt-l">${String.fromCharCode(65+oi)})</span>
+          <span>${o.replace(/^[A-D]\)\s*/,'')}</span>
+        </div>`).join('')}
+      </div>
+      <div class="expl" id="exp-${qi}">${q.exp}</div>
+    </div>`).join('');
+}
+
+function answerQ(qi, oi) {
+  const q = quizData[qi];
+  document.querySelectorAll(`#qb-${qi} .opt`).forEach(o => { o.classList.add('disabled'); o.onclick = null; });
+  document.getElementById(`opt-${qi}-${oi}`).classList.add(oi === q.correct ? 'correct' : 'wrong');
+  document.getElementById(`opt-${qi}-${q.correct}`).classList.add('correct');
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  if (oi === q.correct) quizScore++;
+  quizAnswered++;
+  document.getElementById('score-val').textContent = `${quizScore}/${quizAnswered}`;
+}
+
+function fmt(text) {
+  return text
+    .replace(/###\s*(.*)/g, '<h3>$1</h3>')
+    .replace(/##\s*(.*)/g, '<h3>$1</h3>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^-\s+(.*)/gm, '<li>$1</li>')
+    .replace(/(<li>[\s\S]*?<\/li>)/g, m => '<ul>' + m + '</ul>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<[hul])(.*\S.*)/gm, '<p>$1</p>')
+    .replace(/<p><\/p>/g, '');
+}
+
+init();
+</script>
+</body>
+</html>
