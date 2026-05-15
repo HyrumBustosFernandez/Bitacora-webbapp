@@ -19,7 +19,7 @@
   <!-- ── TOPBAR ── -->
   <header class="topbar">
     <div class="topbar-logo">
-      <div class="logo-mark">B</div>
+      <svg width="28" height="28" viewBox="..."> <!-- paste your SVG here --> </svg>
       <span class="logo-text">Bitácora</span>
     </div>
 
@@ -28,6 +28,9 @@
       <input type="text" id="search-input" placeholder="Search courses, modules..." autocomplete="off">
       <div class="search-results" id="search-results"></div>
     </div>
+
+    <!-- Mobile search icon (shows when search bar is hidden) -->
+    <div class="topbar-search-icon-btn" style="display:none" onclick="openMobileSearch()">⌕</div>
 
     <div class="topbar-spacer"></div>
 
@@ -319,6 +322,12 @@
 
     </main>
   </div>
+</div>
+
+<!-- Mobile search overlay -->
+<div class="search-overlay" id="search-overlay">
+  <input type="text" id="search-input-mobile" placeholder="Search courses, modules..." autocomplete="off">
+  <div class="search-overlay-close" onclick="closeMobileSearch()">Cancel</div>
 </div>
 
 <!-- BOTTOM NAV (mobile) -->

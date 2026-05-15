@@ -1161,6 +1161,17 @@ function renderProgressSection() {
   });
 }
 
+// ── MOBILE SEARCH ─────────────────────────
+function openMobileSearch() {
+  const overlay = document.getElementById('search-overlay');
+  overlay.classList.add('visible');
+  document.getElementById('search-input-mobile').focus();
+}
+function closeMobileSearch() {
+  document.getElementById('search-overlay').classList.remove('visible');
+  document.getElementById('search-input-mobile').value = '';
+}
+
 // ── SEARCH ─────────────────────────────────
 function initSearch() {
   const input = document.getElementById('search-input');
