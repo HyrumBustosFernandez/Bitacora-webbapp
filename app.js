@@ -214,6 +214,9 @@ function setLang(lang) {
   });
   document.getElementById('lang-dropdown').classList.remove('visible');
   applyI18n();
+  document.querySelectorAll('.bnav-label[data-i18n]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
   // refresh dynamic content
   renderGreeting();
   renderTracking();
@@ -264,10 +267,13 @@ function navigate(section, courseId) {
   // hide all
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.bnav-item').forEach(n => n.classList.remove('active'));
   // show target
   document.getElementById(`section-${section}`).classList.add('active');
   const navEl = document.getElementById(`nav-${section}`);
   if (navEl) navEl.classList.add('active');
+  const bnavEl = document.getElementById(`bnav-${section}`);
+  if (bnavEl) bnavEl.classList.add('active');
   currentSection = section;
   // special renders
   if (section === 'plan') {
@@ -1265,3 +1271,10 @@ function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// Register service worker for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}

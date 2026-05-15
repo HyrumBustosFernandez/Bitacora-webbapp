@@ -830,3 +830,151 @@ a { text-decoration: none; color: inherit; }
 .mb-16 { margin-bottom: 16px; }
 .text-muted { color: var(--text3); }
 .text-accent { color: var(--accent); }
+
+/* ═══════════════════════════════════════
+   MOBILE — BOTTOM NAV + RESPONSIVE
+   Breakpoint: 680px
+═══════════════════════════════════════ */
+
+/* BOTTOM NAV BAR (mobile only) */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 58px;
+  background: var(--topbar-bg);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  z-index: 300;
+  padding: 0 8px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.bottom-nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 100%;
+}
+.bnav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex: 1;
+  height: 100%;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition);
+  padding: 6px 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+.bnav-item:active { background: var(--surface2); }
+.bnav-icon { font-size: 19px; line-height: 1; }
+.bnav-label {
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 0.03em;
+  transition: color var(--transition);
+}
+.bnav-item.active .bnav-label { color: var(--accent); }
+.bnav-item.active .bnav-icon { filter: none; }
+
+@media (max-width: 680px) {
+
+  /* Show bottom nav, hide sidebar */
+  .bottom-nav { display: flex; }
+  .sidebar { display: none !important; }
+
+  /* Push content above bottom nav */
+  .main { padding-bottom: 68px; }
+
+  /* Topbar adjustments */
+  .topbar { padding: 0 12px; gap: 8px; }
+  .topbar-logo { width: auto; padding: 0; }
+  .logo-text { opacity: 1 !important; width: auto !important; font-size: 14px; }
+  .topbar-search { max-width: none; flex: 1; }
+  .topbar-search input { font-size: 13px; }
+  .user-name { display: none; }
+  .lang-btn { padding: 0 7px; font-size: 10px; }
+
+  /* Sections full width */
+  .section { padding: 16px; }
+  .section-header { margin-bottom: 16px; }
+  .section-title { font-size: 17px; }
+
+  /* HOME */
+  .home-grid { grid-template-columns: 1fr; gap: 14px; }
+  .stat-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .stat-val { font-size: 22px; }
+
+  /* Track banner */
+  .track-banner { padding: 12px 14px; gap: 10px; }
+  .tb-big { font-size: 22px; }
+
+  /* Dual bar section */
+  .dual-bar-section { padding: 14px; }
+
+  /* Course tracks */
+  .ctr-barwrap { width: 70px; }
+
+  /* Calendar */
+  .calendar-widget { padding: 14px; }
+  .cal-day { font-size: 12px; }
+
+  /* Deadline card */
+  .deadline-card { padding: 12px 14px; }
+  .dc-val { font-size: 24px; }
+
+  /* Quick access */
+  .quick-access { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .qa-btn { padding: 10px 12px; }
+
+  /* COURSES */
+  .courses-grid { grid-template-columns: 1fr; gap: 10px; }
+  .course-card { padding: 16px; }
+
+  /* PLAN */
+  .plan-course-title { font-size: 16px; }
+  .wk-hdr { padding: 10px 12px; gap: 8px; }
+  .mod-item { padding: 10px 12px; gap: 10px; }
+  .mod-chk { width: 18px; height: 18px; }
+  .mod-name { font-size: 13px; }
+
+  /* STUDY */
+  .study-layout { grid-template-columns: 1fr; }
+  .study-sidebar { position: static; margin-bottom: 12px; }
+  .study-sidebar .study-course-btn { padding: 10px 12px; }
+  .scb-name { font-size: 13px; }
+  .study-modes { gap: 6px; }
+  .smode { font-size: 12px; padding: 8px 14px; }
+  .topic-pills { gap: 6px; }
+  .topic-pill { font-size: 12px; padding: 6px 12px; }
+  .gen-btn { font-size: 12px; padding: 10px 18px; }
+  .ai-content { font-size: 13px; }
+  .fc-term { font-size: 18px; }
+  .q-text { font-size: 13px; }
+  .opt { padding: 12px 14px; font-size: 13px; }
+
+  /* PROGRESS */
+  .progress-grid { grid-template-columns: 1fr; }
+  .prog-card { padding: 16px; }
+
+  /* SETTINGS */
+  .settings-group { max-width: 100%; }
+  .sg-row { flex-wrap: wrap; gap: 10px; }
+
+  /* Lang dropdown position */
+  .lang-dropdown { right: 8px; }
+
+  /* Search results */
+  .search-results { left: 0; right: 0; }
+}
+
+/* Safe area for iPhone notch/home indicator */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav { padding-bottom: calc(8px + env(safe-area-inset-bottom)); height: calc(58px + env(safe-area-inset-bottom)); }
+  @media (max-width: 680px) {
+    .main { padding-bottom: calc(68px + env(safe-area-inset-bottom)); }
+  }
+}

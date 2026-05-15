@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bitácora</title>
 <link rel="stylesheet" href="app.css">
+<meta name="theme-color" content="#0f1117" id="theme-color-meta">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bitácora">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
 
@@ -314,6 +320,32 @@
     </main>
   </div>
 </div>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <div class="bnav-item active" id="bnav-home" onclick="navigate('home')">
+      <span class="bnav-icon">⊞</span>
+      <span class="bnav-label" data-i18n="nav_home">Home</span>
+    </div>
+    <div class="bnav-item" id="bnav-courses" onclick="navigate('courses')">
+      <span class="bnav-icon">📚</span>
+      <span class="bnav-label" data-i18n="nav_courses">Courses</span>
+    </div>
+    <div class="bnav-item" id="bnav-plan" onclick="navigate('plan')">
+      <span class="bnav-icon">📋</span>
+      <span class="bnav-label" data-i18n="nav_plan">Plan</span>
+    </div>
+    <div class="bnav-item" id="bnav-study" onclick="navigate('study')">
+      <span class="bnav-icon">✦</span>
+      <span class="bnav-label" data-i18n="nav_study">Study</span>
+    </div>
+    <div class="bnav-item" id="bnav-progress" onclick="navigate('progress')">
+      <span class="bnav-icon">◎</span>
+      <span class="bnav-label" data-i18n="nav_progress">Progress</span>
+    </div>
+  </div>
+</nav>
 
 <script src="app.js"></script>
 </body>
