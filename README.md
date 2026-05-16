@@ -1,6 +1,6 @@
 # Bitácora
 
-A personal course-tracking and AI-powered study web app built for certification exam prep. Combines a structured study planner with Claude-powered flashcards, quizzes, and summaries — all in a single-page PWA.
+A personal course-tracking and study web app built for certification exam prep. Combines a structured study planner with per-module summaries (based on actual Cisco NetAcad and Microsoft Learn curriculum) and personal notes — all in a single-page PWA that runs entirely in the browser.
 
 ---
 
@@ -12,13 +12,10 @@ Track progress across 10 courses covering Cisco NetAcad (CCST Cybersecurity) and
 ### Plan
 Weekly study schedule with a built-in calendar. Tracks whether you're **ahead**, **on track**, or **behind** based on daily check-ins. Each course has a detailed week-by-week plan with tips for heavier modules.
 
-### Study (AI-powered)
-Select a course and topic, then generate:
-- **Summary** — structured study notes with key concepts and exam-likely points
-- **Flashcards** — 8 interactive flip cards with terms and definitions
-- **Quiz** — 5 multiple-choice questions at certification-exam level with explanations
-
-All content is generated on demand via the Anthropic Claude API.
+### Study
+Select a course and topic to access:
+- **Summary** — Pre-written module summaries based on the official Cisco NetAcad and Microsoft Learn curriculum, with key concepts and exam tips
+- **My Notes** — A personal notepad per module; notes auto-save to the browser and persist between sessions
 
 ### Progress
 Visual dashboard showing completion percentage, items done vs. total, and study status per course.
@@ -33,10 +30,8 @@ Toggle dark/light theme and switch the UI language between English, Spanish, Fre
 | Layer | Technology |
 |-------|------------|
 | Frontend | Vanilla HTML, CSS, JavaScript (no framework) |
-| AI | Anthropic Claude API (`claude-sonnet-4-6`) |
-| Hosting | Cloudflare Workers + Assets |
+| State | `localStorage` (no backend, no server required) |
 | PWA | Service Worker, Web App Manifest |
-| State | `localStorage` (no backend database) |
 
 ---
 
@@ -44,41 +39,35 @@ Toggle dark/light theme and switch the UI language between English, Spanish, Fre
 
 ```
 bitacora-webbapp/
-├── index.html       # App shell and all section markup
-├── app.js           # All application logic, state, and AI calls
-├── app.css          # Styles including dark/light themes and animations
-├── sw.js            # Service worker for offline/PWA support
-├── manifest.json    # PWA manifest
-├── wrangler.jsonc   # Cloudflare Workers deployment config
-└── icon*.png/svg    # App icons
+├── index.html      # App shell and all section markup
+├── app.js          # All application logic and state
+├── app.css         # Styles including dark/light themes and animations
+├── sw.js           # Service worker for offline/PWA support
+├── manifest.json   # PWA manifest
+└── icon*.png/svg   # App icons
 ```
 
 ---
 
-## Setup
+## Running Locally
 
-### Prerequisites
-- [Node.js](https://nodejs.org/) (for Wrangler CLI)
-- [Wrangler](https://developers.cloudflare.com/workers/wrangler/) — `npm install -g wrangler`
-- An [Anthropic API key](https://console.anthropic.com/)
-
-### Local Development
+No build step or server required. Open `index.html` directly in a browser:
 
 ```bash
-wrangler dev
+open index.html
 ```
 
-### API Key Configuration
-
-The app calls the Anthropic API from the client. Before deploying, you need to configure your API key. The recommended approach is to proxy requests through a Cloudflare Worker so the key is never exposed in the browser.
-
-> **Note:** The current `callClaude()` function in `app.js` does not include an API key header. A Worker-based proxy is needed for the Study features (flashcards, quiz, summary) to work.
-
-### Deploy to Cloudflare
+Or serve it with any static file server:
 
 ```bash
-wrangler deploy
+# Python
+python -m http.server 8080
+
+# Node.js (npx)
+npx serve .
 ```
+
+Then open `http://localhost:8080` in your browser.
 
 ---
 
