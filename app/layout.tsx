@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import TopNav from "@/components/TopNav";
 
 export const metadata: Metadata = {
   title: "Bitácora",
@@ -14,7 +15,10 @@ export default function RootLayout({
   return (
     <html lang="es" className="h-full">
       <body className="min-h-full flex flex-col bg-[#080808] text-[#EDE8DC]">
-        {children}
+        <TopNav />
+        <main className="flex flex-col flex-1 p-4">
+          {children}
+        </main>
       </body>
     </html>
   );
