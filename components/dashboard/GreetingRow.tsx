@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { IconFlame } from '@tabler/icons-react';
 import type { AppState } from '@/lib/storage';
 
@@ -19,8 +20,14 @@ function formatDate(): string {
 }
 
 export default function GreetingRow({ state }: Props) {
-  const name    = (state.userName as string) || 'Hyrum';
-  const streak  = Number(state.streak_count ?? 0);
+  const name = (state.userName as string) || 'Hyrum';
+  const [streak, setStreak] = useState(0);
+
+  useEffect(() => {
+    const val = parseInt(localStorage.getItem('streak_count') || '0');
+    setStreak(val);
+  }, []);
+
   const showStreak = streak >= 2;
 
   return (
