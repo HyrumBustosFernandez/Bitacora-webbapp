@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import TopNav from "@/components/TopNav";
 import LeftSidebar from "@/components/LeftSidebar";
+import StreakInit from "@/components/StreakInit";
 
 export const metadata: Metadata = {
   title: "Bitácora",
@@ -17,6 +18,7 @@ export default function RootLayout({
         className="bg-[#080808] text-[#EDE8DC]"
         style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
       >
+        <StreakInit />
         <TopNav />
         <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
           <LeftSidebar />

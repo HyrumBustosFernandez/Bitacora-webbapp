@@ -8,6 +8,7 @@ import StatsRow from '@/components/dashboard/StatsRow';
 import FocusTodayCard from '@/components/dashboard/FocusTodayCard';
 import OverallProgressCard from '@/components/dashboard/OverallProgressCard';
 import CalendarCard from '@/components/dashboard/CalendarCard';
+import ExternalToolsStrip from '@/components/dashboard/ExternalToolsStrip';
 
 function Skeleton() {
   return (
@@ -72,6 +73,7 @@ export default function Home() {
         {/* Right column */}
         <CalendarCard state={appState} />
       </div>
+      <ExternalToolsStrip />
     </div>
   );
 }
