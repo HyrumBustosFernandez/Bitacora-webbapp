@@ -1,0 +1,62 @@
+@import "tailwindcss";
+@import "@fontsource/plus-jakarta-sans/400.css";
+@import "@fontsource/plus-jakarta-sans/500.css";
+@import "@fontsource/plus-jakarta-sans/600.css";
+@import "@fontsource/plus-jakarta-sans/700.css";
+
+@theme inline {
+  /* Font */
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  /* Background & surfaces */
+  --color-page:             #080808;
+  --color-surface:          #0E0E0E;
+  --color-surface-elevated: #141414;
+
+  /* Borders */
+  --color-border:           rgba(255, 255, 255, 0.07);
+  --color-border-hover:     rgba(255, 255, 255, 0.11);
+  --color-border-focus:     rgba(72, 117, 240, 0.50);
+
+  /* Text */
+  --color-cream:            #EDE8DC;
+  --color-cream-secondary:  #A8A29A;
+  --color-cream-muted:      #484848;
+  --color-cream-disabled:   #2E2E2E;
+
+  /* Blue accent */
+  --color-blue-accent:      #4875F0;
+  --color-blue-light:       #7AA3F8;
+  --color-blue-subtle:      rgba(72, 117, 240, 0.10);
+  --color-blue-border:      rgba(72, 117, 240, 0.25);
+
+  /* Amber */
+  --color-amber-accent:     #F59E0B;
+  --color-amber-subtle:     rgba(245, 158, 11, 0.10);
+
+  /* Red */
+  --color-red-accent:       #EF4444;
+  --color-red-subtle:       rgba(239, 68, 68, 0.08);
+  --color-red-border:       rgba(239, 68, 68, 0.25);
+  --color-red-text:         rgba(252, 165, 165, 0.85);
+
+  /* Green */
+  --color-green-accent:     #22C55E;
+  --color-green-subtle:     rgba(34, 197, 94, 0.08);
+  --color-green-border:     rgba(34, 197, 94, 0.15);
+  --color-green-text:       rgba(110, 231, 183, 0.80);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background-color: #080808;
+  color: #EDE8DC;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100%;
+}

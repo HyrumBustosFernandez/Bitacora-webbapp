@@ -232,7 +232,7 @@
         <div class="section-header">
           <div>
             <div class="section-title" data-i18n="nav_study">Study</div>
-            <div class="section-subtitle" data-i18n="study_sub">AI-powered summaries, flashcards and quizzes</div>
+            <div class="section-subtitle" data-i18n="study_sub">Module summaries and personal notes</div>
           </div>
         </div>
         <div class="study-layout">
@@ -242,23 +242,15 @@
           </div>
           <div class="study-main">
             <div class="study-modes">
-              <button class="smode active" onclick="switchSMode('resumen',this)" data-i18n="mode_summary">Summary</button>
-              <button class="smode" onclick="switchSMode('flashcards',this)" data-i18n="mode_flashcards">Flashcards</button>
-              <button class="smode" onclick="switchSMode('quiz',this)" data-i18n="mode_quiz">Quiz</button>
+              <button class="smode active" onclick="switchSMode('summary',this)" data-i18n="mode_summary">Summary</button>
+              <button class="smode" onclick="switchSMode('notes',this)" data-i18n="mode_notes">My Notes</button>
             </div>
             <div class="topic-pills" id="topic-pills"></div>
-            <div class="sview active" id="sview-resumen">
-              <button class="gen-btn" id="btn-resumen" onclick="generateResumen()">▶ <span data-i18n="gen_summary">Generate summary</span></button>
-              <div class="ai-box" id="box-resumen"><div class="empty-state"><span class="empty-icon">📋</span><span data-i18n="empty_summary">Select a module and generate a summary</span></div></div>
+            <div class="sview active" id="sview-summary">
+              <div class="ai-box" id="box-summary"></div>
             </div>
-            <div class="sview" id="sview-flashcards">
-              <button class="gen-btn" id="btn-flash" onclick="generateFlashcards()">▶ <span data-i18n="gen_flashcards">Generate flashcards</span></button>
-              <div id="fc-area"><div class="empty-state"><span class="empty-icon">🃏</span><span data-i18n="empty_flashcards">Generate flashcards to review key terms</span></div></div>
-            </div>
-            <div class="sview" id="sview-quiz">
-              <button class="gen-btn" id="btn-quiz" onclick="generateQuiz()">▶ <span data-i18n="gen_quiz">Generate quiz</span></button>
-              <div class="quiz-score" id="quiz-score" style="display:none"><span data-i18n="score_label">Score:</span>&nbsp;<span class="quiz-score-val" id="score-val">0/0</span></div>
-              <div id="quiz-area"><div class="empty-state"><span class="empty-icon">🎯</span><span data-i18n="empty_quiz">Generate a quiz to test your knowledge</span></div></div>
+            <div class="sview" id="sview-notes">
+              <textarea id="notes-area" class="notes-textarea" placeholder="Write your thoughts, key takeaways, and personal notes for this module..." oninput="saveNote()"></textarea>
             </div>
           </div>
         </div>
