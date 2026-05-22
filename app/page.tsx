@@ -4,28 +4,33 @@ import { useState, useEffect, useCallback } from 'react';
 import { loadState, type AppState } from '@/lib/storage';
 import GreetingRow from '@/components/dashboard/GreetingRow';
 import AlertBanner from '@/components/dashboard/AlertBanner';
+import StatsRow from '@/components/dashboard/StatsRow';
 import FocusTodayCard from '@/components/dashboard/FocusTodayCard';
-import StatsProgressCard from '@/components/dashboard/StatsProgressCard';
+import OverallProgressCard from '@/components/dashboard/OverallProgressCard';
 import CalendarCard from '@/components/dashboard/CalendarCard';
-
-const GRID: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'minmax(0, 2.1fr) minmax(0, 1.7fr) minmax(0, 1.2fr)',
-  gap: 10,
-  alignItems: 'start',
-};
 
 function Skeleton() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div style={{ height: 36 }} />
-      <div style={GRID}>
-        {[0, 1, 2].map(i => (
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+        {[0, 1, 2, 3].map(i => (
           <div key={i} style={{
             background: '#0E0E0E',
             border: '1px solid rgba(255,255,255,0.07)',
             borderRadius: 12,
-            height: 320,
+            height: 80,
+            opacity: 0.35,
+          }} />
+        ))}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.9fr) minmax(0, 1fr)', gap: 10 }}>
+        {[0, 1].map(i => (
+          <div key={i} style={{
+            background: '#0E0E0E',
+            border: '1px solid rgba(255,255,255,0.07)',
+            borderRadius: 12,
+            height: 400,
             opacity: 0.35,
           }} />
         ))}
@@ -51,9 +56,20 @@ export default function Home() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <GreetingRow state={appState} />
       <AlertBanner state={appState} />
-      <div style={GRID}>
-        <FocusTodayCard state={appState} onRefresh={refresh} />
-        <StatsProgressCard state={appState} />
+      <StatsRow state={appState} />
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, 1.9fr) minmax(0, 1fr)',
+        gap: 10,
+        alignItems: 'start',
+      }}>
+        {/* Left column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <FocusTodayCard state={appState} onRefresh={refresh} />
+          <OverallProgressCard state={appState} />
+        </div>
+
+        {/* Right column */}
         <CalendarCard state={appState} />
       </div>
     </div>
