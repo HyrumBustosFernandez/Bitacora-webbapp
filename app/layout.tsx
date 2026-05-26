@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import ThemeProvider from "@/components/ThemeProvider";
 import TopNav from "@/components/TopNav";
 import LeftSidebar from "@/components/LeftSidebar";
+import BottomBar from "@/components/BottomBar";
 import StreakInit from "@/components/StreakInit";
 
 export const metadata: Metadata = {
-  title: "Bitácora",
+  title: "PaceUp",
   description: "Personal student productivity tracker",
 };
 
@@ -14,18 +16,20 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es" style={{ height: '100%' }}>
-      <body
-        className="bg-[#080808] text-[#EDE8DC]"
-        style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
-      >
-        <StreakInit />
-        <TopNav />
-        <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-          <LeftSidebar />
-          <main style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
-            {children}
-          </main>
-        </div>
+      <body style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <ThemeProvider>
+          <StreakInit />
+          <TopNav />
+          <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+            <LeftSidebar />
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <main style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
+                {children}
+              </main>
+              <BottomBar />
+            </div>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -15,7 +15,7 @@ export default function ExternalToolsStrip() {
   const [duocUrl, setDuocUrl] = useState('https://campusvirtual.duoc.cl/');
 
   useEffect(() => {
-    const saved = localStorage.getItem('setting_duoc_url');
+    const saved = localStorage.getItem('paceup_duoc_url');
     if (saved) setDuocUrl(saved);
   }, []);
 
@@ -27,7 +27,7 @@ export default function ExternalToolsStrip() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <span style={{
-        fontSize: 9, fontWeight: 600, color: '#2E2E2E',
+        fontSize: 9, fontWeight: 600, color: 'var(--text-4)',
         textTransform: 'uppercase', letterSpacing: '0.5px',
       }}>
         External tools
@@ -43,13 +43,13 @@ export default function ExternalToolsStrip() {
               display: 'flex', flexDirection: 'column',
               alignItems: 'center', gap: 6,
               padding: '8px 12px',
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border-subtle)',
               borderRadius: 8, textDecoration: 'none',
             }}
           >
-            <Icon size={16} color="#3A3A3A" strokeWidth={1.5} />
-            <span style={{ fontSize: 10, color: '#484848', fontWeight: 500, textAlign: 'center' }}>
+            <Icon size={16} color="var(--text-3)" strokeWidth={1.5} />
+            <span style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500, textAlign: 'center' }}>
               {label}
             </span>
           </a>

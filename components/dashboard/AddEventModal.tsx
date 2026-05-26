@@ -45,6 +45,8 @@ export default function AddEventModal({ initialDate, onClose, onSaved }: Props) 
       title:    title.trim(),
       date,
       type,
+      group:    'personal',
+      color:    '#4875F0',
       courseId: courseId || undefined,
     };
     saveEvent(event);

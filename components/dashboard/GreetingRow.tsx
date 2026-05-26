@@ -24,7 +24,7 @@ export default function GreetingRow({ state }: Props) {
   const [streak, setStreak] = useState(0);
 
   useEffect(() => {
-    const val = parseInt(localStorage.getItem('streak_count') || '0');
+    const val = parseInt(localStorage.getItem('paceup_streak_count') || '0');
     setStreak(val);
   }, []);
 
@@ -33,10 +33,10 @@ export default function GreetingRow({ state }: Props) {
   return (
     <div className="flex items-center justify-between">
       <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-        <span style={{ fontSize: 18, fontWeight: 600, color: '#EDE8DC' }}>
+        <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-1)' }}>
           {getGreeting()}, {name}
         </span>
-        <span style={{ fontSize: 11, color: '#4A4A4A', fontWeight: 400 }}>
+        <span style={{ fontSize: 11, color: 'var(--text-4)', fontWeight: 400 }}>
           {formatDate()}
         </span>
       </div>

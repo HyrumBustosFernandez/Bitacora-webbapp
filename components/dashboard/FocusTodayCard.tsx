@@ -13,8 +13,8 @@ interface Props {
 }
 
 const CARD: React.CSSProperties = {
-  background: '#0E0E0E',
-  border: '1px solid rgba(255,255,255,0.07)',
+  background: 'var(--bg-surface)',
+  border: '1px solid var(--border-default)',
   borderRadius: 12,
   padding: '14px 16px',
   display: 'flex',
@@ -24,7 +24,7 @@ const CARD: React.CSSProperties = {
 
 const DIVIDER: React.CSSProperties = {
   height: 1,
-  background: 'rgba(255,255,255,0.05)',
+  background: 'var(--border-subtle)',
   flexShrink: 0,
 };
 
@@ -34,7 +34,7 @@ export default function FocusTodayCard({ state, onRefresh }: Props) {
   if (!focus) {
     return (
       <div style={CARD}>
-        <span style={{ fontSize: 11, color: '#484848' }}>All modules complete 🎉</span>
+        <span style={{ fontSize: 11, color: 'var(--text-3)' }}>All modules complete 🎉</span>
       </div>
     );
   }
@@ -64,12 +64,12 @@ export default function FocusTodayCard({ state, onRefresh }: Props) {
       </div>
 
       {/* Breadcrumb */}
-      <div style={{ fontSize: 10, color: '#484848', fontWeight: 500 }}>
+      <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500 }}>
         {course.title}
       </div>
 
       {/* Module title */}
-      <div style={{ fontSize: 15, fontWeight: 600, color: '#EDE8DC', lineHeight: 1.3 }}>
+      <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-1)', lineHeight: 1.3 }}>
         {week.name}
       </div>
 
@@ -99,24 +99,24 @@ export default function FocusTodayCard({ state, onRefresh }: Props) {
                 background: isDone ? 'rgba(72,117,240,0.15)' : 'transparent',
                 border: isDone
                   ? '1.5px solid rgba(72,117,240,0.45)'
-                  : '1.5px solid rgba(255,255,255,0.12)',
+                  : '1.5px solid var(--border-default)',
               }}>
                 {isDone && <IconCheck size={9} color="#4875F0" strokeWidth={3} />}
               </span>
               <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <span style={{
                   fontSize: 12, fontWeight: 500,
-                  color: isDone ? '#333' : '#A8A29A',
+                  color: isDone ? 'var(--text-4)' : 'var(--text-2)',
                   textDecoration: isDone ? 'line-through' : 'none',
                 }}>
                   {item.exam ? '📝 ' : ''}{item.name}
                 </span>
                 {item.sub && !isDone && (
-                  <span style={{ fontSize: 10, color: '#3A3A3A' }}>{item.sub}</span>
+                  <span style={{ fontSize: 10, color: 'var(--text-4)' }}>{item.sub}</span>
                 )}
               </span>
               {item.day && (
-                <span style={{ fontSize: 9, color: '#333', flexShrink: 0, marginTop: 2 }}>
+                <span style={{ fontSize: 9, color: 'var(--text-4)', flexShrink: 0, marginTop: 2 }}>
                   {item.day}
                 </span>
               )}
@@ -129,7 +129,7 @@ export default function FocusTodayCard({ state, onRefresh }: Props) {
       {week.tip && (
         <>
           <div style={DIVIDER} />
-          <div style={{ fontSize: 10, color: '#333', fontStyle: 'italic' }}>{week.tip}</div>
+          <div style={{ fontSize: 10, color: 'var(--text-4)', fontStyle: 'italic' }}>{week.tip}</div>
         </>
       )}
 
@@ -138,9 +138,9 @@ export default function FocusTodayCard({ state, onRefresh }: Props) {
       {/* Next up */}
       {nextCourse && typeof nextWeekIndex === 'number' && (
         <div className="flex items-center gap-2">
-          <span style={{ fontSize: 10, color: '#333', flexShrink: 0 }}>Next up</span>
+          <span style={{ fontSize: 10, color: 'var(--text-4)', flexShrink: 0 }}>Next up</span>
           <span style={{
-            fontSize: 10, color: '#484848',
+            fontSize: 10, color: 'var(--text-3)',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
             {nextCourse.weeks[nextWeekIndex].name}
@@ -148,17 +148,17 @@ export default function FocusTodayCard({ state, onRefresh }: Props) {
         </div>
       )}
 
-      {/* CTA — dark bordered style matching mockup */}
+      {/* CTA */}
       <Link
         href={`/study/${course.id}-w${weekIndex}`}
         className="flex items-center justify-center gap-2 no-underline"
         style={{
           width: '100%',
           padding: '11px 0',
-          background: '#141414',
-          border: '1px solid rgba(255,255,255,0.12)',
+          background: 'var(--bg-elevated)',
+          border: '1px solid var(--border-default)',
           borderRadius: 9,
-          color: '#EDE8DC',
+          color: 'var(--text-1)',
           fontSize: 13,
           fontWeight: 600,
           marginTop: 2,
@@ -177,8 +177,8 @@ function Badge({ children, urgent }: { children: React.ReactNode; urgent?: boole
       padding: '2px 7px', borderRadius: 5,
       border: urgent
         ? '1px solid rgba(239,68,68,0.25)'
-        : '1px solid rgba(255,255,255,0.08)',
-      color: urgent ? 'rgba(252,165,165,0.75)' : '#5A5A5A',
+        : '1px solid var(--border-default)',
+      color: urgent ? 'rgba(252,165,165,0.75)' : 'var(--text-3)',
     }}>
       {children}
     </span>
