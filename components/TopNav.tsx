@@ -1,79 +1,104 @@
 'use client';
 
 import Link from 'next/link';
-import { IconSearch, IconDeviceLaptop } from '@tabler/icons-react';
+import { IconSearch, IconSun, IconMoon } from '@tabler/icons-react';
+import { useTheme } from './ThemeProvider';
+
+function BalanceLogo({ size = 22 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* tilted line */}
+      <line x1="10" y1="62" x2="90" y2="30" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
+      {/* circle sitting on the line, slightly left of center */}
+      <circle cx="42" cy="58" r="18" fill="currentColor" />
+    </svg>
+  );
+}
 
 export default function TopNav() {
+  const { theme, toggle } = useTheme();
+
   return (
     <nav
-      className="sticky top-0 z-50 w-full bg-[#080808] flex items-center px-4 shrink-0"
-      style={{ height: 44, borderBottom: '1px solid rgba(255,255,255,0.05)', gap: 10 }}
+      style={{
+        position: 'sticky', top: 0, zIndex: 50, width: '100%',
+        background: 'var(--bg-page)',
+        borderBottom: '1px solid var(--border-default)',
+        height: 44,
+        display: 'flex', alignItems: 'center',
+        padding: '0 16px',
+        gap: 10,
+        flexShrink: 0,
+      }}
     >
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-[7px] shrink-0 no-underline">
-        <span
-          className="flex items-center justify-center shrink-0"
-          style={{ width: 22, height: 22, borderRadius: 7, background: '#4875F0' }}
-        >
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#fff', lineHeight: 1 }}>B</span>
+      <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 7, textDecoration: 'none', flexShrink: 0 }}>
+        <span style={{ color: 'var(--text-1)', display: 'flex', alignItems: 'center' }}>
+          <BalanceLogo size={22} />
         </span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: '#EDE8DC' }}>Bitácora</span>
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-1)' }}>PaceUp</span>
       </Link>
 
-      {/* Search — wider */}
+      {/* Search */}
       <label
-        className="flex items-center gap-[6px]"
         style={{
-          width: 240,
-          height: 28,
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.07)',
-          borderRadius: 8,
-          padding: '0 9px',
-          cursor: 'text',
+          display: 'flex', alignItems: 'center', gap: 6,
+          width: 240, height: 28,
+          background: 'rgba(128,128,128,0.06)',
+          border: '1px solid var(--border-default)',
+          borderRadius: 8, padding: '0 9px', cursor: 'text',
         }}
       >
-        <IconSearch size={12} color="#484848" />
+        <IconSearch size={12} color="var(--text-3)" />
         <input
           type="text"
           placeholder="Search courses, modules…"
-          className="bg-transparent border-0 outline-none w-full font-[inherit]"
-          style={{ color: '#EDE8DC', fontSize: 11, fontWeight: 400 }}
+          style={{
+            background: 'transparent', border: 0, outline: 'none', width: '100%',
+            color: 'var(--text-1)', fontSize: 11, fontWeight: 400,
+            fontFamily: 'inherit',
+          }}
         />
       </label>
 
       {/* Right side */}
-      <div className="ml-auto flex items-center gap-2">
+      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
         {/* Language */}
         <span style={{
-          fontSize: 11, fontWeight: 500, color: '#A8A29A',
-          border: '1px solid rgba(255,255,255,0.10)',
-          borderRadius: 5, padding: '2px 7px',
-          letterSpacing: '0.3px',
+          fontSize: 11, fontWeight: 500, color: 'var(--text-2)',
+          border: '1px solid var(--border-default)',
+          borderRadius: 5, padding: '2px 7px', letterSpacing: '0.3px',
         }}>
           EN
         </span>
 
-        {/* Dark mode toggle */}
+        {/* Theme toggle */}
         <button
           type="button"
-          className="flex items-center justify-center bg-transparent border-0 cursor-pointer p-1"
-          style={{ color: '#333' }}
+          onClick={toggle}
           aria-label="Toggle theme"
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: 28, height: 28, borderRadius: 7,
+            background: 'transparent',
+            border: '1px solid var(--border-default)',
+            color: 'var(--text-3)', cursor: 'pointer',
+          }}
         >
-          <IconDeviceLaptop size={16} />
+          {theme === 'dark'
+            ? <IconSun size={14} />
+            : <IconMoon size={14} />
+          }
         </button>
 
         {/* Avatar */}
-        <div
-          className="flex items-center justify-center shrink-0"
-          style={{
-            width: 26, height: 26, borderRadius: '50%',
-            background: '#2A2A2A',
-            border: '1px solid rgba(255,255,255,0.10)',
-          }}
-        >
-          <span style={{ fontSize: 11, fontWeight: 600, color: '#A8A29A', lineHeight: 1 }}>H</span>
+        <div style={{
+          width: 26, height: 26, borderRadius: '50%',
+          background: 'var(--bg-elevated)',
+          border: '1px solid var(--border-default)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-2)', lineHeight: 1 }}>H</span>
         </div>
       </div>
     </nav>

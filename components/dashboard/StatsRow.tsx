@@ -39,8 +39,8 @@ function Card({
 }) {
   return (
     <div style={{
-      background: '#0E0E0E',
-      border: '1px solid rgba(255,255,255,0.07)',
+      background: 'var(--bg-surface)',
+      border: '1px solid var(--border-default)',
       borderRadius: 12,
       padding: '12px 14px',
       display: 'flex',
@@ -48,16 +48,16 @@ function Card({
       gap: 4,
     }}>
       <span style={{
-        fontSize: 9, fontWeight: 600, color: '#484848',
+        fontSize: 9, fontWeight: 600, color: 'var(--text-3)',
         textTransform: 'uppercase', letterSpacing: '0.6px',
       }}>
         {label}
       </span>
-      <span style={{ fontSize: 28, fontWeight: 600, color: valueColor ?? '#EDE8DC', lineHeight: 1 }}>
+      <span style={{ fontSize: 28, fontWeight: 600, color: valueColor ?? 'var(--text-1)', lineHeight: 1 }}>
         {value}
       </span>
       {sub && (
-        <span style={{ fontSize: 10, color: '#2E2E2E', fontWeight: 400 }}>{sub}</span>
+        <span style={{ fontSize: 10, color: 'var(--text-4)', fontWeight: 400 }}>{sub}</span>
       )}
     </div>
   );

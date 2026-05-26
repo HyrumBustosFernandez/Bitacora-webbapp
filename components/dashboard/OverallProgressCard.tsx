@@ -2,15 +2,15 @@
 
 import Link from 'next/link';
 import {
-  getTrackInfo, getCourseProgress, type AppState, type TrackStatus,
+  getTrackInfo, getCourseProgress, type AppState,
 } from '@/lib/storage';
 import { COURSES } from '@/lib/courses';
 
 interface Props { state: AppState }
 
 const CARD: React.CSSProperties = {
-  background: '#0E0E0E',
-  border: '1px solid rgba(255,255,255,0.07)',
+  background: 'var(--bg-surface)',
+  border: '1px solid var(--border-default)',
   borderRadius: 12,
   padding: '12px 14px',
 };
@@ -39,7 +39,7 @@ export default function OverallProgressCard({ state }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between" style={{ marginBottom: 10 }}>
         <span style={{
-          fontSize: 9, fontWeight: 600, color: '#484848',
+          fontSize: 9, fontWeight: 600, color: 'var(--text-3)',
           textTransform: 'uppercase', letterSpacing: '0.6px',
         }}>
           Overall progress
@@ -52,12 +52,12 @@ export default function OverallProgressCard({ state }: Props) {
       {/* Dual bar */}
       <div style={{
         position: 'relative', height: 5, borderRadius: 3,
-        background: 'rgba(255,255,255,0.05)', overflow: 'hidden', marginBottom: 6,
+        background: 'var(--border-subtle)', overflow: 'hidden', marginBottom: 6,
       }}>
         <div style={{
           position: 'absolute', top: 0, left: 0, height: '100%',
           width: `${Math.min(expectedPct, 100)}%`,
-          background: 'rgba(255,255,255,0.10)', borderRadius: 3,
+          background: 'var(--border-default)', borderRadius: 3,
         }} />
         <div style={{
           position: 'absolute', top: 0, left: 0, height: '100%',
@@ -66,7 +66,7 @@ export default function OverallProgressCard({ state }: Props) {
         }} />
       </div>
       <div className="flex items-center justify-between" style={{ marginBottom: 12 }}>
-        <span style={{ fontSize: 9, color: '#484848' }}>● Expected {expectedPct}%</span>
+        <span style={{ fontSize: 9, color: 'var(--text-3)' }}>● Expected {expectedPct}%</span>
         <span style={{ fontSize: 9, color: '#4875F0' }}>● Actual {actualPct}%</span>
       </div>
 
@@ -79,7 +79,7 @@ export default function OverallProgressCard({ state }: Props) {
               background: c.accent, flexShrink: 0,
             }} />
             <span style={{
-              fontSize: 11, color: '#484848', flex: 1,
+              fontSize: 11, color: 'var(--text-3)', flex: 1,
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>
               {c.title}
@@ -87,7 +87,7 @@ export default function OverallProgressCard({ state }: Props) {
             {/* Bar */}
             <div style={{
               width: 80, height: 3, borderRadius: 2,
-              background: 'rgba(255,255,255,0.05)', flexShrink: 0,
+              background: 'var(--border-subtle)', flexShrink: 0,
               position: 'relative', overflow: 'hidden',
             }}>
               <div style={{
@@ -97,7 +97,7 @@ export default function OverallProgressCard({ state }: Props) {
                 borderRadius: 2,
               }} />
             </div>
-            <span style={{ fontSize: 10, color: '#484848', flexShrink: 0, width: 30, textAlign: 'right' }}>
+            <span style={{ fontSize: 10, color: 'var(--text-3)', flexShrink: 0, width: 30, textAlign: 'right' }}>
               {pct}%
             </span>
             <StatusBadge behind={behind} />

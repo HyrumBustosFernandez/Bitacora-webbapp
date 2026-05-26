@@ -17,8 +17,8 @@ function Skeleton() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
         {[0, 1, 2, 3].map(i => (
           <div key={i} style={{
-            background: '#0E0E0E',
-            border: '1px solid rgba(255,255,255,0.07)',
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-subtle)',
             borderRadius: 12,
             height: 80,
             opacity: 0.35,
@@ -28,8 +28,8 @@ function Skeleton() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.9fr) minmax(0, 1fr)', gap: 10 }}>
         {[0, 1].map(i => (
           <div key={i} style={{
-            background: '#0E0E0E',
-            border: '1px solid rgba(255,255,255,0.07)',
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-subtle)',
             borderRadius: 12,
             height: 400,
             opacity: 0.35,
