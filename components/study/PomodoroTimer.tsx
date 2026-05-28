@@ -6,9 +6,14 @@ interface Props { moduleId?: string }
 type Phase = 'focus' | 'break' | 'longBreak';
 
 const PHASE_COLORS: Record<Phase, string> = {
-  focus:     '#4875F0',
-  break:     '#22C55E',
-  longBreak: '#F59E0B',
+  focus:     'var(--accent)',
+  break:     'var(--color-green)',
+  longBreak: 'var(--color-amber)',
+};
+const PHASE_HEX: Record<Phase, string> = {
+  focus:     '#4F6BFB',
+  break:     '#3DD68C',
+  longBreak: '#F5A623',
 };
 const PHASE_LABELS: Record<Phase, string> = {
   focus:     'FOCUS',
@@ -25,21 +30,20 @@ function saveSession(moduleId: string, mins: number) {
     const sessions = JSON.parse(localStorage.getItem('paceup_study_sessions') || '[]');
     sessions.push({ date: new Date().toISOString(), moduleId, durationMinutes: mins });
     localStorage.setItem('paceup_study_sessions', JSON.stringify(sessions));
-  } catch {}
+  } catch { /* ignore */ }
 }
 
 interface Settings { focus: number; shortBreak: number; longBreak: number }
-
 const DEFAULT_SETTINGS: Settings = { focus: 25, shortBreak: 5, longBreak: 15 };
 
 export default function PomodoroTimer({ moduleId = 'general' }: Props) {
-  const [settings,    setSettings]    = useState<Settings>(DEFAULT_SETTINGS);
+  const [settings,     setSettings]     = useState<Settings>(DEFAULT_SETTINGS);
   const [editSettings, setEditSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [showSettings, setShowSettings] = useState(false);
   const [phase,        setPhase]        = useState<Phase>('focus');
   const [timeLeft,     setTimeLeft]     = useState(DEFAULT_SETTINGS.focus * 60);
   const [running,      setRunning]      = useState(false);
-  const [session,      setSession]      = useState(1); // 1–4 before long break
+  const [session,      setSession]      = useState(1);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -47,11 +51,9 @@ export default function PomodoroTimer({ moduleId = 'general' }: Props) {
       const stored = localStorage.getItem('paceup_pomodoro_settings');
       if (stored) {
         const s = JSON.parse(stored) as Settings;
-        setSettings(s);
-        setEditSettings(s);
-        setTimeLeft(s.focus * 60);
+        setSettings(s); setEditSettings(s); setTimeLeft(s.focus * 60);
       }
-    } catch {}
+    } catch { /* ignore */ }
   }, []);
 
   const totalForPhase = phase === 'focus'
@@ -60,10 +62,7 @@ export default function PomodoroTimer({ moduleId = 'general' }: Props) {
     ? settings.shortBreak * 60
     : settings.longBreak * 60;
 
-  const elapsed = totalForPhase - timeLeft;
-  const pct = totalForPhase > 0 ? elapsed / totalForPhase : 0;
-
-  // SVG ring
+  const pct = totalForPhase > 0 ? (totalForPhase - timeLeft) / totalForPhase : 0;
   const R = 80, STROKE = 7;
   const circumference = 2 * Math.PI * R;
   const dashOffset = circumference * (1 - pct);
@@ -95,29 +94,21 @@ export default function PomodoroTimer({ moduleId = 'general' }: Props) {
   }, [running, phase, session, moduleId, settings]);
 
   function reset() {
-    setRunning(false);
-    setPhase('focus');
-    setSession(1);
+    setRunning(false); setPhase('focus'); setSession(1);
     setTimeLeft(settings.focus * 60);
   }
-
   function skipBreak() {
-    setRunning(false);
-    setPhase('focus');
+    setRunning(false); setPhase('focus');
     setTimeLeft(settings.focus * 60);
   }
-
   function saveSettings() {
     setSettings(editSettings);
     localStorage.setItem('paceup_pomodoro_settings', JSON.stringify(editSettings));
-    setShowSettings(false);
-    setRunning(false);
-    setPhase('focus');
-    setSession(1);
+    setShowSettings(false); setRunning(false); setPhase('focus'); setSession(1);
     setTimeLeft(editSettings.focus * 60);
   }
 
-  const color = PHASE_COLORS[phase];
+  const hex = PHASE_HEX[phase];
 
   return (
     <div style={{
@@ -125,6 +116,7 @@ export default function PomodoroTimer({ moduleId = 'general' }: Props) {
       border: '1px solid var(--border-default)',
       borderRadius: 14, padding: '20px 24px',
       display: 'flex', flexDirection: 'column', gap: 16,
+      boxShadow: 'var(--shadow-card)',
     }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -137,11 +129,8 @@ export default function PomodoroTimer({ moduleId = 'general' }: Props) {
         <button
           type="button"
           onClick={() => setShowSettings(s => !s)}
-          style={{
-            background: 'transparent', border: '1px solid var(--border-default)',
-            borderRadius: 7, padding: '4px 10px',
-            fontSize: 10, color: 'var(--text-3)', cursor: 'pointer',
-          }}
+          className="btn btn-secondary"
+          style={{ padding: '4px 10px', fontSize: 10, fontWeight: 500 }}
         >
           {showSettings ? 'Hide' : 'Settings'}
         </button>
@@ -153,14 +142,18 @@ export default function PomodoroTimer({ moduleId = 'general' }: Props) {
           <button
             key={p}
             type="button"
-            onClick={() => { setRunning(false); setPhase(p); setTimeLeft((p === 'focus' ? settings.focus : p === 'break' ? settings.shortBreak : settings.longBreak) * 60); }}
+            onClick={() => {
+              setRunning(false); setPhase(p);
+              setTimeLeft((p === 'focus' ? settings.focus : p === 'break' ? settings.shortBreak : settings.longBreak) * 60);
+            }}
             style={{
               flex: 1, padding: '5px 0',
-              background: phase === p ? `rgba(${p === 'focus' ? '72,117,240' : p === 'break' ? '34,197,94' : '245,158,11'},0.12)` : 'transparent',
-              border: `1px solid ${phase === p ? PHASE_COLORS[p] + '50' : 'var(--border-subtle)'}`,
-              borderRadius: 7, fontSize: 10, fontWeight: 500,
-              color: phase === p ? PHASE_COLORS[p] : 'var(--text-3)',
-              cursor: 'pointer', transition: 'all 150ms ease',
+              background: phase === p ? `${PHASE_HEX[p]}18` : 'transparent',
+              border: `1px solid ${phase === p ? PHASE_HEX[p] + '55' : 'var(--border-subtle)'}`,
+              borderRadius: 7, fontSize: 10, fontWeight: phase === p ? 600 : 500,
+              color: phase === p ? PHASE_HEX[p] : 'var(--text-3)',
+              cursor: 'pointer', fontFamily: 'inherit',
+              transition: 'all 150ms ease',
             }}
           >
             {p === 'focus' ? `Focus ${settings.focus}m` : p === 'break' ? `Break ${settings.shortBreak}m` : `Long ${settings.longBreak}m`}
@@ -168,23 +161,20 @@ export default function PomodoroTimer({ moduleId = 'general' }: Props) {
         ))}
       </div>
 
-      {/* SVG circular ring + countdown */}
+      {/* SVG ring */}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <div style={{ position: 'relative', width: 180, height: 180 }}>
           <svg width="180" height="180" style={{ transform: 'rotate(-90deg)' }}>
-            {/* Track */}
-            <circle cx="90" cy="90" r={R} fill="none" stroke="var(--border-subtle)" strokeWidth={STROKE} />
-            {/* Progress */}
+            <circle cx="90" cy="90" r={R} fill="none" stroke="var(--bg-elevated)" strokeWidth={STROKE} />
             <circle
               cx="90" cy="90" r={R} fill="none"
-              stroke={color} strokeWidth={STROKE}
+              stroke={hex} strokeWidth={STROKE}
               strokeLinecap="round"
               strokeDasharray={circumference}
               strokeDashoffset={dashOffset}
               style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s ease' }}
             />
           </svg>
-          {/* Center content */}
           <div style={{
             position: 'absolute', top: '50%', left: '50%',
             transform: 'translate(-50%, -50%)',
@@ -197,7 +187,7 @@ export default function PomodoroTimer({ moduleId = 'general' }: Props) {
             }}>
               {fmt(timeLeft)}
             </span>
-            <span style={{ fontSize: 9, fontWeight: 600, color, letterSpacing: '0.8px' }}>
+            <span style={{ fontSize: 9, fontWeight: 700, color: hex, letterSpacing: '1px' }}>
               {PHASE_LABELS[phase]}
             </span>
             <span style={{ fontSize: 9, color: 'var(--text-4)' }}>
@@ -209,11 +199,32 @@ export default function PomodoroTimer({ moduleId = 'general' }: Props) {
 
       {/* Controls */}
       <div style={{ display: 'flex', gap: 8 }}>
-        <Btn onClick={() => setRunning(r => !r)} color={color}>
+        <button
+          type="button"
+          onClick={() => setRunning(r => !r)}
+          className="btn btn-primary"
+          style={{ flex: 2, background: hex, justifyContent: 'center' }}
+        >
           {running ? 'Pause' : 'Start'}
-        </Btn>
-        <Btn onClick={reset}>Reset</Btn>
-        {phase !== 'focus' && <Btn onClick={skipBreak}>Skip ⏭</Btn>}
+        </button>
+        <button
+          type="button"
+          onClick={reset}
+          className="btn btn-secondary"
+          style={{ flex: 1, justifyContent: 'center' }}
+        >
+          Reset
+        </button>
+        {phase !== 'focus' && (
+          <button
+            type="button"
+            onClick={skipBreak}
+            className="btn btn-secondary"
+            style={{ flex: 1, justifyContent: 'center' }}
+          >
+            Skip ⏭
+          </button>
+        )}
       </div>
 
       {/* Session dots */}
@@ -221,8 +232,8 @@ export default function PomodoroTimer({ moduleId = 'general' }: Props) {
         {[1, 2, 3, 4].map(i => (
           <span key={i} style={{
             width: 8, height: 8, borderRadius: '50%',
-            background: i < session ? color : i === session ? color : 'var(--border-default)',
-            opacity: i < session ? 1 : i === session ? 1 : 0.4,
+            background: i <= session ? hex : 'var(--border-default)',
+            opacity: i < session ? 0.5 : i === session ? 1 : 0.3,
             transition: 'all 0.3s ease',
           }} />
         ))}
@@ -237,9 +248,7 @@ export default function PomodoroTimer({ moduleId = 'general' }: Props) {
           borderTop: '1px solid var(--border-subtle)', paddingTop: 14,
           display: 'flex', flexDirection: 'column', gap: 12,
         }}>
-          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            Customize
-          </span>
+          <span className="label-section">Customize durations</span>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
             {([
               ['Focus', 'focus'],
@@ -247,52 +256,32 @@ export default function PomodoroTimer({ moduleId = 'general' }: Props) {
               ['Long Break', 'longBreak'],
             ] as [string, keyof Settings][]).map(([label, key]) => (
               <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <label style={{ fontSize: 10, color: 'var(--text-3)' }}>{label}</label>
+                <label style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500 }}>{label}</label>
                 <input
-                  type="number"
-                  min={1} max={60}
+                  type="number" min={1} max={60}
                   value={editSettings[key]}
                   onChange={e => setEditSettings(s => ({ ...s, [key]: parseInt(e.target.value) || 1 }))}
                   style={{
-                    width: '100%', background: 'var(--bg-elevated)',
+                    width: '100%', background: 'var(--bg-input)',
                     border: '1px solid var(--border-default)', borderRadius: 7,
                     padding: '5px 8px', color: 'var(--text-1)', fontSize: 12,
                     outline: 'none', fontFamily: 'inherit',
                   }}
+                  onFocus={e => (e.target.style.borderColor = 'var(--border-focus)')}
+                  onBlur={e  => (e.target.style.borderColor = 'var(--border-default)')}
                 />
               </div>
             ))}
           </div>
           <button
             type="button" onClick={saveSettings}
-            style={{
-              alignSelf: 'flex-start', background: '#4875F0', border: 0,
-              borderRadius: 8, padding: '7px 16px',
-              color: '#fff', fontSize: 11, fontWeight: 600, cursor: 'pointer',
-            }}
+            className="btn btn-primary"
+            style={{ alignSelf: 'flex-start' }}
           >
             Save settings
           </button>
         </div>
       )}
     </div>
-  );
-}
-
-function Btn({ children, onClick, color }: { children: React.ReactNode; onClick: () => void; color?: string }) {
-  return (
-    <button
-      type="button" onClick={onClick}
-      style={{
-        flex: 1, padding: '8px 0',
-        background: color ? `${color}18` : 'var(--bg-elevated)',
-        border: `1px solid ${color ? color + '40' : 'var(--border-default)'}`,
-        borderRadius: 8, fontSize: 11, fontWeight: 500,
-        color: color ?? 'var(--text-2)', cursor: 'pointer',
-        transition: 'background 150ms ease, border-color 150ms ease',
-      }}
-    >
-      {children}
-    </button>
   );
 }

@@ -12,7 +12,7 @@ function Skeleton() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
         {[0, 1, 2, 3, 4, 5].map(i => (
           <div key={i} style={{
-            background: '#0E0E0E', border: '1px solid rgba(255,255,255,0.07)',
+            background: 'var(--bg-surface)', border: '1px solid var(--border-default)',
             borderRadius: 12, height: 140, opacity: 0.35,
           }} />
         ))}
@@ -38,13 +38,13 @@ export default function CoursesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <span style={{ fontSize: 18, fontWeight: 600, color: '#EDE8DC' }}>Courses</span>
+          <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-1)' }}>Courses</span>
           <span style={{ fontSize: 11, color: '#484848' }}>{COURSES.length} courses</span>
         </div>
         <button
           type="button"
           style={{
-            background: '#4875F0', color: '#EDE8DC', fontWeight: 600,
+            background: 'var(--accent)', color: 'var(--text-1)', fontWeight: 600,
             fontSize: 12, borderRadius: 9, border: 0, cursor: 'pointer',
             padding: '8px 14px',
           }}
@@ -64,8 +64,8 @@ export default function CoursesPage() {
           return (
             <Link key={c.id} href={`/courses/${c.id}`} style={{ textDecoration: 'none' }}>
               <div style={{
-                background: '#0E0E0E',
-                border: '1px solid rgba(255,255,255,0.07)',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border-default)',
                 borderRadius: 12,
                 padding: '12px 14px',
                 display: 'flex', flexDirection: 'column', gap: 8,
@@ -78,7 +78,7 @@ export default function CoursesPage() {
                     background: c.accent, flexShrink: 0,
                   }} />
                   <span style={{
-                    fontSize: 13, fontWeight: 600, color: '#EDE8DC',
+                    fontSize: 13, fontWeight: 600, color: 'var(--text-1)',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   }}>
                     {c.title}
@@ -107,7 +107,7 @@ export default function CoursesPage() {
                 {/* Footer */}
                 <div className="flex items-center justify-between">
                   <span style={{ fontSize: 10, color: '#484848' }}>{pct}%</span>
-                  <span style={{ fontSize: 10, color: '#4875F0' }}>Open plan →</span>
+                  <span style={{ fontSize: 10, color: 'var(--accent)' }}>Open plan →</span>
                 </div>
               </div>
             </Link>

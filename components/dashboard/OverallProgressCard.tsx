@@ -44,7 +44,7 @@ export default function OverallProgressCard({ state }: Props) {
         }}>
           Overall progress
         </span>
-        <Link href="/analytics" style={{ fontSize: 10, color: '#4875F0', textDecoration: 'none' }}>
+        <Link href="/analytics" style={{ fontSize: 10, color: 'var(--accent)', textDecoration: 'none' }}>
           View details →
         </Link>
       </div>
@@ -62,12 +62,12 @@ export default function OverallProgressCard({ state }: Props) {
         <div style={{
           position: 'absolute', top: 0, left: 0, height: '100%',
           width: `${Math.min(actualPct, 100)}%`,
-          background: '#4875F0', borderRadius: 3,
+          background: 'var(--accent)', borderRadius: 3,
         }} />
       </div>
       <div className="flex items-center justify-between" style={{ marginBottom: 12 }}>
         <span style={{ fontSize: 9, color: 'var(--text-3)' }}>● Expected {expectedPct}%</span>
-        <span style={{ fontSize: 9, color: '#4875F0' }}>● Actual {actualPct}%</span>
+        <span style={{ fontSize: 9, color: 'var(--accent)' }}>● Actual {actualPct}%</span>
       </div>
 
       {/* Per-course rows */}

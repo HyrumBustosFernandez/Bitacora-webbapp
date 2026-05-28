@@ -124,7 +124,7 @@ export default function CalendarPage() {
     fontSize: 11, fontWeight: tab === t ? 600 : 400,
     color: tab === t ? 'var(--text-1)' : 'var(--text-3)',
     cursor: 'pointer', borderRadius: 6,
-    borderBottom: tab === t ? '2px solid #4875F0' : '2px solid transparent',
+    borderBottom: tab === t ? '2px solid var(--accent)' : '2px solid transparent',
     transition: 'all 120ms ease',
     whiteSpace: 'nowrap',
   });
@@ -178,12 +178,8 @@ export default function CalendarPage() {
           </div>
           <button
             type="button" onClick={handleAddEvent}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 5,
-              background: '#4875F0', border: 0, borderRadius: 8,
-              padding: '5px 12px', fontSize: 11, fontWeight: 600,
-              color: '#fff', cursor: 'pointer',
-            }}
+            className="btn btn-primary"
+            style={{ gap: 5, padding: '5px 12px', fontSize: 11 }}
           >
             <IconPlus size={13} />
             Add event
@@ -374,7 +370,7 @@ function RemindersPanel() {
           }}
         />
         <button type="button" onClick={add}
-          style={{ background: '#4875F0', border: 0, borderRadius: 7, padding: '5px 12px', fontSize: 11, fontWeight: 600, color: '#fff', cursor: 'pointer' }}>
+          style={{ background: 'var(--accent)', border: 0, borderRadius: 7, padding: '5px 12px', fontSize: 11, fontWeight: 600, color: '#fff', cursor: 'pointer' }}>
           Add
         </button>
       </div>
@@ -388,7 +384,7 @@ function RemindersPanel() {
           }}>
             <input type="checkbox" checked={item.done}
               onChange={() => save(items.map(i => i.id === item.id ? { ...i, done: !i.done } : i))}
-              style={{ cursor: 'pointer', accentColor: '#4875F0' }}
+              style={{ cursor: 'pointer', accentColor: 'var(--accent)' }}
             />
             <span style={{ fontSize: 11, color: 'var(--text-2)', textDecoration: item.done ? 'line-through' : 'none' }}>{item.text}</span>
             <button type="button"
@@ -411,7 +407,7 @@ function GroupsPanel({ events }: { events: CalendarEvent[] }) {
   if (groups.length === 0) {
     return <span style={{ fontSize: 11, color: 'var(--text-3)' }}>No events with groups yet.</span>;
   }
-  const groupColors: Record<string, string> = { school: '#4875F0', personal: '#22C55E', work: '#F59E0B' };
+  const groupColors: Record<string, string> = { school: 'var(--accent)', personal: '#22C55E', work: '#F59E0B' };
   return (
     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
       {groups.map(g => {

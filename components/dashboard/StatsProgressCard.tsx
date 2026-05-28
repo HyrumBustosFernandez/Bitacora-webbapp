@@ -10,15 +10,15 @@ import { COURSES } from '@/lib/courses';
 interface Props { state: AppState }
 
 const CARD: React.CSSProperties = {
-  background: '#0E0E0E',
-  border: '1px solid rgba(255,255,255,0.07)',
+  background: 'var(--bg-surface)',
+  border: '1px solid var(--border-default)',
   borderRadius: 12,
   padding: '12px 14px',
 };
 
 const STAT_CARD: React.CSSProperties = {
-  background: '#0E0E0E',
-  border: '1px solid rgba(255,255,255,0.07)',
+  background: 'var(--bg-surface)',
+  border: '1px solid var(--border-default)',
   borderRadius: 10,
   padding: '9px 11px',
   display: 'flex',
@@ -65,7 +65,7 @@ export default function StatsProgressCard({ state }: Props) {
           label="Today's target"
           value={String(todayTarget)}
           sub="items/day"
-          valueColor="#4875F0"
+          valueColor="var(--accent)"
         />
       </div>
 
@@ -76,7 +76,7 @@ export default function StatsProgressCard({ state }: Props) {
             Overall progress
           </span>
           <Link href="/analytics" style={{
-            fontSize: 10, color: '#4875F0', textDecoration: 'none',
+            fontSize: 10, color: 'var(--accent)', textDecoration: 'none',
           }}>
             View all →
           </Link>
@@ -93,13 +93,13 @@ export default function StatsProgressCard({ state }: Props) {
           <div style={{
             position: 'absolute', top: 0, left: 0, height: '100%',
             width: `${Math.min(actualPct, 100)}%`,
-            background: '#4875F0',
+            background: 'var(--accent)',
             borderRadius: 3,
           }} />
         </div>
         <div className="flex items-center justify-between" style={{ marginTop: 5, marginBottom: 10 }}>
           <span style={{ fontSize: 9, color: '#333' }}>Expected {expectedPct}%</span>
-          <span style={{ fontSize: 9, color: '#4875F0' }}>Actual {actualPct}%</span>
+          <span style={{ fontSize: 9, color: 'var(--accent)' }}>Actual {actualPct}%</span>
         </div>
 
         {/* Per-course rows */}
@@ -152,7 +152,7 @@ function StatCard({
   return (
     <div style={STAT_CARD}>
       <div style={{ fontSize: 9, color: '#3E3E3E', fontWeight: 500 }}>{label}</div>
-      <div style={{ fontSize: 22, fontWeight: 600, color: valueColor ?? '#EDE8DC', lineHeight: 1 }}>
+      <div style={{ fontSize: 22, fontWeight: 600, color: valueColor ?? 'var(--text-1)', lineHeight: 1 }}>
         {value}
       </div>
       {sub && <div style={{ fontSize: 9, color: '#2E2E2E' }}>{sub}</div>}

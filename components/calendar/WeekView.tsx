@@ -68,7 +68,7 @@ export default function WeekView({ weekStart, events, onSlotClick, onEventClick 
             <div key={i} style={{
               padding: '8px 0', textAlign: 'center',
               borderLeft: '1px solid var(--border-subtle)',
-              background: isToday ? 'rgba(72,117,240,0.04)' : 'transparent',
+              background: isToday ? 'var(--accent-subtle)' : 'transparent',
             }}>
               <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500 }}>{DOW_SHORT[i]}</div>
               <div style={{
@@ -78,7 +78,7 @@ export default function WeekView({ weekStart, events, onSlotClick, onEventClick 
                 width: isToday ? 28 : 'auto',
                 height: isToday ? 28 : 'auto',
                 borderRadius: isToday ? '50%' : 0,
-                background: isToday ? '#4875F0' : 'transparent',
+                background: isToday ? 'var(--accent)' : 'transparent',
               }}>
                 {d.getDate()}
               </div>
@@ -136,7 +136,7 @@ export default function WeekView({ weekStart, events, onSlotClick, onEventClick 
               <div key={di} style={{
                 borderLeft: '1px solid var(--border-subtle)',
                 position: 'relative', height: totalH,
-                background: isToday ? 'rgba(72,117,240,0.02)' : 'transparent',
+                background: isToday ? 'var(--accent-subtle)' : 'transparent',
               }}>
                 {/* Clickable slots */}
                 {HOURS.map(h => (

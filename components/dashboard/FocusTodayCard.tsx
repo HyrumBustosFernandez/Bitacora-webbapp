@@ -56,7 +56,7 @@ export default function FocusTodayCard({ state, onRefresh }: Props) {
     <div style={CARD}>
       {/* Label */}
       <div className="flex items-center gap-1" style={{
-        fontSize: 9, fontWeight: 600, color: '#4875F0',
+        fontSize: 9, fontWeight: 600, color: 'var(--accent)',
         textTransform: 'uppercase', letterSpacing: '0.7px',
       }}>
         <IconBolt size={11} />
@@ -96,12 +96,12 @@ export default function FocusTodayCard({ state, onRefresh }: Props) {
               <span style={{
                 width: 15, height: 15, borderRadius: 4, flexShrink: 0, marginTop: 1,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: isDone ? 'rgba(72,117,240,0.15)' : 'transparent',
+                background: isDone ? 'var(--accent-subtle)' : 'transparent',
                 border: isDone
-                  ? '1.5px solid rgba(72,117,240,0.45)'
+                  ? '1.5px solid var(--accent-subtle)'
                   : '1.5px solid var(--border-default)',
               }}>
-                {isDone && <IconCheck size={9} color="#4875F0" strokeWidth={3} />}
+                {isDone && <IconCheck size={9} color="var(--accent)" strokeWidth={3} />}
               </span>
               <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <span style={{

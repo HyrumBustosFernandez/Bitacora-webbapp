@@ -71,8 +71,8 @@ export default function StudyModePage() {
   if (!course || !week || isNaN(weekIndex)) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <Link href="/study" style={{ fontSize: 11, color: '#484848', textDecoration: 'none' }}>← Back</Link>
-        <span style={{ fontSize: 14, color: '#484848' }}>Module not found.</span>
+        <Link href="/study" style={{ fontSize: 11, color: 'var(--text-3)', textDecoration: 'none' }}>← Back</Link>
+        <span style={{ fontSize: 14, color: 'var(--text-3)' }}>Module not found.</span>
       </div>
     );
   }
@@ -85,9 +85,9 @@ export default function StudyModePage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <Link href="/study" style={{ fontSize: 11, color: '#484848', textDecoration: 'none' }}>← Back</Link>
-          <span style={{ fontSize: 14, fontWeight: 600, color: '#EDE8DC' }}>{week.name}</span>
-          <span style={{ fontSize: 11, color: '#484848' }}>{course.title}</span>
+          <Link href="/study" style={{ fontSize: 11, color: 'var(--text-3)', textDecoration: 'none' }}>← Back</Link>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-1)' }}>{week.name}</span>
+          <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{course.title}</span>
         </div>
 
         <button
@@ -109,7 +109,7 @@ export default function StudyModePage() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+      <div style={{ display: 'flex', borderBottom: '1px solid var(--border-default)' }}>
         {(['notes', 'tools'] as Tab[]).map(t => (
           <button
             key={t}
@@ -117,9 +117,9 @@ export default function StudyModePage() {
             onClick={() => setTab(t)}
             style={{
               background: 'transparent', border: 0,
-              borderBottom: tab === t ? '2px solid #4875F0' : '2px solid transparent',
+              borderBottom: tab === t ? '2px solid var(--accent)' : '2px solid transparent',
               padding: '8px 14px', fontSize: 12, fontWeight: 500,
-              cursor: 'pointer', color: tab === t ? '#EDE8DC' : '#484848',
+              cursor: 'pointer', color: tab === t ? 'var(--text-1)' : '#484848',
               marginBottom: -1, textTransform: 'capitalize',
             }}
           >
@@ -132,17 +132,17 @@ export default function StudyModePage() {
       {tab === 'notes' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div className="flex items-center justify-between">
-            <span style={{ fontSize: 10, color: '#484848' }}>
+            <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
               {content ? 'Auto-saved' : 'Start typing to create a note'}
             </span>
             <button
               type="button"
               onClick={() => setPreview(p => !p)}
               style={{
-                background: preview ? 'rgba(72,117,240,0.1)' : 'rgba(255,255,255,0.04)',
-                border: `1px solid ${preview ? 'rgba(72,117,240,0.25)' : 'rgba(255,255,255,0.08)'}`,
+                background: preview ? 'var(--accent-subtle)' : 'var(--border-subtle)',
+                border: `1px solid ${preview ? 'var(--accent-border)' : 'var(--border-default)'}`,
                 borderRadius: 6, padding: '4px 10px',
-                color: preview ? '#4875F0' : '#484848',
+                color: preview ? 'var(--accent)' : '#484848',
                 fontSize: 10, fontWeight: 500, cursor: 'pointer',
               }}
             >
@@ -153,8 +153,8 @@ export default function StudyModePage() {
           {preview ? (
             <div
               style={{
-                background: '#0E0E0E',
-                border: '1px solid rgba(255,255,255,0.07)',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border-default)',
                 borderRadius: 10, padding: 14,
                 minHeight: 200, lineHeight: 1.6,
               }}
@@ -166,9 +166,9 @@ export default function StudyModePage() {
               onChange={e => handleContentChange(e.target.value)}
               placeholder="Write your notes for this module..."
               style={{
-                background: '#0E0E0E',
-                border: '1px solid rgba(255,255,255,0.07)',
-                color: '#EDE8DC', fontFamily: 'inherit',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border-default)',
+                color: 'var(--text-1)', fontFamily: 'inherit',
                 fontSize: 12, borderRadius: 10,
                 padding: 14, minHeight: 200,
                 resize: 'vertical', outline: 'none',
@@ -182,8 +182,8 @@ export default function StudyModePage() {
       {/* AI Tools tab */}
       {tab === 'tools' && (
         <div style={{
-          background: '#0E0E0E',
-          border: '1px solid rgba(255,255,255,0.07)',
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--border-default)',
           borderRadius: 12, padding: '24px 16px',
           textAlign: 'center',
         }}>
