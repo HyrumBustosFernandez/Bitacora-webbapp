@@ -9,26 +9,18 @@ import {
   IconChartBar, IconUsers, IconSettings2,
 } from '@tabler/icons-react';
 
-/* ── Panda yin-yang logo ── */
+/* ── PaceUp panda logo (from panda-icon-2 SVG) ── */
 function PandaLogo({ size = 26 }: { size?: number }) {
   return (
     <svg
       width={size} height={size}
-      viewBox="0 0 100 100"
+      viewBox="0 0 305 285"
       xmlns="http://www.w3.org/2000/svg"
       style={{ flexShrink: 0 }}
     >
-      <circle cx="50" cy="50" r="50" fill="currentColor" />
-      <g transform="rotate(135 50 50)">
-        {/* White yin-yang fish — forms panda face */}
-        <path
-          d="M 50 0 A 50 50 0 1 1 50 100 A 25 25 0 1 1 50 50 A 25 25 0 0 0 50 0 Z"
-          fill="white"
-        />
-        {/* Eye in white area */}
-        <circle cx="50" cy="25" r="9" fill="currentColor" />
-        {/* Eye in black area */}
-        <circle cx="50" cy="75" r="9" fill="white" />
+      <g transform="translate(0,285) scale(0.1,-0.1)" fill="currentColor" stroke="none">
+        <path d="M1365 2530 c-214 -30 -431 -121 -588 -246 -61 -47 -70 -66 -20 -41 15 8 62 25 103 37 483 144 953 -36 1065 -407 21 -68 19 -83 -8 -83 -52 0 -84 -74 -65 -149 14 -55 75 -119 194 -203 100 -70 168 -143 202 -216 35 -75 38 -193 6 -263 -29 -63 -79 -116 -135 -145 -57 -28 -74 -30 -65 -7 13 34 27 168 21 200 -7 41 -25 50 -66 33 -22 -9 -53 -47 -113 -139 -111 -169 -153 -213 -234 -253 -58 -29 -76 -33 -142 -32 -63 0 -86 5 -134 30 -65 32 -114 84 -148 153 -18 36 -23 64 -23 126 0 71 4 88 32 146 35 70 102 145 234 261 87 76 115 123 131 221 22 133 -38 302 -141 401 -100 94 -213 137 -366 137 -210 0 -384 -71 -531 -218 -315 -315 -270 -874 103 -1247 223 -224 500 -340 813 -340 311 0 577 110 795 329 133 132 218 270 275 445 31 95 60 264 60 350 0 145 -54 369 -121 501 -158 314 -454 540 -790 604 -104 19 -265 27 -344 15z m-36 -876 c53 -45 51 -132 -5 -169 -31 -20 -103 -19 -130 3 -55 44 -59 109 -10 158 44 44 99 47 145 8z" />
+        <path d="M1933 1330 c-84 -38 -103 -115 -43 -174 24 -25 39 -30 88 -34 120 -9 204 83 152 166 -37 60 -119 78 -197 42z" />
       </g>
     </svg>
   );
@@ -120,7 +112,6 @@ export default function LeftSidebar() {
                 borderRadius: 8, textDecoration: 'none',
                 color: isActive ? 'var(--accent)' : 'var(--text-3)',
                 background: isActive ? 'var(--accent-subtle)' : 'transparent',
-                boxShadow: isActive ? 'inset 2px 0 0 var(--accent)' : 'none',
                 whiteSpace: 'nowrap', overflow: 'hidden',
                 transition: 'color 130ms ease, background-color 130ms ease, box-shadow 130ms ease',
               }}
@@ -191,7 +182,6 @@ export default function LeftSidebar() {
                 borderRadius: 8, textDecoration: 'none',
                 color: isActive ? 'var(--accent)' : 'var(--text-3)',
                 background: isActive ? 'var(--accent-subtle)' : 'transparent',
-                boxShadow: isActive ? 'inset 2px 0 0 var(--accent)' : 'none',
                 whiteSpace: 'nowrap', overflow: 'hidden',
                 transition: 'color 130ms ease, background-color 130ms ease, box-shadow 130ms ease',
               }}

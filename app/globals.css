@@ -45,18 +45,18 @@
    ──────────────────────────────────────── */
 :root,
 [data-theme="dark"] {
-  /* Backgrounds */
-  --bg-page:              #0C0C0E;
-  --bg-surface:           #111114;
-  --bg-elevated:          #18181C;
-  --bg-input:             #1C1C22;
+  /* Backgrounds — warm neutral dark gray */
+  --bg-page:              #0E0E0E;
+  --bg-surface:           #171717;
+  --bg-elevated:          #272727;
+  --bg-input:             #2E2E2E;
 
   /* Borders */
-  --border-subtle:        rgba(255, 255, 255, 0.05);
-  --border-default:       rgba(255, 255, 255, 0.09);
-  --border-hover:         rgba(255, 255, 255, 0.16);
-  --border-focus:         rgba(79, 107, 251, 0.55);
-  --border-strong:        rgba(255, 255, 255, 0.22);
+  --border-subtle:        rgba(255, 255, 255, 0.06);
+  --border-default:       rgba(255, 255, 255, 0.11);
+  --border-hover:         rgba(255, 255, 255, 0.20);
+  --border-focus:         rgba(79, 107, 251, 0.60);
+  --border-strong:        rgba(255, 255, 255, 0.26);
 
   /* Accent */
   --accent:               #4F6BFB;
@@ -278,7 +278,6 @@ input, textarea, select {
 .nav-item-active {
   background: var(--accent-subtle);
   color: var(--accent) !important;
-  box-shadow: inset 2px 0 0 var(--accent);
 }
 
 /* ════════════════════════════════════════
@@ -302,9 +301,9 @@ input, textarea, select {
    TYPOGRAPHY UTILITIES
    ════════════════════════════════════════ */
 .label-section {
-  font-size: 9px;
-  font-weight: 600;
-  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-2);
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.07em;
 }
