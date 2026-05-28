@@ -17,13 +17,19 @@ const EVENT_TYPES: EventType[] = ['study', 'exam', 'deadline', 'homework', 'meet
 const GROUPS: EventGroup[] = ['school', 'personal', 'work'];
 
 const INPUT: React.CSSProperties = {
-  width: '100%', background: 'var(--bg-elevated)',
-  border: '1px solid var(--border-default)', borderRadius: 8,
-  padding: '8px 10px', color: 'var(--text-1)', fontSize: 12,
-  outline: 'none', fontFamily: 'inherit',
-  transition: 'border-color 150ms ease',
+  width: '100%',
+  background: 'var(--bg-input)',
+  border: '1px solid var(--border-default)',
+  borderRadius: 8,
+  padding: '8px 10px',
+  color: 'var(--text-1)',
+  fontSize: 12,
+  outline: 'none',
+  fontFamily: 'inherit',
+  transition: 'border-color 130ms ease',
 };
-const LABEL: React.CSSProperties = {
+
+const FIELD_LABEL: React.CSSProperties = {
   fontSize: 11, fontWeight: 500, color: 'var(--text-2)',
 };
 
@@ -45,8 +51,8 @@ export default function CreateEventModal({ initialDate, onClose, onSaved }: Prop
     if (!date)          { setError('Date is required'); return; }
     const event: CalendarEvent = {
       id: generateId(), title: title.trim(), date, type, group, color,
-      ...(time      && { time }),
-      ...(endTime   && { endTime }),
+      ...(time        && { time }),
+      ...(endTime     && { endTime }),
       ...(description.trim() && { description: description.trim() }),
     };
     saveEvent(event);
@@ -59,7 +65,7 @@ export default function CreateEventModal({ initialDate, onClose, onSaved }: Prop
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0, zIndex: 100,
-        background: 'var(--overlay)', backdropFilter: 'blur(4px)',
+        background: 'var(--overlay)', backdropFilter: 'blur(6px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: 20,
       }}
@@ -73,27 +79,24 @@ export default function CreateEventModal({ initialDate, onClose, onSaved }: Prop
           borderRadius: 16, padding: 24,
           width: '100%', maxWidth: 480,
           display: 'flex', flexDirection: 'column', gap: 16,
-          boxShadow: '0 32px 64px rgba(0,0,0,0.4)',
+          boxShadow: 'var(--shadow-modal)',
         }}
       >
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-1)' }}>Create Event</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-1)' }}>Create Event</span>
           <button
             type="button" onClick={onClose}
-            style={{
-              background: 'transparent', border: 0,
-              color: 'var(--text-3)', cursor: 'pointer', padding: 4,
-              display: 'flex', alignItems: 'center',
-            }}
+            className="btn btn-ghost btn-icon"
+            style={{ color: 'var(--text-3)' }}
           >
-            <IconX size={16} />
+            <IconX size={15} />
           </button>
         </div>
 
         {/* Title */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <span style={LABEL}>Event name *</span>
+          <span style={FIELD_LABEL}>Event name *</span>
           <input
             autoFocus type="text"
             placeholder="e.g. Study session, CCST Exam…"
@@ -107,18 +110,23 @@ export default function CreateEventModal({ initialDate, onClose, onSaved }: Prop
         {/* Type + Color */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={LABEL}>Type *</span>
+            <span style={FIELD_LABEL}>Type *</span>
             <select
               value={type}
-              onChange={e => { setType(e.target.value as EventType); setColor(COLOR_PRESETS[EVENT_TYPES.indexOf(e.target.value as EventType)] ?? COLOR_PRESETS[0]); }}
+              onChange={e => {
+                setType(e.target.value as EventType);
+                setColor(COLOR_PRESETS[EVENT_TYPES.indexOf(e.target.value as EventType)] ?? COLOR_PRESETS[0]);
+              }}
               style={{ ...INPUT }}
+              onFocus={e => (e.target.style.borderColor = 'var(--border-focus)')}
+              onBlur={e  => (e.target.style.borderColor = 'var(--border-default)')}
             >
               {EVENT_TYPES.map(t => <option key={t} value={t}>{EVENT_TYPE_LABELS[t]}</option>)}
             </select>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={LABEL}>Color</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingTop: 6 }}>
+            <span style={FIELD_LABEL}>Color</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, paddingTop: 7 }}>
               {COLOR_PRESETS.map(c => (
                 <button
                   key={c} type="button"
@@ -128,7 +136,8 @@ export default function CreateEventModal({ initialDate, onClose, onSaved }: Prop
                     background: c, border: 0, cursor: 'pointer', flexShrink: 0,
                     outline: color === c ? `2px solid var(--text-1)` : '2px solid transparent',
                     outlineOffset: 2,
-                    transition: 'outline 120ms ease',
+                    transition: 'outline 120ms ease, transform 120ms ease',
+                    transform: color === c ? 'scale(1.15)' : 'scale(1)',
                   }}
                 />
               ))}
@@ -139,14 +148,14 @@ export default function CreateEventModal({ initialDate, onClose, onSaved }: Prop
         {/* Date + Time */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={LABEL}>Date *</span>
+            <span style={FIELD_LABEL}>Date *</span>
             <input type="date" value={date} onChange={e => setDate(e.target.value)} style={INPUT}
               onFocus={e => (e.target.style.borderColor = 'var(--border-focus)')}
               onBlur={e  => (e.target.style.borderColor = 'var(--border-default)')}
             />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={LABEL}>Time</span>
+            <span style={FIELD_LABEL}>Time</span>
             <input type="time" value={time} onChange={e => setTime(e.target.value)} style={INPUT}
               onFocus={e => (e.target.style.borderColor = 'var(--border-focus)')}
               onBlur={e  => (e.target.style.borderColor = 'var(--border-default)')}
@@ -157,58 +166,51 @@ export default function CreateEventModal({ initialDate, onClose, onSaved }: Prop
         {/* End time + Group */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={LABEL}>End time</span>
+            <span style={FIELD_LABEL}>End time</span>
             <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} style={INPUT}
               onFocus={e => (e.target.style.borderColor = 'var(--border-focus)')}
               onBlur={e  => (e.target.style.borderColor = 'var(--border-default)')}
             />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={LABEL}>Group</span>
-            <select value={group} onChange={e => setGroup(e.target.value as EventGroup)} style={{ ...INPUT }}>
-              {GROUPS.map(g => <option key={g} value={g} style={{ textTransform: 'capitalize' }}>{g.charAt(0).toUpperCase() + g.slice(1)}</option>)}
+            <span style={FIELD_LABEL}>Group</span>
+            <select value={group} onChange={e => setGroup(e.target.value as EventGroup)} style={{ ...INPUT }}
+              onFocus={e => (e.target.style.borderColor = 'var(--border-focus)')}
+              onBlur={e  => (e.target.style.borderColor = 'var(--border-default)')}
+            >
+              {GROUPS.map(g => (
+                <option key={g} value={g}>
+                  {g.charAt(0).toUpperCase() + g.slice(1)}
+                </option>
+              ))}
             </select>
           </div>
         </div>
 
         {/* Description */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <span style={LABEL}>Description</span>
+          <span style={FIELD_LABEL}>Description</span>
           <textarea
             placeholder="Optional notes…"
             value={description}
             onChange={e => setDescription(e.target.value)}
             rows={3}
-            style={{ ...INPUT, resize: 'vertical', lineHeight: 1.5 }}
+            style={{ ...INPUT, resize: 'vertical', lineHeight: 1.6 }}
             onFocus={e => (e.target.style.borderColor = 'var(--border-focus)')}
             onBlur={e  => (e.target.style.borderColor = 'var(--border-default)')}
           />
         </div>
 
-        {error && <span style={{ fontSize: 11, color: '#EF4444' }}>{error}</span>}
+        {error && (
+          <span style={{ fontSize: 11, color: 'var(--color-red)', fontWeight: 500 }}>{error}</span>
+        )}
 
-        {/* Buttons */}
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button
-            type="button" onClick={onClose}
-            style={{
-              flex: 1, padding: '9px 0',
-              background: 'transparent', border: '1px solid var(--border-default)',
-              borderRadius: 9, fontSize: 12, fontWeight: 500,
-              color: 'var(--text-2)', cursor: 'pointer',
-            }}
-          >
+        {/* Actions */}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button type="button" onClick={onClose} className="btn btn-secondary" style={{ flex: 1, justifyContent: 'center' }}>
             Cancel
           </button>
-          <button
-            type="submit"
-            style={{
-              flex: 2, padding: '9px 0',
-              background: '#4875F0', border: 0,
-              borderRadius: 9, fontSize: 12, fontWeight: 600,
-              color: '#fff', cursor: 'pointer',
-            }}
-          >
+          <button type="submit" className="btn btn-primary" style={{ flex: 2, justifyContent: 'center' }}>
             + Create Event
           </button>
         </div>

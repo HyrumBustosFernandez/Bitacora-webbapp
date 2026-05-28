@@ -142,7 +142,7 @@ export default function CalendarCard({ state }: Props) {
                     textAlign: 'center',
                     display: 'inline-block',
                     fontSize: 10,
-                    background: cell.isToday ? '#4875F0' : 'transparent',
+                    background: cell.isToday ? 'var(--accent)' : 'transparent',
                     color: cell.isToday
                       ? '#fff'
                       : cell.kind !== 'cur'
@@ -173,7 +173,7 @@ export default function CalendarCard({ state }: Props) {
           </div>
 
           <div className="flex items-center gap-3" style={{ marginTop: 8 }}>
-            <LegendDot color="#4875F0" label="today" />
+            <LegendDot color="var(--accent)" label="today" />
             <LegendDot color="#F87171" label="deadline" />
             <LegendDot color="#22C55E" label="event" />
           </div>

@@ -49,7 +49,7 @@ export default function DayView({ date, events, onSlotClick, onEventClick }: Pro
       }}>
         <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-1)' }}>
           {dateLabel}
-          {isToday && <span style={{ marginLeft: 10, fontSize: 10, color: '#4875F0', fontWeight: 500, background: 'rgba(72,117,240,0.1)', padding: '2px 8px', borderRadius: 20 }}>Today</span>}
+          {isToday && <span style={{ marginLeft: 10, fontSize: 10, color: 'var(--accent)', fontWeight: 500, background: 'var(--accent-subtle)', padding: '2px 8px', borderRadius: 20 }}>Today</span>}
         </span>
         {allDayEvents.length > 0 && (
           <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>

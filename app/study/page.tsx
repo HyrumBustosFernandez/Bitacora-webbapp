@@ -79,8 +79,8 @@ export default function StudyPage() {
                 <div key={str} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                   <div style={{
                     width: 20, height: 20, borderRadius: 4,
-                    background: isActive ? '#4875F0' : 'var(--bg-elevated)',
-                    border: `1px solid ${isActive ? '#4875F0' : 'var(--border-default)'}`,
+                    background: isActive ? 'var(--accent)' : 'var(--bg-elevated)',
+                    border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border-default)'}`,
                   }} />
                   <span style={{ fontSize: 9, color: 'var(--text-4)' }}>{label}</span>
                 </div>

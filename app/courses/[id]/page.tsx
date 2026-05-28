@@ -61,7 +61,7 @@ export default function CourseDetailPage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <div style={{ height: 80 }} />
         <div style={{
-          background: '#0E0E0E', border: '1px solid rgba(255,255,255,0.07)',
+          background: 'var(--bg-surface)', border: '1px solid var(--border-default)',
           borderRadius: 12, height: 400, opacity: 0.35,
         }} />
       </div>
@@ -106,7 +106,7 @@ export default function CourseDetailPage() {
 
       {/* Page header */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <span style={{ fontSize: 18, fontWeight: 600, color: '#EDE8DC' }}>{course.title}</span>
+        <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-1)' }}>{course.title}</span>
         <span style={{ fontSize: 11, color: '#484848' }}>
           {course.num} · {platform} · {course.hours}
         </span>
@@ -133,7 +133,7 @@ export default function CourseDetailPage() {
       {/* Tabs */}
       <div style={{
         display: 'flex', gap: 0,
-        borderBottom: '1px solid rgba(255,255,255,0.07)',
+        borderBottom: '1px solid var(--border-default)',
       }}>
         {(['modules', 'notes', 'tools'] as Tab[]).map(t => {
           const labels: Record<Tab, string> = {
@@ -148,10 +148,10 @@ export default function CourseDetailPage() {
               onClick={() => setTab(t)}
               style={{
                 background: 'transparent', border: 0,
-                borderBottom: tab === t ? '2px solid #4875F0' : '2px solid transparent',
+                borderBottom: tab === t ? '2px solid var(--accent)' : '2px solid transparent',
                 padding: '8px 14px',
                 fontSize: 12, fontWeight: 500, cursor: 'pointer',
-                color: tab === t ? '#EDE8DC' : '#484848',
+                color: tab === t ? 'var(--text-1)' : '#484848',
                 marginBottom: -1,
               }}
             >
@@ -171,8 +171,8 @@ export default function CourseDetailPage() {
 
             return (
               <div key={wi} style={{
-                background: '#0E0E0E',
-                border: '1px solid rgba(255,255,255,0.07)',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border-default)',
                 borderRadius: 12,
                 padding: '12px 14px',
                 display: 'flex', flexDirection: 'column', gap: 10,
@@ -181,14 +181,14 @@ export default function CourseDetailPage() {
                 <div className="flex items-center gap-2">
                   <span style={{
                     fontSize: 9, fontWeight: 600, color: '#7AA3F8',
-                    background: 'rgba(72,117,240,0.1)',
-                    border: '1px solid rgba(72,117,240,0.2)',
+                    background: 'var(--accent-subtle)',
+                    border: '1px solid var(--accent-border)',
                     borderRadius: 4, padding: '2px 7px',
                     letterSpacing: '0.4px', textTransform: 'uppercase',
                   }}>
                     {week.label}
                   </span>
-                  <span style={{ fontSize: 11, color: '#EDE8DC', fontWeight: 500 }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-1)', fontWeight: 500 }}>
                     {week.name}
                   </span>
                   {week.dates && (
@@ -231,20 +231,20 @@ export default function CourseDetailPage() {
                           style={{
                             width: 15, height: 15, borderRadius: 4, flexShrink: 0, marginTop: 1,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            background: isDone ? 'rgba(72,117,240,0.15)' : 'transparent',
+                            background: isDone ? 'var(--accent-subtle)' : 'transparent',
                             border: isDone
-                              ? '1.5px solid rgba(72,117,240,0.45)'
+                              ? '1.5px solid var(--accent-border)'
                               : '1.5px solid rgba(255,255,255,0.12)',
                             cursor: 'pointer', padding: 0,
                           }}
                         >
-                          {isDone && <IconCheck size={9} color="#4875F0" strokeWidth={3} />}
+                          {isDone && <IconCheck size={9} color="var(--accent)" strokeWidth={3} />}
                         </button>
 
                         <span style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 5 }}>
                           <span style={{
                             fontSize: 11, fontWeight: 400,
-                            color: isDone ? '#333' : '#A8A29A',
+                            color: isDone ? '#333' : 'var(--text-2)',
                             textDecoration: isDone ? 'line-through' : 'none',
                           }}>
                             {item.exam ? '📝 ' : ''}{item.name}
@@ -252,7 +252,7 @@ export default function CourseDetailPage() {
                           {isItemNote && (
                             <span style={{
                               width: 4, height: 4, borderRadius: '50%',
-                              background: '#4875F0', flexShrink: 0,
+                              background: 'var(--accent)', flexShrink: 0,
                             }} />
                           )}
                         </span>
@@ -284,8 +284,8 @@ export default function CourseDetailPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {courseNotes.length === 0 ? (
             <div style={{
-              background: '#0E0E0E',
-              border: '1px solid rgba(255,255,255,0.07)',
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border-default)',
               borderRadius: 12, padding: '24px 14px',
               textAlign: 'center',
             }}>
@@ -307,12 +307,12 @@ export default function CourseDetailPage() {
                   style={{ textDecoration: 'none' }}
                 >
                   <div style={{
-                    background: '#0E0E0E',
-                    border: '1px solid rgba(255,255,255,0.07)',
+                    background: 'var(--bg-surface)',
+                    border: '1px solid var(--border-default)',
                     borderRadius: 12, padding: '10px 14px',
                     display: 'flex', flexDirection: 'column', gap: 4,
                   }}>
-                    <span style={{ fontSize: 12, fontWeight: 500, color: '#A8A29A' }}>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-2)' }}>
                       {moduleName}
                     </span>
                     <span style={{
@@ -333,8 +333,8 @@ export default function CourseDetailPage() {
       {/* ── Tab 3: Study Tools ── */}
       {tab === 'tools' && (
         <div style={{
-          background: '#0E0E0E',
-          border: '1px solid rgba(255,255,255,0.07)',
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--border-default)',
           borderRadius: 12, padding: '24px 14px',
           textAlign: 'center',
         }}>

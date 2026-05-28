@@ -23,7 +23,7 @@ const INPUT: React.CSSProperties = {
   background: 'rgba(255,255,255,0.04)',
   border: '1px solid rgba(255,255,255,0.09)',
   borderRadius: 8, padding: '8px 10px',
-  color: '#EDE8DC', fontSize: 12,
+  color: 'var(--text-1)', fontSize: 12,
   outline: 'none',
 };
 
@@ -46,7 +46,7 @@ export default function AddEventModal({ initialDate, onClose, onSaved }: Props) 
       date,
       type,
       group:    'personal',
-      color:    '#4875F0',
+      color:    'var(--accent)',
       courseId: courseId || undefined,
     };
     saveEvent(event);
@@ -74,7 +74,7 @@ export default function AddEventModal({ initialDate, onClose, onSaved }: Props) 
           display: 'flex', flexDirection: 'column', gap: 14,
         }}
       >
-        <span style={{ fontSize: 14, fontWeight: 600, color: '#EDE8DC' }}>Add event</span>
+        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-1)' }}>Add event</span>
 
         {/* Title */}
         <div>
@@ -138,8 +138,8 @@ export default function AddEventModal({ initialDate, onClose, onSaved }: Props) 
             onClick={handleSubmit}
             style={{
               flex: 1, padding: '9px 0',
-              background: '#4875F0', border: 0,
-              borderRadius: 9, color: '#EDE8DC',
+              background: 'var(--accent)', border: 0,
+              borderRadius: 9, color: 'var(--text-1)',
               fontSize: 12, fontWeight: 600, cursor: 'pointer',
             }}
           >

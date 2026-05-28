@@ -116,7 +116,7 @@ export default function MonthView({ year, month, events, onDayClick, onEventClic
                 lineHeight: cell.isToday ? '22px' : undefined,
                 textAlign: 'center',
                 borderRadius: cell.isToday ? '50%' : 3,
-                background: cell.isToday ? '#4875F0' : 'transparent',
+                background: cell.isToday ? 'var(--accent)' : 'transparent',
                 color: cell.isToday ? '#fff' : 'var(--text-3)',
                 fontSize: 11, fontWeight: cell.isToday ? 600 : 400,
                 padding: cell.isToday ? 0 : '0 2px',
