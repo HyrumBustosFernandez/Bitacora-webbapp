@@ -13,8 +13,9 @@ function Skeleton() {
       <div style={{ height: 36 }} />
       {[0, 1, 2].map(i => (
         <div key={i} style={{
-          background: '#0E0E0E', border: '1px solid rgba(255,255,255,0.07)',
-          borderRadius: 12, height: 100, opacity: 0.35,
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: 12, height: 100, opacity: 0.4,
         }} />
       ))}
     </div>
@@ -53,83 +54,94 @@ export default function AnalyticsPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
       {/* Page title */}
-      <span style={{ fontSize: 18, fontWeight: 600, color: '#EDE8DC' }}>Analytics</span>
+      <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-1)' }}>Analytics</span>
 
       {/* Overall card */}
       <div style={{
-        background: '#0E0E0E',
-        border: '1px solid rgba(255,255,255,0.07)',
-        borderRadius: 12, padding: '14px 16px',
-        display: 'flex', flexDirection: 'column', gap: 10,
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border-default)',
+        borderRadius: 12, padding: '16px 18px',
+        display: 'flex', flexDirection: 'column', gap: 12,
+        boxShadow: 'var(--shadow-card)',
       }}>
         <div className="flex items-end justify-between">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <span style={{ fontSize: 32, fontWeight: 700, color: '#EDE8DC', lineHeight: 1 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={{ fontSize: 36, fontWeight: 700, color: 'var(--text-1)', lineHeight: 1 }}>
               {track.actualPct}%
             </span>
-            <span style={{ fontSize: 11, color: '#484848' }}>
+            <span style={{ fontSize: 11, color: 'var(--text-3)' }}>
               {done} / {total} items complete
             </span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
-            <span style={{ fontSize: 11, color: daysLeft < 30 ? '#F59E0B' : '#484848' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+            <span style={{
+              fontSize: 11, fontWeight: 500,
+              color: daysLeft < 30 ? 'var(--color-amber)' : 'var(--text-2)',
+            }}>
               {daysLeft} days left
             </span>
-            <span style={{ fontSize: 10, color: '#2E2E2E' }}>Deadline Jun 10</span>
+            <span style={{ fontSize: 10, color: 'var(--text-3)' }}>Deadline Jun 10</span>
             {isBehind && (
-              <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(252,165,165,0.85)' }}>
+              <span style={{
+                fontSize: 11, fontWeight: 500,
+                color: 'var(--color-red)',
+              }}>
                 {Math.abs(track.diff)} items behind
               </span>
             )}
           </div>
         </div>
 
-        {/* Dual bar */}
+        {/* Dual progress bar */}
         <div style={{
           position: 'relative', height: 6, borderRadius: 3,
-          background: 'rgba(255,255,255,0.05)', overflow: 'hidden',
+          background: 'var(--bg-elevated)', overflow: 'hidden',
         }}>
+          {/* Expected track (ghost) */}
           <div style={{
             position: 'absolute', top: 0, left: 0, height: '100%',
             width: `${Math.min(track.expectedPct, 100)}%`,
-            background: 'rgba(255,255,255,0.10)', borderRadius: 3,
+            background: 'var(--border-strong)', borderRadius: 3,
           }} />
+          {/* Actual progress */}
           <div style={{
             position: 'absolute', top: 0, left: 0, height: '100%',
             width: `${Math.min(track.actualPct, 100)}%`,
-            background: '#4875F0', borderRadius: 3,
+            background: 'var(--accent)', borderRadius: 3,
           }} />
         </div>
 
         <div className="flex items-center gap-4">
-          <span style={{ fontSize: 10, color: '#484848' }}>● Expected {track.expectedPct}%</span>
-          <span style={{ fontSize: 10, color: '#4875F0' }}>● Actual {track.actualPct}%</span>
+          <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
+            <span style={{ opacity: 0.6 }}>●</span> Expected {track.expectedPct}%
+          </span>
+          <span style={{ fontSize: 10, color: 'var(--accent)', fontWeight: 500 }}>
+            ● Actual {track.actualPct}%
+          </span>
         </div>
       </div>
 
       {/* Section label */}
-      <span style={{
-        fontSize: 9, fontWeight: 600, color: '#484848',
-        textTransform: 'uppercase', letterSpacing: '0.6px',
-        marginTop: 4,
-      }}>
-        Per course
-      </span>
+      <span className="label-section" style={{ marginTop: 4 }}>Per course</span>
 
-      {/* Per-course grid */}
+      {/* Per-course list */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {sorted.map(({ c, pct, behind, dl, totalC, doneC }) => (
           <div key={c.id} style={{
-            background: '#0E0E0E',
-            border: '1px solid rgba(255,255,255,0.07)',
-            borderRadius: 12, padding: '10px 14px',
-            display: 'flex', flexDirection: 'column', gap: 8,
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-default)',
+            borderRadius: 12, padding: '12px 16px',
+            display: 'flex', flexDirection: 'column', gap: 9,
+            boxShadow: 'var(--shadow-card)',
           }}>
             {/* Row 1: dot + name + badge */}
             <div className="flex items-center gap-2">
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: c.accent, flexShrink: 0 }} />
               <span style={{
-                fontSize: 12, fontWeight: 600, color: '#EDE8DC', flex: 1,
+                width: 8, height: 8, borderRadius: '50%',
+                background: c.accent, flexShrink: 0,
+              }} />
+              <span style={{
+                fontSize: 12, fontWeight: 600, color: 'var(--text-1)', flex: 1,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
                 {c.title}
@@ -140,24 +152,29 @@ export default function AnalyticsPage() {
             {/* Progress bar */}
             <div style={{
               position: 'relative', height: 4, borderRadius: 2,
-              background: 'rgba(255,255,255,0.05)', overflow: 'hidden',
+              background: 'var(--bg-elevated)', overflow: 'hidden',
             }}>
               <div style={{
                 position: 'absolute', top: 0, left: 0, height: '100%',
                 width: `${pct}%`,
-                background: behind ? 'rgba(239,68,68,0.6)' : c.accent,
+                background: behind ? 'var(--color-red)' : c.accent,
                 borderRadius: 2,
+                opacity: behind ? 0.7 : 1,
               }} />
             </div>
 
             {/* Row 2: meta */}
             <div className="flex items-center justify-between">
-              <span style={{ fontSize: 10, color: '#484848' }}>
+              <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
                 {doneC} / {totalC} items · {pct}%
               </span>
               <span style={{
-                fontSize: 10,
-                color: dl < 0 ? 'rgba(252,165,165,0.85)' : dl < 7 ? '#F59E0B' : '#484848',
+                fontSize: 10, fontWeight: 500,
+                color: dl < 0
+                  ? 'var(--color-red)'
+                  : dl < 7
+                  ? 'var(--color-amber)'
+                  : 'var(--text-3)',
               }}>
                 {dl < 0 ? 'Overdue' : dl === 0 ? 'Due today' : `${dl} days left`}
               </span>
@@ -173,11 +190,11 @@ export default function AnalyticsPage() {
 function StatusBadge({ behind }: { behind: boolean }) {
   return (
     <span style={{
-      fontSize: 9, fontWeight: 500,
+      fontSize: 9, fontWeight: 600,
       padding: '2px 7px', borderRadius: 4, flexShrink: 0,
-      background: behind ? 'rgba(239,68,68,0.08)' : 'rgba(34,197,94,0.08)',
-      border: `1px solid ${behind ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.15)'}`,
-      color: behind ? 'rgba(252,165,165,0.8)' : 'rgba(110,231,183,0.8)',
+      background: behind ? 'var(--color-red-subtle)' : 'var(--color-green-subtle)',
+      border: `1px solid ${behind ? 'var(--color-red-border)' : 'var(--color-green-border)'}`,
+      color: behind ? 'var(--color-red)' : 'var(--color-green)',
     }}>
       {behind ? 'behind' : 'on track'}
     </span>
