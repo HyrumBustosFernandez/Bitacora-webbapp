@@ -7,71 +7,66 @@
 @theme inline {
   --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
 
-  /* ── Accent (Midnight Indigo — same in both themes) ── */
-  --color-accent:           #4F6BFB;
-  --color-accent-hover:     #6B83FC;
-  --color-accent-subtle:    rgba(79, 107, 251, 0.10);
-  --color-accent-border:    rgba(79, 107, 251, 0.30);
-  --color-accent-glow:      rgba(79, 107, 251, 0.35);
+  /* ── Accent — Calm Indigo ── */
+  --color-accent:           #5B5BD6;
+  --color-accent-hover:     #4A4AC4;
+  --color-accent-subtle:    rgba(91, 91, 214, 0.08);
+  --color-accent-border:    rgba(91, 91, 214, 0.20);
+  --color-accent-glow:      rgba(91, 91, 214, 0.22);
 
   /* ── Status colors ── */
-  --color-red:              #F26464;
-  --color-red-subtle:       rgba(242, 100, 100, 0.10);
-  --color-red-border:       rgba(242, 100, 100, 0.25);
-  --color-red-text:         #F26464;
+  --color-red:              #EF4444;
+  --color-red-subtle:       rgba(239, 68, 68, 0.09);
+  --color-red-border:       rgba(239, 68, 68, 0.22);
+  --color-red-text:         #EF4444;
 
-  --color-amber:            #F5A623;
-  --color-amber-subtle:     rgba(245, 166, 35, 0.10);
-  --color-amber-border:     rgba(245, 166, 35, 0.25);
+  --color-amber:            #F59E0B;
+  --color-amber-subtle:     rgba(245, 158, 11, 0.09);
+  --color-amber-border:     rgba(245, 158, 11, 0.28);
 
-  --color-green:            #3DD68C;
-  --color-green-subtle:     rgba(61, 214, 140, 0.10);
-  --color-green-border:     rgba(61, 214, 140, 0.20);
-  --color-green-text:       #3DD68C;
+  --color-green:            #22C55E;
+  --color-green-subtle:     rgba(34, 197, 94, 0.09);
+  --color-green-border:     rgba(34, 197, 94, 0.22);
+  --color-green-text:       #22C55E;
 
-  /* Legacy aliases — keep for backward compat with existing components */
-  --color-blue-accent:      #4F6BFB;
-  --color-blue-light:       #6B83FC;
-  --color-blue-subtle:      rgba(79, 107, 251, 0.10);
-  --color-blue-border:      rgba(79, 107, 251, 0.30);
-  --color-amber-accent:     #F5A623;
-  --color-red-accent:       #F26464;
-  --color-green-accent:     #3DD68C;
-  --color-green-text-light: #3DD68C;
+  /* Legacy aliases */
+  --color-blue-accent:      #5B5BD6;
+  --color-blue-light:       #4A4AC4;
+  --color-blue-subtle:      rgba(91, 91, 214, 0.08);
+  --color-blue-border:      rgba(91, 91, 214, 0.20);
+  --color-amber-accent:     #F59E0B;
+  --color-red-accent:       #EF4444;
+  --color-green-accent:     #22C55E;
+  --color-green-text-light: #22C55E;
 }
 
 /* ────────────────────────────────────────
-   DARK THEME (default) — Midnight Indigo
+   DARK THEME
    ──────────────────────────────────────── */
 :root,
 [data-theme="dark"] {
-  /* Backgrounds — warm neutral dark gray */
   --bg-page:              #0E0E0E;
   --bg-surface:           #171717;
   --bg-elevated:          #272727;
   --bg-input:             #2E2E2E;
 
-  /* Borders */
   --border-subtle:        rgba(255, 255, 255, 0.06);
   --border-default:       rgba(255, 255, 255, 0.11);
   --border-hover:         rgba(255, 255, 255, 0.20);
-  --border-focus:         rgba(79, 107, 251, 0.60);
+  --border-focus:         rgba(91, 91, 214, 0.60);
   --border-strong:        rgba(255, 255, 255, 0.26);
 
-  /* Accent */
-  --accent:               #4F6BFB;
-  --accent-hover:         #6B83FC;
-  --accent-subtle:        rgba(79, 107, 251, 0.10);
-  --accent-border:        rgba(79, 107, 251, 0.30);
-  --accent-glow:          rgba(79, 107, 251, 0.35);
+  --accent:               #5B5BD6;
+  --accent-hover:         #7474E0;
+  --accent-subtle:        rgba(91, 91, 214, 0.12);
+  --accent-border:        rgba(91, 91, 214, 0.30);
+  --accent-glow:          rgba(91, 91, 214, 0.35);
 
-  /* Text */
   --text-1:               #F0EEF8;
   --text-2:               #9B98B0;
   --text-3:               #5A5770;
   --text-4:               #32303F;
 
-  /* Misc */
   --overlay:              rgba(0, 0, 0, 0.72);
   --shadow-card:          0 1px 3px rgba(0, 0, 0, 0.40);
   --shadow-elevated:      0 4px 16px rgba(0, 0, 0, 0.50);
@@ -79,46 +74,41 @@
 }
 
 /* ────────────────────────────────────────
-   LIGHT THEME — Cool Lavender-White
+   LIGHT THEME — Premium Calm
    ──────────────────────────────────────── */
 [data-theme="light"] {
-  /* Backgrounds */
-  --bg-page:              #F5F4F8;
+  --bg-page:              #F7F8FC;
   --bg-surface:           #FFFFFF;
   --bg-elevated:          #F0EFF6;
-  --bg-input:             #FAFAF9;
+  --bg-input:             #FAFAFA;
 
-  /* Borders */
   --border-subtle:        rgba(0, 0, 0, 0.05);
   --border-default:       rgba(0, 0, 0, 0.09);
-  --border-hover:         rgba(0, 0, 0, 0.16);
-  --border-focus:         rgba(79, 107, 251, 0.55);
+  --border-hover:         rgba(0, 0, 0, 0.15);
+  --border-focus:         rgba(91, 91, 214, 0.45);
   --border-strong:        rgba(0, 0, 0, 0.20);
 
-  /* Accent — identical in both themes */
-  --accent:               #4F6BFB;
-  --accent-hover:         #3D57E8;
-  --accent-subtle:        rgba(79, 107, 251, 0.08);
-  --accent-border:        rgba(79, 107, 251, 0.25);
-  --accent-glow:          rgba(79, 107, 251, 0.20);
+  --accent:               #5B5BD6;
+  --accent-hover:         #4A4AC4;
+  --accent-subtle:        rgba(91, 91, 214, 0.08);
+  --accent-border:        rgba(91, 91, 214, 0.20);
+  --accent-glow:          rgba(91, 91, 214, 0.18);
 
-  /* Text */
-  --text-1:               #12101E;
-  --text-2:               #5A5770;
-  --text-3:               #9B98B0;
-  --text-4:               #C8C5D8;
+  --text-1:               #111827;
+  --text-2:               #4B5563;
+  --text-3:               #9CA3AF;
+  --text-4:               #D1D5DB;
 
-  /* Misc */
   --overlay:              rgba(0, 0, 0, 0.45);
-  --shadow-card:          0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-elevated:      0 4px 16px rgba(0, 0, 0, 0.10);
-  --shadow-modal:         0 24px 64px rgba(0, 0, 0, 0.18);
+  --shadow-card:          0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.03);
+  --shadow-elevated:      0 4px 16px rgba(0, 0, 0, 0.09), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-modal:         0 20px 60px rgba(0, 0, 0, 0.14);
 }
 
 /* ────────────────────────────────────────
    RESET & BASE
    ──────────────────────────────────────── */
-* { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
 
 html {
   height: 100%;
@@ -135,7 +125,6 @@ body {
   height: 100%;
 }
 
-/* ── Global transition defaults ── */
 a, button {
   transition: color 130ms ease, background-color 130ms ease,
               border-color 130ms ease, opacity 130ms ease,
@@ -154,10 +143,7 @@ input, textarea, select {
 
 /* ════════════════════════════════════════
    BUTTON SYSTEM
-   Global utility classes — use in all components.
    ════════════════════════════════════════ */
-
-/* ── Base reset shared by all buttons ── */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -174,7 +160,7 @@ input, textarea, select {
   text-decoration: none;
   user-select: none;
   -webkit-user-select: none;
-  border-radius: 8px;
+  border-radius: 9px;
   padding: 8px 14px;
   transition: color 130ms ease, background-color 130ms ease,
               border-color 130ms ease, box-shadow 130ms ease,
@@ -188,13 +174,11 @@ input, textarea, select {
   pointer-events: none;
 }
 
-/* Focus ring */
 .btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* ── Primary — filled indigo ── */
 .btn-primary {
   background: var(--accent);
   color: #ffffff;
@@ -210,7 +194,6 @@ input, textarea, select {
   box-shadow: none;
 }
 
-/* ── Secondary — ghost with border ── */
 .btn-secondary {
   background: transparent;
   color: var(--text-2);
@@ -225,7 +208,6 @@ input, textarea, select {
   background: var(--bg-input);
 }
 
-/* ── Ghost — no border, no fill ── */
 .btn-ghost {
   background: transparent;
   color: var(--text-2);
@@ -239,7 +221,6 @@ input, textarea, select {
   background: var(--bg-input);
 }
 
-/* ── Pill / chip — rounded ghost with border ── */
 .btn-pill {
   background: var(--bg-elevated);
   color: var(--text-2);
@@ -253,18 +234,16 @@ input, textarea, select {
   color: var(--text-1);
 }
 
-/* ── Destructive ── */
 .btn-destructive {
   background: var(--color-red-subtle);
   color: var(--color-red);
   border: 1px solid var(--color-red-border);
 }
 .btn-destructive:hover:not(:disabled) {
-  background: rgba(242, 100, 100, 0.18);
-  border-color: rgba(242, 100, 100, 0.40);
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.35);
 }
 
-/* ── Icon-only button (square) ── */
 .btn-icon {
   padding: 6px;
   border-radius: 7px;
@@ -272,38 +251,37 @@ input, textarea, select {
 }
 
 /* ════════════════════════════════════════
-   NAV ITEM ACTIVE STATE
-   Applied in LeftSidebar for the left-border active style.
-   ════════════════════════════════════════ */
-.nav-item-active {
-  background: var(--accent-subtle);
-  color: var(--accent) !important;
-}
-
-/* ════════════════════════════════════════
    CARD BASE
    ════════════════════════════════════════ */
 .card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
   box-shadow: var(--shadow-card);
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
 }
 
 .card:hover {
   border-color: var(--border-hover);
   box-shadow: var(--shadow-elevated);
-  transform: translateY(-1px);
-  transition: border-color 130ms ease, box-shadow 130ms ease, transform 130ms ease;
+  transform: translateY(-1.5px);
 }
 
 /* ════════════════════════════════════════
    TYPOGRAPHY UTILITIES
    ════════════════════════════════════════ */
 .label-section {
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 700;
-  color: var(--text-2);
+  color: var(--text-3);
   text-transform: uppercase;
   letter-spacing: 0.07em;
+}
+
+/* ════════════════════════════════════════
+   NAV ITEM ACTIVE STATE (legacy compat)
+   ════════════════════════════════════════ */
+.nav-item-active {
+  background: rgba(255, 255, 255, 0.13);
+  color: #ffffff !important;
 }

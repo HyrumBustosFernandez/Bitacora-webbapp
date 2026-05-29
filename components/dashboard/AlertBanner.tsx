@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { getTrackInfo, getDaysLeft, type AppState } from '@/lib/storage';
 import { COURSES } from '@/lib/courses';
@@ -7,14 +8,14 @@ import { COURSES } from '@/lib/courses';
 interface Props { state: AppState }
 
 export default function AlertBanner({ state }: Props) {
+  const [dismissed, setDismissed] = useState(false);
   const track    = getTrackInfo(null, state);
   const daysLeft = getDaysLeft();
 
-  if (track.status !== 'behind') return null;
+  if (track.status !== 'behind' || dismissed) return null;
 
   const itemsBehind   = Math.abs(track.diff);
   const catchUpPerDay = daysLeft > 0 ? Math.ceil(itemsBehind / daysLeft) : itemsBehind;
-  const catchUpDate   = new Date('2026-06-10');
 
   const behindCourses = COURSES
     .map(c => ({ course: c, diff: getTrackInfo(c, state).diff }))
@@ -24,29 +25,31 @@ export default function AlertBanner({ state }: Props) {
 
   return (
     <div style={{
-      border: '1px solid rgba(239,68,68,0.30)',
-      borderRadius: 8,
-      background: 'rgba(239,68,68,0.06)',
-      padding: '10px 14px',
       display: 'flex', alignItems: 'flex-start', gap: 12,
+      background: 'var(--color-amber-subtle)',
+      border: '1px solid var(--color-amber-border)',
+      borderLeft: '3px solid var(--color-amber)',
+      borderRadius: 10,
+      padding: '11px 14px',
     }}>
+      <span style={{ fontSize: 15, flexShrink: 0, marginTop: 1 }}>⚠️</span>
+
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
-        <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(252,165,165,0.90)' }}>
-          □ You&apos;re {itemsBehind} item{itemsBehind !== 1 ? 's' : ''} behind schedule
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-1)' }}>
+          You&apos;re {itemsBehind} item{itemsBehind !== 1 ? 's' : ''} behind schedule
         </span>
-        <span style={{ fontSize: 11, color: 'rgba(245,158,11,0.80)' }}>
-          Complete {catchUpPerDay} item{catchUpPerDay !== 1 ? 's' : ''}/day to catch up by{' '}
-          {catchUpDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+        <span style={{ fontSize: 11, color: 'var(--text-2)', fontWeight: 400 }}>
+          Complete {catchUpPerDay} item{catchUpPerDay !== 1 ? 's' : ''}/day to catch up by Jun 10.
         </span>
         {behindCourses.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginTop: 4 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginTop: 3 }}>
             {behindCourses.map(({ course, diff }) => (
-              <div key={course.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div key={course.id} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                 <span style={{
                   width: 5, height: 5, borderRadius: '50%',
-                  background: 'rgba(239,68,68,0.7)', flexShrink: 0, display: 'inline-block',
+                  background: 'var(--color-amber)', flexShrink: 0, display: 'inline-block',
                 }} />
-                <span style={{ fontSize: 11, color: 'rgba(252,165,165,0.70)' }}>
+                <span style={{ fontSize: 11, color: 'var(--text-2)' }}>
                   {course.title} — {Math.abs(diff)} items
                 </span>
               </div>
@@ -54,17 +57,34 @@ export default function AlertBanner({ state }: Props) {
           </div>
         )}
       </div>
-      <Link
-        href="/analytics"
-        style={{
-          fontSize: 11, fontWeight: 500, color: 'var(--text-2)',
-          border: '1px solid var(--border-default)',
-          borderRadius: 6, padding: '4px 10px',
-          textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap',
-        }}
-      >
-        See all →
-      </Link>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        <Link
+          href="/analytics"
+          style={{
+            fontSize: 11, fontWeight: 600,
+            color: 'var(--color-amber)',
+            textDecoration: 'none', whiteSpace: 'nowrap',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.75')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+        >
+          Review now →
+        </Link>
+        <button
+          type="button"
+          onClick={() => setDismissed(true)}
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            color: 'var(--text-3)', fontSize: 18, lineHeight: 1,
+            padding: '0 2px', transition: 'color 130ms',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-1)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-3)')}
+        >
+          ×
+        </button>
+      </div>
     </div>
   );
 }

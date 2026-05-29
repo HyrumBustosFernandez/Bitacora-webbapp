@@ -17,29 +17,15 @@ const MONTHS = [
 ];
 const DOW = ['S','M','T','W','T','F','S'];
 
-const CARD: React.CSSProperties = {
-  background: 'var(--bg-surface)',
-  border: '1px solid var(--border-default)',
-  borderRadius: 12,
-  padding: '12px 14px',
-};
-
-const SECTION_LABEL: React.CSSProperties = {
-  fontSize: 9, fontWeight: 600, color: 'var(--text-3)',
-  textTransform: 'uppercase', letterSpacing: '0.6px',
-  marginBottom: 10,
-};
-
 export default function CalendarCard({ state }: Props) {
   const today = new Date();
-  const [calYear,    setCalYear]    = useState(today.getFullYear());
-  const [calMonth,   setCalMonth]   = useState(today.getMonth());
-  const [events,     setEvents]     = useState<CalendarEvent[]>([]);
-  const [modalOpen,  setModalOpen]  = useState(false);
-  const [modalDate,  setModalDate]  = useState('');
+  const [calYear,   setCalYear]   = useState(today.getFullYear());
+  const [calMonth,  setCalMonth]  = useState(today.getMonth());
+  const [events,    setEvents]    = useState<CalendarEvent[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalDate, setModalDate] = useState('');
 
   const refreshEvents = useCallback(() => setEvents(loadEvents()), []);
-
   useEffect(() => { refreshEvents(); }, [refreshEvents]);
 
   function prev() {
@@ -51,11 +37,6 @@ export default function CalendarCard({ state }: Props) {
     else setCalMonth(m => m + 1);
   }
 
-  function openModal(dateStr: string) {
-    setModalDate(dateStr);
-    setModalOpen(true);
-  }
-
   const deadlines    = getUpcomingDeadlines(state);
   const deadlineDays = new Set(
     deadlines
@@ -63,7 +44,6 @@ export default function CalendarCard({ state }: Props) {
       .map(d => d.deadline.getDate())
   );
 
-  // Map of day → events for the visible month
   const eventsByDay = new Map<number, CalendarEvent[]>();
   events.forEach(e => {
     const [y, m, d] = e.date.split('-').map(Number);
@@ -84,85 +64,109 @@ export default function CalendarCard({ state }: Props) {
   for (let i = firstDay - 1; i >= 0; i--)
     cells.push({ day: daysInPrev - i, kind: 'prev' });
   for (let d = 1; d <= daysInMonth; d++)
-    cells.push({
-      day: d, kind: 'cur',
-      isToday:    isThisMonth && d === today.getDate(),
-      isDeadline: deadlineDays.has(d),
-    });
+    cells.push({ day: d, kind: 'cur', isToday: isThisMonth && d === today.getDate(), isDeadline: deadlineDays.has(d) });
   const tail = cells.length % 7 === 0 ? 0 : 7 - (cells.length % 7);
   for (let d = 1; d <= tail; d++)
     cells.push({ day: d, kind: 'next' });
 
   const todayStr = toDateKey(today);
 
+  const card: React.CSSProperties = {
+    background: 'var(--bg-surface)',
+    border: '1px solid var(--border-subtle)',
+    borderRadius: 14,
+    padding: '16px 18px',
+    boxShadow: 'var(--shadow-card)',
+    transition: 'border-color 200ms, box-shadow 200ms, transform 200ms',
+  };
+
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-        {/* ── Calendar ── */}
-        <div style={CARD}>
-          <div className="flex items-center justify-between" style={{ marginBottom: 8 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-2)' }}>
+        {/* Calendar */}
+        <div
+          className="card"
+          style={{ padding: '16px 18px' }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-elevated)';
+            (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-hover)';
+            (e.currentTarget as HTMLElement).style.transform = 'translateY(-1.5px)';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card)';
+            (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-subtle)';
+            (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+          }}
+        >
+          {/* Month header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-1)' }}>
               {MONTHS[calMonth]} {calYear}
             </span>
-            <div className="flex items-center gap-1">
-              <NavBtn onClick={prev}><IconChevronLeft size={10} /></NavBtn>
-              <NavBtn onClick={next}><IconChevronRight size={10} /></NavBtn>
+            <div style={{ display: 'flex', gap: 2 }}>
+              <NavBtn onClick={prev}><IconChevronLeft size={11} /></NavBtn>
+              <NavBtn onClick={next}><IconChevronRight size={11} /></NavBtn>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px 0' }}>
+          {/* Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px 0' }}>
             {DOW.map((d, i) => (
               <div key={i} style={{
-                fontSize: 9, color: 'var(--text-3)', textAlign: 'center',
-                fontWeight: 600, paddingBottom: 4, letterSpacing: '0.3px',
+                textAlign: 'center', fontSize: 9, fontWeight: 700,
+                textTransform: 'uppercase', letterSpacing: '0.05em',
+                color: 'var(--text-3)', padding: '3px 0 6px',
               }}>{d}</div>
             ))}
             {cells.map((cell, i) => {
               const dayEvents = cell.kind === 'cur' ? (eventsByDay.get(cell.day) ?? []) : [];
-              const dateStr   = cell.kind === 'cur'
+              const dateStr = cell.kind === 'cur'
                 ? `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(cell.day).padStart(2, '0')}`
                 : '';
               return (
                 <div
                   key={i}
-                  onClick={() => cell.kind === 'cur' && openModal(dateStr)}
+                  onClick={() => cell.kind === 'cur' && setModalDate(dateStr) && setModalOpen(true)}
                   style={{
                     display: 'flex', flexDirection: 'column',
                     alignItems: 'center', justifyContent: 'center',
-                    height: 26, cursor: cell.kind === 'cur' ? 'pointer' : 'default',
-                    gap: 2,
+                    height: 28, cursor: cell.kind === 'cur' ? 'pointer' : 'default',
+                    gap: 2, borderRadius: 6,
+                    transition: 'background 130ms',
+                  }}
+                  onMouseEnter={e => {
+                    if (cell.kind === 'cur' && !cell.isToday)
+                      (e.currentTarget as HTMLElement).style.background = 'var(--bg-elevated)';
+                  }}
+                  onMouseLeave={e => {
+                    if (!cell.isToday)
+                      (e.currentTarget as HTMLElement).style.background = 'transparent';
                   }}
                 >
                   <span style={{
-                    width: cell.isToday ? 20 : 'auto',
-                    height: cell.isToday ? 20 : 'auto',
-                    lineHeight: cell.isToday ? '20px' : undefined,
+                    width: cell.isToday ? 22 : 'auto',
+                    height: cell.isToday ? 22 : 'auto',
+                    lineHeight: cell.isToday ? '22px' : undefined,
                     borderRadius: cell.isToday ? '50%' : 3,
-                    textAlign: 'center',
-                    display: 'inline-block',
-                    fontSize: 10,
+                    textAlign: 'center', display: 'inline-block',
+                    fontSize: 11,
                     background: cell.isToday ? 'var(--accent)' : 'transparent',
-                    color: cell.isToday
-                      ? '#fff'
-                      : cell.kind !== 'cur'
-                      ? 'var(--text-4)'
-                      : cell.isDeadline
-                      ? '#F87171'
-                      : 'var(--text-3)',
-                    fontWeight: cell.isToday ? 600 : 400,
+                    color: cell.isToday ? '#fff'
+                      : cell.kind !== 'cur' ? 'var(--text-4)'
+                      : cell.isDeadline ? 'var(--color-red)'
+                      : 'var(--text-2)',
+                    fontWeight: cell.isToday ? 700 : cell.isDeadline ? 600 : 400,
                     padding: cell.isToday ? 0 : '0 2px',
                   }}>
                     {cell.day}
                   </span>
-                  {/* Event dots */}
                   {dayEvents.length > 0 && (
                     <div style={{ display: 'flex', gap: 2 }}>
                       {dayEvents.slice(0, 3).map((ev, ei) => (
                         <span key={ei} style={{
                           width: 3, height: 3, borderRadius: '50%',
-                          background: EVENT_COLORS[ev.type],
-                          flexShrink: 0,
+                          background: EVENT_COLORS[ev.type], flexShrink: 0,
                         }} />
                       ))}
                     </div>
@@ -172,46 +176,57 @@ export default function CalendarCard({ state }: Props) {
             })}
           </div>
 
-          <div className="flex items-center gap-3" style={{ marginTop: 8 }}>
-            <LegendDot color="var(--accent)" label="today" />
-            <LegendDot color="#F87171" label="deadline" />
-            <LegendDot color="#22C55E" label="event" />
+          {/* Legend */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 10 }}>
+            <LegendDot color="var(--accent)"    label="today" />
+            <LegendDot color="var(--color-red)" label="deadline" />
+            <LegendDot color="var(--color-green)" label="event" />
           </div>
         </div>
 
-        {/* ── Upcoming ── */}
-        <div style={CARD}>
-          <div style={SECTION_LABEL}>Upcoming</div>
+        {/* Upcoming */}
+        <div className="card" style={{ padding: '16px 18px' }}>
+          <div style={{
+            fontSize: 9, fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '0.07em', color: 'var(--text-3)', marginBottom: 10,
+          }}>
+            Upcoming
+          </div>
           {deadlines.length === 0 ? (
-            <div style={{ fontSize: 10, color: 'var(--text-4)' }}>No upcoming deadlines</div>
+            <div style={{ fontSize: 11, color: 'var(--text-3)', fontStyle: 'italic' }}>
+              No upcoming deadlines 🎉
+            </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {deadlines.map(({ course, daysLeft }) => {
-                const overdue    = daysLeft <= 0;
-                const soon       = daysLeft >= 1 && daysLeft <= 5;
-                const dotColor   = overdue ? '#EF4444' : soon ? '#F59E0B' : 'var(--text-3)';
-                const labelColor = overdue
-                  ? 'rgba(239,68,68,0.75)'
-                  : soon
-                  ? 'rgba(245,158,11,0.75)'
-                  : 'var(--text-3)';
-                const labelText = overdue ? 'Due today' : `${daysLeft} day${daysLeft !== 1 ? 's' : ''} left`;
+                const overdue  = daysLeft <= 0;
+                const soon     = daysLeft >= 1 && daysLeft <= 5;
+                const dotColor = overdue ? 'var(--color-red)' : soon ? 'var(--color-amber)' : 'var(--text-3)';
+                const label    = overdue ? 'Due today' : `${daysLeft}d left`;
+                const labelColor = overdue ? 'var(--color-red)' : soon ? 'var(--color-amber)' : 'var(--text-3)';
 
                 return (
-                  <div key={course.id} className="flex items-center gap-2">
-                    <span style={{
-                      width: 7, height: 7, borderRadius: '50%',
-                      background: dotColor, flexShrink: 0,
-                    }} />
-                    <span style={{
-                      fontSize: 11, color: 'var(--text-3)', flex: 1,
-                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    }}>
-                      {course.title}
-                    </span>
-                    <span style={{ fontSize: 10, color: labelColor, flexShrink: 0, fontWeight: 500 }}>
-                      {labelText}
-                    </span>
+                  <div key={course.id} style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '6px 10px', borderRadius: 8,
+                    border: '1px solid var(--border-subtle)',
+                    transition: 'border-color 130ms, background 130ms',
+                    cursor: 'pointer',
+                  }}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-hover)';
+                      (e.currentTarget as HTMLElement).style.background = 'var(--bg-elevated)';
+                    }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-subtle)';
+                      (e.currentTarget as HTMLElement).style.background = 'transparent';
+                    }}
+                  >
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-1)' }}>{course.title}</div>
+                    </div>
+                    <span style={{ fontSize: 10, color: labelColor, fontWeight: 500, flexShrink: 0 }}>{label}</span>
                   </div>
                 );
               })}
@@ -219,18 +234,19 @@ export default function CalendarCard({ state }: Props) {
           )}
         </div>
 
-        {/* ── Quick Actions ── */}
-        <div style={CARD}>
-          <div style={SECTION_LABEL}>Quick actions</div>
+        {/* Quick actions */}
+        <div className="card" style={{ padding: '16px 18px' }}>
+          <div style={{
+            fontSize: 9, fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '0.07em', color: 'var(--text-3)', marginBottom: 10,
+          }}>
+            Quick actions
+          </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-            <QuickAction icon={<IconNote size={13} />}         label="Add note"  href="/study" />
-            <QuickAction
-              icon={<IconCalendarPlus size={13} />}
-              label="Add event"
-              onClick={() => openModal(todayStr)}
-            />
-            <QuickAction icon={<IconClock size={13} />}        label="Timer"     href="/study" />
-            <QuickAction icon={<IconBook size={13} />}         label="Courses"   href="/courses" />
+            <QuickAction icon={<IconNote size={14} />}         label="Add note"  href="/study" />
+            <QuickAction icon={<IconCalendarPlus size={14} />} label="Add event" onClick={() => { setModalDate(todayStr); setModalOpen(true); }} />
+            <QuickAction icon={<IconClock size={14} />}        label="Timer"     href="/study" />
+            <QuickAction icon={<IconBook size={14} />}         label="Courses"   href="/courses" />
           </div>
         </div>
 
@@ -249,13 +265,20 @@ export default function CalendarCard({ state }: Props) {
 
 function NavBtn({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
   return (
-    <button
-      type="button" onClick={onClick}
-      className="flex items-center justify-center border-0 cursor-pointer"
-      style={{
-        width: 20, height: 20,
-        background: 'var(--bg-elevated)',
-        borderRadius: 5, color: 'var(--text-3)', padding: 0,
+    <button type="button" onClick={onClick} style={{
+      width: 24, height: 24, borderRadius: 6, border: 'none',
+      background: 'var(--bg-elevated)', color: 'var(--text-3)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      cursor: 'pointer', padding: 0,
+      transition: 'background 130ms, color 130ms',
+    }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.background = 'var(--border-default)';
+        (e.currentTarget as HTMLElement).style.color = 'var(--text-1)';
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.background = 'var(--bg-elevated)';
+        (e.currentTarget as HTMLElement).style.color = 'var(--text-3)';
       }}
     >
       {children}
@@ -265,41 +288,46 @@ function NavBtn({ children, onClick }: { children: React.ReactNode; onClick: () 
 
 function LegendDot({ color, label }: { color: string; label: string }) {
   return (
-    <div className="flex items-center gap-1">
-      <span style={{ width: 5, height: 5, borderRadius: '50%', background: color }} />
-      <span style={{ fontSize: 9, color: 'var(--text-4)' }}>{label}</span>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+      <span style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0 }} />
+      <span style={{ fontSize: 9, color: 'var(--text-3)', fontWeight: 500 }}>{label}</span>
     </div>
   );
 }
 
-function QuickAction({
-  icon, label, href, onClick,
-}: {
+function QuickAction({ icon, label, href, onClick }: {
   icon: React.ReactNode; label: string; href?: string; onClick?: () => void;
 }) {
   const style: React.CSSProperties = {
-    display: 'flex', flexDirection: 'column', alignItems: 'center',
-    gap: 5, padding: '9px 8px',
+    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+    padding: '10px 8px',
     background: 'var(--bg-elevated)',
     border: '1px solid var(--border-subtle)',
-    borderRadius: 8, textDecoration: 'none', color: 'var(--text-3)',
-    cursor: 'pointer', width: '100%',
+    borderRadius: 9, textDecoration: 'none',
+    color: 'var(--text-3)', cursor: 'pointer', width: '100%',
+    transition: 'border-color 130ms, background 130ms, color 130ms',
   };
 
-  if (onClick) {
-    return (
-      <button type="button" onClick={onClick} style={style}>
-        {icon}
-        <span style={{ fontSize: 9, color: 'var(--text-3)', fontWeight: 500 }}>{label}</span>
-      </button>
-    );
-  }
+  const handleEnter = (e: React.MouseEvent) => {
+    (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-hover)';
+    (e.currentTarget as HTMLElement).style.background = 'var(--bg-surface)';
+    (e.currentTarget as HTMLElement).style.color = 'var(--text-1)';
+  };
+  const handleLeave = (e: React.MouseEvent) => {
+    (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-subtle)';
+    (e.currentTarget as HTMLElement).style.background = 'var(--bg-elevated)';
+    (e.currentTarget as HTMLElement).style.color = 'var(--text-3)';
+  };
 
-  // eslint-disable-next-line @next/next/no-html-link-for-pages
-  return (
-    <a href={href} style={style}>
+  const inner = (
+    <>
       {icon}
-      <span style={{ fontSize: 9, color: '#484848', fontWeight: 500 }}>{label}</span>
-    </a>
+      <span style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</span>
+    </>
   );
+
+  if (onClick) {
+    return <button type="button" onClick={onClick} style={style} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>{inner}</button>;
+  }
+  return <a href={href} style={style} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>{inner}</a>;
 }
