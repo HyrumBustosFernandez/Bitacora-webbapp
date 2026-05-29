@@ -10,7 +10,7 @@ import {
 } from '@tabler/icons-react';
 
 /* ── Sidebar brand colors ── */
-const SB_BG          = '#283c7b';
+const SB_BG          = '#1a1a1a';
 const SB_ACTIVE_BG   = 'rgba(255,255,255,0.13)';
 const SB_HOVER_BG    = 'rgba(255,255,255,0.08)';
 const SB_TEXT        = 'rgba(255,255,255,0.55)';

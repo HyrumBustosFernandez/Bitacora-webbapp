@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PaceUp — Visual Draft</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+
+:root {
+  --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --bg-page:      #F7F8FC;
+  --bg-surface:   #FFFFFF;
+  --bg-elevated:  #F0EFF6;
+  --bg-input:     #FAFAFA;
+  --border-subtle:  rgba(0,0,0,0.05);
+  --border-default: rgba(0,0,0,0.09);
+  --border-hover:   rgba(0,0,0,0.15);
+  --border-focus:   rgba(91,91,214,0.45);
+  --accent:         #5B5BD6;
+  --accent-hover:   #4A4AC4;
+  --accent-subtle:  rgba(91,91,214,0.08);
+  --accent-border:  rgba(91,91,214,0.20);
+  --accent-glow:    rgba(91,91,214,0.22);
+  --success:        #22C55E;
+  --success-subtle: rgba(34,197,94,0.09);
+  --success-border: rgba(34,197,94,0.22);
+  --warning:        #F59E0B;
+  --warning-subtle: rgba(245,158,11,0.09);
+  --warning-border: rgba(245,158,11,0.28);
+  --danger:         #EF4444;
+  --danger-subtle:  rgba(239,68,68,0.09);
+  --danger-border:  rgba(239,68,68,0.22);
+  --text-1: #111827;
+  --text-2: #4B5563;
+  --text-3: #9CA3AF;
+  --text-4: #D1D5DB;
+  --shadow-card:     0 1px 2px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.03);
+  --shadow-elevated: 0 4px 16px rgba(0,0,0,0.09), 0 1px 3px rgba(0,0,0,0.04);
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg-page);
+  color: var(--text-1);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 10px; }
+
+/* ── TOP NAV ── */
+.topnav {
+  height: 44px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  flex-shrink: 0;
+  z-index: 100;
+}
+.logo-mark {
+  width: 26px; height: 26px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 13px; font-weight: 700;
+  flex-shrink: 0;
+}
+.wordmark { font-size: 13px; font-weight: 700; color: var(--text-1); letter-spacing: -0.01em; }
+
+.search-bar {
+  display: flex; align-items: center; gap: 7px;
+  width: 240px; height: 28px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
+  border-radius: 8px; padding: 0 10px; cursor: text;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.search-bar:focus-within { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-subtle); }
+.search-bar input { background: none; border: none; outline: none; font-family: var(--font); font-size: 11px; color: var(--text-1); width: 100%; }
+.search-bar input::placeholder { color: var(--text-3); }
+
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.lang-badge { font-size: 9px; font-weight: 700; color: var(--text-3); border: 1px solid var(--border-default); border-radius: 5px; padding: 2px 7px; letter-spacing: 0.5px; }
+.icon-btn { width: 28px; height: 28px; border-radius: 7px; border: none; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-3); transition: background 130ms, color 130ms; }
+.icon-btn:hover { background: var(--bg-elevated); color: var(--text-1); }
+.avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-subtle); border: 1.5px solid var(--accent-border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--accent); cursor: pointer; }
+
+/* ── LAYOUT ── */
+.app-body { display: flex; flex-direction: column; flex: 1; overflow: hidden; min-height: 0; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 200px; flex-shrink: 0;
+  height: 100vh;
+  background: #283c7b;
+  border-right: none;
+  box-shadow: 2px 0 20px rgba(20,30,70,0.22), 1px 0 0 rgba(255,255,255,0.04);
+  display: flex; flex-direction: column;
+  padding: 14px 0 14px;
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+}
+.sidebar-top { padding: 0 6px; display: flex; flex-direction: column; gap: 1px; }
+.sidebar-bottom { padding: 0 6px; display: flex; flex-direction: column; gap: 1px; }
+.spacer { flex: 1; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  height: 34px; padding: 0 9px;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,0.52);
+  text-decoration: none; cursor: pointer;
+  border: none; background: transparent; width: 100%; text-align: left;
+  transition: background 130ms, color 130ms;
+  position: relative;
+}
+.nav-item:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.88); }
+.nav-item.active {
+  background: rgba(255,255,255,0.13);
+  color: #ffffff;
+  font-weight: 600;
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: -6px; top: 50%; transform: translateY(-50%);
+  width: 2.5px; height: 18px;
+  background: rgba(255,255,255,0.85); border-radius: 0 2px 2px 0;
+}
+.nav-item.locked { opacity: 0.22; pointer-events: none; }
+.ni { width: 15px; height: 15px; flex-shrink: 0; }
+
+/* ── MAIN ── */
+.main { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+
+/* ── GREETING ── */
+.greeting-title { font-size: 22px; font-weight: 700; color: var(--text-1); letter-spacing: -0.025em; line-height: 1.2; }
+.greeting-date  { font-size: 12px; color: var(--text-3); font-weight: 500; margin-top: 2px; }
+.greeting-pill  {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 9px;
+  background: var(--accent-subtle); border: 1px solid var(--accent-border);
+  border-radius: 20px; padding: 4px 12px;
+  font-size: 11px; font-weight: 500; color: var(--accent);
+}
+
+/* ── ALERT ── */
+.alert {
+  display: flex; align-items: center; gap: 11px;
+  background: var(--warning-subtle);
+  border: 1px solid var(--warning-border);
+  border-left: 3px solid var(--warning);
+  border-radius: 10px; padding: 11px 14px;
+  font-size: 12px; color: var(--text-2); line-height: 1.5;
+}
+.alert strong { color: var(--text-1); font-weight: 600; }
+.alert-link { color: var(--warning); font-weight: 600; font-size: 11px; text-decoration: none; white-space: nowrap; margin-left: auto; }
+.alert-link:hover { opacity: 0.75; }
+.dismiss { background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 18px; line-height: 1; padding: 0 2px; margin-left: 6px; }
+.dismiss:hover { color: var(--text-1); }
+
+/* ── STATS ── */
+.stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+.stat-card {
+  background: var(--bg-surface); border: 1px solid var(--border-subtle);
+  border-radius: 14px; padding: 16px 18px 0;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 200ms, border-color 200ms, transform 200ms;
+  overflow: hidden; cursor: default;
+}
+.stat-card:hover { box-shadow: var(--shadow-elevated); border-color: var(--border-hover); transform: translateY(-1.5px); }
+.stat-micro { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); margin-bottom: 6px; }
+.stat-num { font-size: 30px; font-weight: 700; color: var(--text-1); line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -0.025em; }
+.stat-num.amber { color: var(--warning); }
+.stat-sub { font-size: 10px; color: var(--text-3); margin-top: 4px; margin-bottom: 14px; }
+.stat-track { height: 3px; background: var(--bg-elevated); margin: 0 -18px; }
+.stat-fill { height: 100%; background: var(--accent); opacity: 0.45; border-radius: 0 2px 2px 0; }
+.stat-fill.amber { background: var(--warning); }
+
+/* ── MAIN GRID ── */
+.content-grid { display: grid; grid-template-columns: minmax(0,1.85fr) minmax(0,1fr); gap: 12px; align-items: start; }
+.left-col { display: flex; flex-direction: column; gap: 12px; }
+
+/* ── CARD BASE ── */
+.card {
+  background: var(--bg-surface); border: 1px solid var(--border-subtle);
+  border-radius: 14px; box-shadow: var(--shadow-card);
+  transition: box-shadow 200ms, border-color 200ms, transform 200ms;
+}
+.card:hover { box-shadow: var(--shadow-elevated); border-color: var(--border-hover); transform: translateY(-1.5px); }
+.card-body { padding: 20px 22px; }
+
+/* ── FOCUS TODAY ── */
+.focus-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 10px; }
+.breadcrumb { font-size: 10px; color: var(--text-3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.module-title { font-size: 17px; font-weight: 600; color: var(--text-1); line-height: 1.3; letter-spacing: -0.01em; margin-bottom: 11px; }
+.meta-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.pill { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--border-default); color: var(--text-2); }
+.pill.amber { border-color: var(--warning-border); color: var(--warning); background: var(--warning-subtle); }
+.pill.accent { border-color: var(--accent-border); color: var(--accent); background: var(--accent-subtle); }
+
+.divider { height: 1px; background: var(--border-subtle); margin: 14px 0; }
+
+/* ── CHECKLIST ── */
+.checklist { display: flex; flex-direction: column; gap: 1px; }
+.ci {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 8px; border-radius: 8px; cursor: pointer;
+  transition: background 130ms;
+}
+.ci:hover { background: var(--bg-elevated); }
+.cb {
+  width: 16px; height: 16px; border-radius: 5px;
+  border: 1.5px solid var(--border-default);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 130ms;
+}
+.cb.done { background: var(--accent-subtle); border-color: var(--accent-border); }
+.cl { font-size: 12px; font-weight: 500; color: var(--text-2); flex: 1; line-height: 1.5; }
+.cl.done { text-decoration: line-through; color: var(--text-4); }
+.exam-tag { font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: var(--danger-subtle); border: 1px solid var(--danger-border); color: var(--danger); text-transform: uppercase; letter-spacing: 0.03em; flex-shrink: 0; }
+
+.next-row { display: flex; align-items: center; gap: 8px; padding: 0 8px; }
+.next-label { font-size: 10px; color: var(--text-3); font-weight: 500; flex-shrink: 0; }
+.next-val { font-size: 10px; color: var(--text-2); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.btn-study {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 11px 0; margin-top: 14px;
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 10px; font-family: var(--font); font-size: 13px; font-weight: 600;
+  cursor: pointer; letter-spacing: -0.01em;
+  transition: background 150ms, box-shadow 150ms, transform 150ms;
+}
+.btn-study:hover { background: var(--accent-hover); box-shadow: 0 4px 14px var(--accent-glow); transform: translateY(-1px); }
+.btn-study:active { transform: translateY(0); box-shadow: none; }
+
+/* ── PROGRESS CARD ── */
+.card-header { display: flex; align-items: center; gap: 9px; margin-bottom: 18px; }
+.card-icon { width: 28px; height: 28px; border-radius: 8px; background: var(--accent-subtle); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.card-title { font-size: 13px; font-weight: 600; color: var(--text-1); letter-spacing: -0.01em; }
+.prog-item { margin-bottom: 14px; }
+.prog-item:last-child { margin-bottom: 0; }
+.prog-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.prog-name { font-size: 12px; font-weight: 500; color: var(--text-2); }
+.prog-pct { font-size: 11px; font-weight: 600; color: var(--text-1); font-variant-numeric: tabular-nums; }
+.prog-track { height: 5px; background: var(--bg-elevated); border-radius: 10px; overflow: hidden; }
+.prog-fill { height: 100%; background: var(--accent); border-radius: 10px; transition: width 700ms cubic-bezier(.25,.46,.45,.94); }
+
+/* ── CALENDAR ── */
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.cal-month { font-size: 13px; font-weight: 600; color: var(--text-1); }
+.cal-nav { display: flex; gap: 2px; }
+.cal-btn { width: 24px; height: 24px; border-radius: 6px; border: none; background: transparent; color: var(--text-3); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: background 130ms, color 130ms; }
+.cal-btn:hover { background: var(--bg-elevated); color: var(--text-1); }
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; margin-bottom: 14px; }
+.dow { text-align: center; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-3); padding: 4px 0; }
+.day {
+  position: relative; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  height: 30px; border-radius: 7px;
+  font-size: 11px; font-weight: 500; color: var(--text-2);
+  cursor: pointer; transition: background 130ms, color 130ms;
+}
+.day:hover { background: var(--bg-elevated); }
+.day.other { color: var(--text-4); }
+.day.today { background: var(--accent); color: #fff; font-weight: 700; }
+.day.today:hover { background: var(--accent-hover); }
+.dot { width: 4px; height: 4px; border-radius: 50%; position: absolute; bottom: 3px; }
+
+.up-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); margin-bottom: 8px; }
+.ev-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 10px; border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 6px; cursor: pointer;
+  transition: border-color 130ms, background 130ms;
+}
+.ev-row:hover { border-color: var(--border-hover); background: var(--bg-elevated); }
+.ev-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.ev-name { font-size: 11px; font-weight: 600; color: var(--text-1); }
+.ev-date { font-size: 10px; color: var(--text-3); }
+
+/* ── TOOLS STRIP ── */
+.tools-strip { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 2px 0; }
+.tools-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); }
+.tool-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 500; color: var(--text-2);
+  padding: 5px 13px; border-radius: 20px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface); text-decoration: none;
+  box-shadow: var(--shadow-card); cursor: pointer;
+  transition: border-color 130ms, color 130ms, background 130ms;
+}
+.tool-chip:hover { border-color: var(--accent-border); color: var(--accent); background: var(--accent-subtle); }
+
+/* ── DESIGN SYSTEM PANEL ── */
+.ds-fab {
+  position: fixed; right: 18px; bottom: 18px; z-index: 300;
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 12px; padding: 9px 16px;
+  font-family: var(--font); font-size: 11px; font-weight: 600;
+  cursor: pointer; box-shadow: 0 4px 16px var(--accent-glow);
+  display: flex; align-items: center; gap: 7px;
+  transition: background 130ms, transform 130ms;
+}
+.ds-fab:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+.ds-panel {
+  position: fixed; right: 18px; bottom: 62px; z-index: 299;
+  width: 268px; max-height: calc(100vh - 100px);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.14);
+  padding: 20px; overflow-y: auto;
+  display: none; animation: fadeUp 180ms ease;
+}
+.ds-panel.open { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+.ds-title { font-size: 12px; font-weight: 700; color: var(--text-1); }
+.ds-sub { font-size: 10px; color: var(--text-3); margin-top: 2px; margin-bottom: 4px; }
+.ds-sec { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); margin: 14px 0 9px; }
+.swatch-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+.swatch { width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.07); flex-shrink: 0; }
+.swatch-name { font-size: 11px; font-weight: 600; color: var(--text-1); }
+.swatch-hex { font-size: 10px; color: var(--text-3); font-family: 'SF Mono', 'Fira Mono', monospace; }
+.type-row { margin-bottom: 7px; }
+.ds-btn-row { display: flex; gap: 7px; flex-wrap: wrap; }
+.ds-btn { padding: 7px 14px; border-radius: 9px; font-family: var(--font); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 130ms; }
+.ds-btn.p { background: var(--accent); color: #fff; border: none; }
+.ds-btn.p:hover { background: var(--accent-hover); box-shadow: 0 3px 10px var(--accent-glow); transform: translateY(-1px); }
+.ds-btn.s { background: transparent; color: var(--text-2); border: 1px solid var(--border-default); }
+.ds-btn.s:hover { background: var(--bg-elevated); border-color: var(--border-hover); color: var(--text-1); }
+.ds-btn.g { background: transparent; color: var(--text-2); border: none; }
+.ds-btn.g:hover { background: var(--bg-elevated); color: var(--text-1); }
+.radius-demo { display: flex; gap: 8px; align-items: flex-end; margin-top: 6px; }
+.rd { width: 28px; height: 28px; background: var(--accent-subtle); border: 1.5px solid var(--accent-border); }
+.motion-note { font-size: 10px; color: var(--text-3); font-style: italic; text-align: center; padding: 8px; border: 1px dashed var(--border-default); border-radius: 8px; margin-top: 12px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+    <!-- Logo zone -->
+    <div style="display:flex;align-items:center;gap:9px;padding:0 15px;height:52px;flex-shrink:0;margin-bottom:6px;">
+      <div style="width:28px;height:28px;border-radius:9px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0;">P</div>
+      <span style="font-size:14px;font-weight:700;color:#fff;letter-spacing:-0.015em;opacity:0.93;">PaceUp</span>
+    </div>
+
+    <div class="sidebar-top">
+      <!-- Home (active) -->
+      <a class="nav-item active" href="#">
+        <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+        Home
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Courses
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Study
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Calendar
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Analytics
+      </a>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="sidebar-bottom">
+      <button class="nav-item locked">
+        <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Groups
+      </button>
+      <a class="nav-item" href="#">
+        <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Settings
+      </a>
+    </div>
+  
+</aside>
+
+<div style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+<!-- TOP NAV -->
+<nav class="topnav">
+  <label class="search-bar">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" placeholder="Search courses, modules…" />
+  </label>
+
+  <div class="nav-right">
+    <span class="lang-badge">EN</span>
+    <button class="icon-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+    <div class="avatar">H</div>
+  </div>
+</nav>
+
+<!-- APP BODY -->
+<div class="app-body">
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- Greeting -->
+    <div>
+      <div class="greeting-title">Good morning, Hyrum 👋</div>
+      <div class="greeting-date">Wednesday, May 28, 2026</div>
+      <div class="greeting-pill">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        3 tasks due today &nbsp;·&nbsp; 47 days until Jun 10
+      </div>
+    </div>
+
+    <!-- Alert Banner -->
+    <div class="alert" id="alertEl">
+      <span style="font-size:15px;flex-shrink:0;">⚠️</span>
+      <span style="flex:1;">
+        <strong>You're 2 weeks behind on CCST Networking</strong> — review Week 4 to catch up before your exam.
+      </span>
+      <a class="alert-link" href="#">Review now →</a>
+      <button class="dismiss" onclick="document.getElementById('alertEl').style.display='none'">×</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-micro">Courses</div>
+        <div class="stat-num">3</div>
+        <div class="stat-sub">active this term</div>
+        <div class="stat-track"><div class="stat-fill" style="width:100%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-micro">Items done</div>
+        <div class="stat-num">47</div>
+        <div class="stat-sub">of 120 total</div>
+        <div class="stat-track"><div class="stat-fill" style="width:39%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-micro">Days left</div>
+        <div class="stat-num amber">47</div>
+        <div class="stat-sub">until Jun 10</div>
+        <div class="stat-track"><div class="stat-fill amber" style="width:56%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-micro">Today</div>
+        <div class="stat-num">4</div>
+        <div class="stat-sub">items to complete</div>
+        <div class="stat-track"><div class="stat-fill" style="width:20%"></div></div>
+      </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="content-grid">
+
+      <!-- LEFT -->
+      <div class="left-col">
+
+        <!-- Focus Today -->
+        <div class="card">
+          <div class="card-body">
+            <div class="focus-chip">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Focus Today
+            </div>
+            <div class="breadcrumb">CCST Networking</div>
+            <div class="module-title">Week 4 — VLANs &amp; Trunking</div>
+            <div class="meta-pills">
+              <span class="pill">40 hrs</span>
+              <span class="pill amber">Due today</span>
+              <span class="pill accent">2 / 6 items</span>
+            </div>
+            <div class="divider"></div>
+            <div class="checklist">
+              <div class="ci">
+                <div class="cb done"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <span class="cl done">Watch VLAN intro video</span>
+              </div>
+              <div class="ci">
+                <div class="cb done"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <span class="cl done">Read Ch. 4 – VLANs</span>
+              </div>
+              <div class="ci">
+                <div class="cb"></div>
+                <span class="cl">Practice lab: VLAN config</span>
+              </div>
+              <div class="ci" style="align-items:center;">
+                <div class="cb"></div>
+                <span class="cl" style="flex:1;">Quiz: VLAN concepts</span>
+                <span class="exam-tag">Exam</span>
+              </div>
+              <div class="ci">
+                <div class="cb"></div>
+                <span class="cl">Review trunking protocols</span>
+              </div>
+              <div class="ci">
+                <div class="cb"></div>
+                <span class="cl">Watch STP overview</span>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="next-row">
+              <span class="next-label">Next up</span>
+              <span style="color:var(--text-4);font-size:11px;">→</span>
+              <span class="next-val">Week 5 – Routing Protocols</span>
+            </div>
+            <button class="btn-study">
+              Start studying this module
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Overall Progress -->
+        <div class="card">
+          <div class="card-body">
+            <div class="card-header">
+              <div class="card-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              </div>
+              <span class="card-title">Overall Progress</span>
+            </div>
+            <div class="prog-item">
+              <div class="prog-row"><span class="prog-name">CCST Networking</span><span class="prog-pct">34%</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:34%"></div></div>
+            </div>
+            <div class="prog-item">
+              <div class="prog-row"><span class="prog-name">MS-900</span><span class="prog-pct">61%</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:61%"></div></div>
+            </div>
+            <div class="prog-item">
+              <div class="prog-row"><span class="prog-name">AZ-900</span><span class="prog-pct">18%</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:18%"></div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT -->
+      <div class="card">
+        <div class="card-body">
+          <div class="cal-head">
+            <span class="cal-month">May 2026</span>
+            <div class="cal-nav">
+              <button class="cal-btn">‹</button>
+              <button class="cal-btn">›</button>
+            </div>
+          </div>
+          <div class="cal-grid">
+            <div class="dow">Su</div><div class="dow">Mo</div><div class="dow">Tu</div>
+            <div class="dow">We</div><div class="dow">Th</div><div class="dow">Fr</div><div class="dow">Sa</div>
+            <!-- Row 1 — Apr overflow + May 1-3 -->
+            <div class="day other">27</div><div class="day other">28</div><div class="day other">29</div>
+            <div class="day other">30</div><div class="day other">1</div><div class="day">2</div>
+            <div class="day" style="position:relative;">3<div class="dot" style="background:var(--warning)"></div></div>
+            <!-- Row 2 -->
+            <div class="day">4</div><div class="day">5</div><div class="day">6</div>
+            <div class="day">7</div><div class="day">8</div><div class="day">9</div>
+            <div class="day" style="position:relative;">10<div class="dot" style="background:var(--success)"></div></div>
+            <!-- Row 3 -->
+            <div class="day">11</div><div class="day">12</div><div class="day">13</div>
+            <div class="day">14</div><div class="day">15</div><div class="day">16</div>
+            <div class="day" style="position:relative;">17<div class="dot" style="background:var(--accent)"></div></div>
+            <!-- Row 4 -->
+            <div class="day">18</div><div class="day">19</div><div class="day">20</div>
+            <div class="day">21</div><div class="day">22</div><div class="day">23</div><div class="day">24</div>
+            <!-- Row 5 -->
+            <div class="day">25</div><div class="day">26</div><div class="day">27</div>
+            <div class="day today">28</div>
+            <div class="day">29</div><div class="day">30</div><div class="day">31</div>
+          </div>
+          <div style="height:1px;background:var(--border-subtle);margin:4px 0 14px;"></div>
+          <div class="up-label">Upcoming</div>
+          <div class="ev-row">
+            <div class="ev-dot" style="background:var(--warning)"></div>
+            <div><div class="ev-name">CCST Quiz</div><div class="ev-date">Tomorrow, May 29</div></div>
+          </div>
+          <div class="ev-row">
+            <div class="ev-dot" style="background:var(--danger)"></div>
+            <div><div class="ev-name">AZ-900 Exam</div><div class="ev-date">Jun 3</div></div>
+          </div>
+          <div class="ev-row">
+            <div class="ev-dot" style="background:var(--success)"></div>
+            <div><div class="ev-name">Study session</div><div class="ev-date">Jun 5</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-grid -->
+
+    <!-- Tools Strip -->
+    <div class="tools-strip">
+      <span class="tools-label">Open in</span>
+      <a class="tool-chip" href="#">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Cisco NetAcad
+      </a>
+      <a class="tool-chip" href="#">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Microsoft Learn
+      </a>
+      <a class="tool-chip" href="#">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Packet Tracer
+      </a>
+      <a class="tool-chip" href="#">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Anki
+      </a>
+    </div>
+
+  </main>
+</div>
+
+</div><!-- /right-col-wrapper -->
+
+<!-- DESIGN SYSTEM PANEL -->
+<button class="ds-fab" onclick="document.getElementById('dsp').classList.toggle('open')">
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9"/></svg>
+  Design System
+</button>
+
+<div class="ds-panel" id="dsp">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+    <div>
+      <div class="ds-title">Design System</div>
+      <div class="ds-sub">PaceUp · Premium Calm Productivity</div>
+    </div>
+    <button onclick="document.getElementById('dsp').classList.remove('open')" style="background:none;border:none;cursor:pointer;color:var(--text-3);font-size:18px;line-height:1;padding:0;">×</button>
+  </div>
+
+  <div class="ds-sec">Color Palette</div>
+  <div class="swatch-row"><div class="swatch" style="background:#5B5BD6"></div><div><div class="swatch-name">Accent — Calm Indigo</div><div class="swatch-hex">#5B5BD6</div></div></div>
+  <div class="swatch-row"><div class="swatch" style="background:#22C55E"></div><div><div class="swatch-name">Success</div><div class="swatch-hex">#22C55E</div></div></div>
+  <div class="swatch-row"><div class="swatch" style="background:#F59E0B"></div><div><div class="swatch-name">Warning</div><div class="swatch-hex">#F59E0B</div></div></div>
+  <div class="swatch-row"><div class="swatch" style="background:#EF4444"></div><div><div class="swatch-name">Danger</div><div class="swatch-hex">#EF4444</div></div></div>
+  <div class="swatch-row"><div class="swatch" style="background:#F7F8FC;border:1px solid rgba(0,0,0,0.1)"></div><div><div class="swatch-name">Page</div><div class="swatch-hex">#F7F8FC</div></div></div>
+  <div class="swatch-row"><div class="swatch" style="background:#FFFFFF;border:1px solid rgba(0,0,0,0.1)"></div><div><div class="swatch-name">Surface</div><div class="swatch-hex">#FFFFFF</div></div></div>
+  <div class="swatch-row"><div class="swatch" style="background:#111827"></div><div><div class="swatch-name">Text Primary</div><div class="swatch-hex">#111827</div></div></div>
+  <div class="swatch-row"><div class="swatch" style="background:#4B5563"></div><div><div class="swatch-name">Text Secondary</div><div class="swatch-hex">#4B5563</div></div></div>
+
+  <div class="ds-sec">Typography Scale</div>
+  <div class="type-row"><span style="font-family:var(--font);font-size:22px;font-weight:700;color:var(--text-1);letter-spacing:-0.025em;line-height:1;">Display / 22 / 700</span></div>
+  <div class="type-row"><span style="font-family:var(--font);font-size:17px;font-weight:600;color:var(--text-1);letter-spacing:-0.01em;">Heading / 17 / 600</span></div>
+  <div class="type-row"><span style="font-family:var(--font);font-size:13px;font-weight:600;color:var(--text-1);">Subhead / 13 / 600</span></div>
+  <div class="type-row"><span style="font-family:var(--font);font-size:13px;font-weight:400;color:var(--text-2);line-height:1.6;">Body / 13 / 400 — calm &amp; readable</span></div>
+  <div class="type-row"><span style="font-family:var(--font);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-3);">LABEL / 11 / 600</span></div>
+  <div class="type-row"><span style="font-family:var(--font);font-size:10px;font-weight:500;color:var(--text-3);">Caption / 10 / 500</span></div>
+  <div class="type-row"><span style="font-family:var(--font);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-3);">MICRO / 9 / 700</span></div>
+
+  <div class="ds-sec">Buttons</div>
+  <div class="ds-btn-row">
+    <button class="ds-btn p">Primary</button>
+    <button class="ds-btn s">Secondary</button>
+    <button class="ds-btn g">Ghost</button>
+  </div>
+
+  <div class="ds-sec">Border Radius</div>
+  <div class="radius-demo">
+    <div class="rd" style="border-radius:5px;"></div>
+    <div class="rd" style="border-radius:8px;"></div>
+    <div class="rd" style="border-radius:10px;"></div>
+    <div class="rd" style="border-radius:14px;"></div>
+    <div class="rd" style="border-radius:50%;"></div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:4px;">
+    <span style="font-size:8px;color:var(--text-3);width:28px;text-align:center;">5px</span>
+    <span style="font-size:8px;color:var(--text-3);width:28px;text-align:center;">8px</span>
+    <span style="font-size:8px;color:var(--text-3);width:28px;text-align:center;">10px</span>
+    <span style="font-size:8px;color:var(--text-3);width:28px;text-align:center;">14px</span>
+    <span style="font-size:8px;color:var(--text-3);width:28px;text-align:center;">∞</span>
+  </div>
+
+  <div class="ds-sec">Spacing</div>
+  <div style="font-size:10px;color:var(--text-2);line-height:1.9;">
+    4 · 8 · 12 · 16 · 20 · 24 · 32 · 48
+    <div style="color:var(--text-3);font-size:9px;margin-top:2px;">4px base unit · 8px grid · 24px page padding</div>
+  </div>
+
+  <div class="motion-note">
+    Motion: 130–200ms ease<br>
+    No bouncing · Subtle elevation · Intentional only
+  </div>
+</div>
+
+<script>
+  // Animate progress bars on load
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.prog-fill').forEach(el => {
+      const target = el.style.width;
+      el.style.width = '0';
+      requestAnimationFrame(() => {
+        setTimeout(() => { el.style.width = target; }, 80);
+      });
+    });
+  });
+</script>
+</body>
+</html>
