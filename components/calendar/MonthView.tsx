@@ -19,12 +19,11 @@ export default function MonthView({ year, month, events, onDayClick, onEventClic
   const isThisMonth = today.getFullYear() === year && today.getMonth() === month;
 
   const firstDayOfMonth = new Date(year, month, 1);
-  // getDay() is 0=Sun, convert to Mon-first (0=Mon)
   let startDow = firstDayOfMonth.getDay() - 1;
   if (startDow < 0) startDow = 6;
 
-  const daysInMonth  = new Date(year, month + 1, 0).getDate();
-  const daysInPrev   = new Date(year, month, 0).getDate();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrev  = new Date(year, month, 0).getDate();
 
   type Cell = { day: number; curMonth: boolean; isToday: boolean; dateStr: string };
   const cells: Cell[] = [];
@@ -60,16 +59,22 @@ export default function MonthView({ year, month, events, onDayClick, onEventClic
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
-      {/* Day-of-week header */}
+
+      {/* Day-of-week header — taller, more breathing room */}
       <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(7, 1fr)',
         borderBottom: '1px solid var(--border-subtle)',
+        flexShrink: 0,
       }}>
         {DOW_LABELS.map(d => (
           <div key={d} style={{
-            padding: '8px 0', textAlign: 'center',
-            fontSize: 10, fontWeight: 600, color: 'var(--text-3)',
-            letterSpacing: '0.4px', textTransform: 'uppercase',
+            padding: '12px 0 10px',
+            textAlign: 'center',
+            fontSize: 10, fontWeight: 700,
+            color: 'var(--text-3)',
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase',
           }}>
             {d}
           </div>
@@ -86,6 +91,7 @@ export default function MonthView({ year, month, events, onDayClick, onEventClic
       }}>
         {cells.map((cell, i) => {
           const dayEvents = eventsByDate.get(cell.dateStr) ?? [];
+          const isWeekend = (i % 7 === 5 || i % 7 === 6);
           return (
             <div
               key={i}
@@ -93,40 +99,42 @@ export default function MonthView({ year, month, events, onDayClick, onEventClic
               style={{
                 borderRight: (i + 1) % 7 !== 0 ? '1px solid var(--border-subtle)' : undefined,
                 borderBottom: i < cells.length - 7 ? '1px solid var(--border-subtle)' : undefined,
-                padding: '6px 7px',
+                padding: '10px 12px 8px',
                 cursor: cell.curMonth ? 'pointer' : 'default',
-                opacity: cell.curMonth ? 1 : 0.3,
-                background: 'transparent',
-                display: 'flex', flexDirection: 'column', gap: 3,
-                transition: 'background 120ms ease',
+                opacity: cell.curMonth ? 1 : 0.28,
+                background: isWeekend && cell.curMonth ? 'rgba(0,0,0,0.012)' : 'transparent',
+                display: 'flex', flexDirection: 'column', gap: 4,
+                transition: 'background 130ms ease',
                 minHeight: 0,
               }}
               onMouseEnter={e => {
-                if (cell.curMonth) (e.currentTarget as HTMLElement).style.background = 'rgba(128,128,128,0.04)';
+                if (cell.curMonth)
+                  (e.currentTarget as HTMLElement).style.background = 'var(--bg-elevated)';
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.background = 'transparent';
+                (e.currentTarget as HTMLElement).style.background =
+                  isWeekend && cell.curMonth ? 'rgba(0,0,0,0.012)' : 'transparent';
               }}
             >
               {/* Date number */}
               <span style={{
-                alignSelf: 'flex-end',
-                width: cell.isToday ? 22 : 'auto',
-                height: cell.isToday ? 22 : 'auto',
-                lineHeight: cell.isToday ? '22px' : undefined,
+                alignSelf: 'flex-start',
+                width: cell.isToday ? 24 : 'auto',
+                height: cell.isToday ? 24 : 'auto',
+                lineHeight: cell.isToday ? '24px' : undefined,
                 textAlign: 'center',
-                borderRadius: cell.isToday ? '50%' : 3,
+                borderRadius: cell.isToday ? '50%' : 4,
                 background: cell.isToday ? 'var(--accent)' : 'transparent',
                 color: cell.isToday ? '#fff' : 'var(--text-3)',
-                fontSize: 11, fontWeight: cell.isToday ? 600 : 400,
-                padding: cell.isToday ? 0 : '0 2px',
+                fontSize: 12, fontWeight: cell.isToday ? 700 : 400,
+                padding: cell.isToday ? 0 : '0 3px',
                 flexShrink: 0,
               }}>
                 {cell.day}
               </span>
 
               {/* Event pills */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, overflow: 'hidden' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 3, overflow: 'hidden' }}>
                 {dayEvents.slice(0, 3).map(ev => {
                   const c = ev.color || EVENT_TYPE_COLORS[ev.type] || '#6B7280';
                   return (
@@ -135,28 +143,34 @@ export default function MonthView({ year, month, events, onDayClick, onEventClic
                       onClick={e => { e.stopPropagation(); onEventClick(ev); }}
                       title={ev.title}
                       style={{
-                        display: 'flex', alignItems: 'center', gap: 4,
-                        padding: '1px 5px', borderRadius: 4,
-                        background: `${c}20`,
-                        borderLeft: `2px solid ${c}`,
-                        border: `1px solid ${c}30`,
+                        display: 'flex', alignItems: 'center', gap: 5,
+                        padding: '2px 7px', borderRadius: 5,
+                        background: `${c}18`,
+                        borderLeft: `2.5px solid ${c}`,
+                        border: `1px solid ${c}28`,
                         cursor: 'pointer', textAlign: 'left', width: '100%',
                         overflow: 'hidden',
+                        transition: 'background 130ms',
                       }}
+                      onMouseEnter={e => (e.currentTarget.style.background = `${c}30`)}
+                      onMouseLeave={e => (e.currentTarget.style.background = `${c}18`)}
                     >
                       <span style={{
                         fontSize: 10, fontWeight: 500, color: c,
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                        lineHeight: 1.4,
+                        lineHeight: 1.5,
                       }}>
-                        {ev.time && <span style={{ opacity: 0.7, marginRight: 3 }}>{ev.time}</span>}
+                        {ev.time && <span style={{ opacity: 0.65, marginRight: 4 }}>{ev.time}</span>}
                         {ev.title}
                       </span>
                     </button>
                   );
                 })}
                 {dayEvents.length > 3 && (
-                  <span style={{ fontSize: 9, color: 'var(--text-3)', paddingLeft: 2 }}>
+                  <span style={{
+                    fontSize: 10, color: 'var(--text-3)',
+                    paddingLeft: 3, fontWeight: 500,
+                  }}>
                     +{dayEvents.length - 3} more
                   </span>
                 )}

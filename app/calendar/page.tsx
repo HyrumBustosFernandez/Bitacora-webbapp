@@ -18,8 +18,8 @@ function toDateStr(d: Date)   { return `${d.getFullYear()}-${twoDigit(d.getMonth
 
 function getWeekStart(d: Date): Date {
   const day = new Date(d);
-  const dow = day.getDay(); // 0=Sun
-  const diff = dow === 0 ? -6 : 1 - dow; // shift to Monday
+  const dow = day.getDay();
+  const diff = dow === 0 ? -6 : 1 - dow;
   day.setDate(day.getDate() + diff);
   day.setHours(0, 0, 0, 0);
   return day;
@@ -72,9 +72,7 @@ export default function CalendarPage() {
     }
   }
 
-  function navToday() {
-    setCurrent(new Date());
-  }
+  function navToday() { setCurrent(new Date()); }
 
   function headerLabel() {
     if (view === 'month') return `${MONTHS[month]} ${year}`;
@@ -108,67 +106,159 @@ export default function CalendarPage() {
     setShowModal(true);
   }
 
+  /* ── shared button styles ── */
   const btnBase: React.CSSProperties = {
-    background: 'transparent', border: '1px solid var(--border-default)',
-    borderRadius: 7, padding: '4px 10px', fontSize: 11, fontWeight: 500,
-    color: 'var(--text-2)', cursor: 'pointer', transition: 'all 120ms ease',
-    whiteSpace: 'nowrap',
+    background: 'transparent',
+    border: '1px solid var(--border-default)',
+    borderRadius: 8, padding: '5px 11px',
+    fontSize: 12, fontWeight: 500,
+    color: 'var(--text-2)', cursor: 'pointer',
+    transition: 'all 130ms ease', whiteSpace: 'nowrap',
   };
   const btnActive: React.CSSProperties = {
     ...btnBase,
-    background: 'var(--bg-elevated)', color: 'var(--text-1)',
-    border: '1px solid var(--border-strong)',
+    background: 'var(--bg-elevated)',
+    color: 'var(--text-1)',
+    border: '1px solid var(--border-hover)',
   };
   const tabBtn = (t: TabMode): React.CSSProperties => ({
-    background: 'transparent', border: 0, padding: '4px 10px',
-    fontSize: 11, fontWeight: tab === t ? 600 : 400,
+    background: 'transparent', border: 0,
+    padding: '6px 12px', fontSize: 12,
+    fontWeight: tab === t ? 600 : 400,
     color: tab === t ? 'var(--text-1)' : 'var(--text-3)',
     cursor: 'pointer', borderRadius: 6,
     borderBottom: tab === t ? '2px solid var(--accent)' : '2px solid transparent',
-    transition: 'all 120ms ease',
-    whiteSpace: 'nowrap',
+    transition: 'all 130ms ease', whiteSpace: 'nowrap',
   });
 
   return (
+    /* ── Outer page — fills the main scroll area ── */
     <div style={{
-      display: 'flex', flexDirection: 'column', height: '100%',
-      background: 'var(--bg-page)', overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      /* 
+        The main element already provides 24px padding on all sides.
+        We use a negative margin trick to pull the calendar to the full
+        available height while keeping side breathing room via the card container.
+      */
     }}>
-      {/* ── Compact single-row topbar ── */}
+
+      {/* ── Page title row ── */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        padding: '6px 14px', borderBottom: '1px solid var(--border-subtle)',
-        flexShrink: 0, flexWrap: 'wrap',
-        background: 'var(--bg-page)', zIndex: 5,
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 16,
+        flexShrink: 0,
       }}>
-        {/* Nav */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-          <button type="button" onClick={navPrev} style={{ ...btnBase, padding: '4px 7px' }}>
-            <IconChevronLeft size={13} />
-          </button>
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-1)', minWidth: 130, textAlign: 'center' }}>
-            {headerLabel()}
-          </span>
-          <button type="button" onClick={navNext} style={{ ...btnBase, padding: '4px 7px' }}>
-            <IconChevronRight size={13} />
-          </button>
-          <button type="button" onClick={navToday} style={{ ...btnBase, marginLeft: 2 }}>Today</button>
+        <div>
+          <h1 style={{
+            fontSize: 18, fontWeight: 700,
+            color: 'var(--text-1)',
+            letterSpacing: '-0.02em', lineHeight: 1.2,
+            margin: 0,
+          }}>
+            Calendar
+          </h1>
+          <p style={{
+            fontSize: 12, color: 'var(--text-3)',
+            margin: '3px 0 0', fontWeight: 400,
+          }}>
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+          </p>
         </div>
 
-        {/* Tab bar (center) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, justifyContent: 'center' }}>
-          {(['events','types','reminders','groups'] as TabMode[]).map(t => (
-            <button key={t} type="button" style={tabBtn(t)} onClick={() => setTab(t)}>
-              {t.charAt(0).toUpperCase() + t.slice(1)}
+        <button
+          type="button" onClick={handleAddEvent}
+          className="btn btn-primary"
+          style={{ gap: 6, padding: '7px 16px', fontSize: 12 }}
+        >
+          <IconPlus size={14} />
+          Add event
+        </button>
+      </div>
+
+      {/* ── Calendar card ── */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border-subtle)',
+        borderRadius: 16,
+        boxShadow: 'var(--shadow-elevated)',
+        overflow: 'hidden',
+        minHeight: 0,
+      }}>
+
+        {/* ── Controls row ── */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '12px 20px',
+          borderBottom: '1px solid var(--border-subtle)',
+          flexShrink: 0, flexWrap: 'wrap',
+          background: 'var(--bg-surface)',
+          zIndex: 5,
+        }}>
+          {/* Nav arrows + month label */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+            <button
+              type="button" onClick={navPrev}
+              style={{ ...btnBase, padding: '5px 9px' }}
+              onMouseEnter={e => Object.assign((e.currentTarget as HTMLElement).style, { background: 'var(--bg-elevated)', color: 'var(--text-1)' })}
+              onMouseLeave={e => Object.assign((e.currentTarget as HTMLElement).style, { background: 'transparent', color: 'var(--text-2)' })}
+            >
+              <IconChevronLeft size={14} />
             </button>
-          ))}
-        </div>
+            <span style={{
+              fontSize: 14, fontWeight: 600,
+              color: 'var(--text-1)',
+              minWidth: 148, textAlign: 'center',
+              letterSpacing: '-0.01em',
+            }}>
+              {headerLabel()}
+            </span>
+            <button
+              type="button" onClick={navNext}
+              style={{ ...btnBase, padding: '5px 9px' }}
+              onMouseEnter={e => Object.assign((e.currentTarget as HTMLElement).style, { background: 'var(--bg-elevated)', color: 'var(--text-1)' })}
+              onMouseLeave={e => Object.assign((e.currentTarget as HTMLElement).style, { background: 'transparent', color: 'var(--text-2)' })}
+            >
+              <IconChevronRight size={14} />
+            </button>
+            <button
+              type="button" onClick={navToday}
+              style={{ ...btnBase, marginLeft: 4 }}
+              onMouseEnter={e => Object.assign((e.currentTarget as HTMLElement).style, { background: 'var(--bg-elevated)', color: 'var(--text-1)', borderColor: 'var(--border-hover)' })}
+              onMouseLeave={e => Object.assign((e.currentTarget as HTMLElement).style, { background: 'transparent', color: 'var(--text-2)', borderColor: 'var(--border-default)' })}
+            >
+              Today
+            </button>
+          </div>
 
-        {/* View toggle + add */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-          <div style={{ display: 'flex', background: 'var(--bg-surface)', borderRadius: 8, padding: 2, gap: 2 }}>
+          {/* Tab bar */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 2,
+            flex: 1, justifyContent: 'center',
+          }}>
+            {(['events','types','reminders','groups'] as TabMode[]).map(t => (
+              <button key={t} type="button" style={tabBtn(t)} onClick={() => setTab(t)}>
+                {t.charAt(0).toUpperCase() + t.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          {/* View toggle */}
+          <div style={{
+            display: 'flex',
+            background: 'var(--bg-elevated)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: 9, padding: 3, gap: 2,
+            flexShrink: 0,
+          }}>
             {(['day','week','month'] as ViewMode[]).map(v => (
-              <button key={v} type="button"
+              <button
+                key={v} type="button"
                 style={view === v ? btnActive : btnBase}
                 onClick={() => setView(v)}
               >
@@ -176,76 +266,61 @@ export default function CalendarPage() {
               </button>
             ))}
           </div>
-          <button
-            type="button" onClick={handleAddEvent}
-            className="btn btn-primary"
-            style={{ gap: 5, padding: '5px 12px', fontSize: 11 }}
-          >
-            <IconPlus size={13} />
-            Add event
-          </button>
         </div>
-      </div>
 
-      {/* ── Tab content strip ── */}
-      {tab !== 'events' && (
+        {/* ── Tab content strip ── */}
+        {tab !== 'events' && (
+          <div style={{
+            padding: '10px 20px',
+            borderBottom: '1px solid var(--border-subtle)',
+            flexShrink: 0,
+            background: 'var(--bg-surface)',
+          }}>
+            {tab === 'types'     && <TypesPanel events={events} />}
+            {tab === 'reminders' && <RemindersPanel />}
+            {tab === 'groups'    && <GroupsPanel events={events} />}
+          </div>
+        )}
+
+        {/* ── Calendar view ── */}
         <div style={{
-          padding: '8px 14px', borderBottom: '1px solid var(--border-subtle)',
-          flexShrink: 0, background: 'var(--bg-page)',
+          flex: 1, overflow: 'hidden',
+          display: 'flex', flexDirection: 'column',
+          minHeight: 0,
         }}>
-          {tab === 'types' && <TypesPanel events={events} />}
-          {tab === 'reminders' && <RemindersPanel />}
-          {tab === 'groups' && <GroupsPanel events={events} />}
+          {view === 'month' && (
+            <MonthView
+              year={year} month={month} events={events}
+              onDayClick={handleDayClick}
+              onEventClick={ev => setDetailEvent(ev)}
+            />
+          )}
+          {view === 'week' && (
+            <WeekView
+              year={year} month={month}
+              weekStart={getWeekStart(current)}
+              events={events}
+              onSlotClick={handleSlotClick}
+              onEventClick={ev => setDetailEvent(ev)}
+            />
+          )}
+          {view === 'day' && (
+            <DayView
+              date={current} events={events}
+              onSlotClick={handleSlotClick}
+              onEventClick={ev => setDetailEvent(ev)}
+            />
+          )}
         </div>
-      )}
-
-      {/* ── Calendar view (fills remaining space) ── */}
-      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        {view === 'month' && (
-          <MonthView
-            year={year} month={month} events={events}
-            onDayClick={handleDayClick}
-            onEventClick={ev => setDetailEvent(ev)}
-          />
-        )}
-        {view === 'week' && (
-          <WeekView
-            year={year} month={month}
-            weekStart={getWeekStart(current)}
-            events={events}
-            onSlotClick={handleSlotClick}
-            onEventClick={ev => setDetailEvent(ev)}
-          />
-        )}
-        {view === 'day' && (
-          <DayView
-            date={current} events={events}
-            onSlotClick={handleSlotClick}
-            onEventClick={ev => setDetailEvent(ev)}
-          />
-        )}
       </div>
 
-      {/* ── Modals ── */}
-      {showModal && (
-        <CreateEventModal
-          initialDate={modalDate}
-          onClose={() => { setShowModal(false); setModalDate(undefined); setModalTime(undefined); }}
-          onSaved={refresh}
-        />
-      )}
-      {detailEvent && (
-        <EventDetailModal
-          event={detailEvent}
-          onClose={() => setDetailEvent(null)}
-          onDeleted={() => { deleteEvent(detailEvent.id); refresh(); setDetailEvent(null); }}
-        />
-      )}
     </div>
   );
 }
 
-/* ── Event detail modal ── */
+/* ─────────────────────────────────────
+   Event detail modal
+───────────────────────────────────── */
 function EventDetailModal({ event, onClose, onDeleted }: {
   event: CalendarEvent;
   onClose: () => void;
@@ -259,9 +334,11 @@ function EventDetailModal({ event, onClose, onDeleted }: {
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
     }}>
       <div onClick={e => e.stopPropagation()} style={{
-        background: 'var(--bg-elevated)', border: '1px solid var(--border-strong)',
-        borderRadius: 16, padding: 24, width: '100%', maxWidth: 400,
-        boxShadow: '0 32px 64px rgba(0,0,0,0.4)',
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border-default)',
+        borderRadius: 16, padding: 24,
+        width: '100%', maxWidth: 400,
+        boxShadow: 'var(--shadow-modal)',
         display: 'flex', flexDirection: 'column', gap: 14,
       }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
@@ -276,9 +353,9 @@ function EventDetailModal({ event, onClose, onDeleted }: {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <Row label="Date" value={event.date} />
+          <Row label="Date"  value={event.date} />
           {event.time && <Row label="Time" value={event.time + (event.endTime ? ` – ${event.endTime}` : '')} />}
-          <Row label="Type" value={EVENT_TYPE_LABELS[event.type] ?? event.type} color={c} />
+          <Row label="Type"  value={EVENT_TYPE_LABELS[event.type] ?? event.type} color={c} />
           {event.group && <Row label="Group" value={event.group.charAt(0).toUpperCase() + event.group.slice(1)} />}
           {event.description && (
             <div style={{ marginTop: 4 }}>
@@ -291,9 +368,11 @@ function EventDetailModal({ event, onClose, onDeleted }: {
         <button
           type="button" onClick={onDeleted}
           style={{
-            marginTop: 4, padding: '8px 0', background: 'rgba(239,68,68,0.1)',
-            border: '1px solid rgba(239,68,68,0.25)', borderRadius: 9,
-            fontSize: 12, fontWeight: 500, color: '#EF4444', cursor: 'pointer',
+            marginTop: 4, padding: '9px 0',
+            background: 'var(--color-red-subtle)',
+            border: '1px solid var(--color-red-border)',
+            borderRadius: 9, fontSize: 12, fontWeight: 500,
+            color: 'var(--color-red)', cursor: 'pointer',
           }}
         >
           Delete event
@@ -325,11 +404,11 @@ function TypesPanel({ events }: { events: CalendarEvent[] }) {
         return (
           <div key={t} style={{
             display: 'flex', alignItems: 'center', gap: 6,
-            padding: '3px 10px', borderRadius: 20,
+            padding: '4px 12px', borderRadius: 20,
             background: `${c}15`, border: `1px solid ${c}30`,
           }}>
-            <span style={{ fontSize: 10, color: c, fontWeight: 600 }}>{EVENT_TYPE_LABELS[t]}</span>
-            <span style={{ fontSize: 10, color: 'var(--text-3)' }}>{n}</span>
+            <span style={{ fontSize: 11, color: c, fontWeight: 600 }}>{EVENT_TYPE_LABELS[t]}</span>
+            <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{n}</span>
           </div>
         );
       })}
@@ -358,19 +437,25 @@ function RemindersPanel() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <div style={{ display: 'flex', gap: 6 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ display: 'flex', gap: 8 }}>
         <input
           value={text} onChange={e => setText(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && add()}
           placeholder="Add a reminder…"
           style={{
-            flex: 1, background: 'var(--bg-elevated)', border: '1px solid var(--border-default)',
-            borderRadius: 7, padding: '5px 10px', fontSize: 11, color: 'var(--text-1)', outline: 'none',
+            flex: 1, background: 'var(--bg-elevated)',
+            border: '1px solid var(--border-default)',
+            borderRadius: 8, padding: '6px 12px',
+            fontSize: 12, color: 'var(--text-1)', outline: 'none',
           }}
         />
         <button type="button" onClick={add}
-          style={{ background: 'var(--accent)', border: 0, borderRadius: 7, padding: '5px 12px', fontSize: 11, fontWeight: 600, color: '#fff', cursor: 'pointer' }}>
+          style={{
+            background: 'var(--accent)', border: 0, borderRadius: 8,
+            padding: '6px 14px', fontSize: 12, fontWeight: 600,
+            color: '#fff', cursor: 'pointer',
+          }}>
           Add
         </button>
       </div>
@@ -378,8 +463,9 @@ function RemindersPanel() {
         {items.map(item => (
           <div key={item.id} style={{
             display: 'flex', alignItems: 'center', gap: 6,
-            padding: '3px 8px 3px 5px', borderRadius: 20,
-            background: 'var(--bg-surface)', border: '1px solid var(--border-default)',
+            padding: '4px 10px 4px 6px', borderRadius: 20,
+            background: 'var(--bg-elevated)',
+            border: '1px solid var(--border-default)',
             opacity: item.done ? 0.5 : 1,
           }}>
             <input type="checkbox" checked={item.done}
@@ -389,7 +475,7 @@ function RemindersPanel() {
             <span style={{ fontSize: 11, color: 'var(--text-2)', textDecoration: item.done ? 'line-through' : 'none' }}>{item.text}</span>
             <button type="button"
               onClick={() => save(items.filter(i => i.id !== item.id))}
-              style={{ background: 'transparent', border: 0, color: 'var(--text-4)', cursor: 'pointer', fontSize: 13, lineHeight: 1, padding: 0 }}>
+              style={{ background: 'transparent', border: 0, color: 'var(--text-4)', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 0 }}>
               ×
             </button>
           </div>
@@ -405,7 +491,7 @@ function GroupsPanel({ events }: { events: CalendarEvent[] }) {
   events.forEach(e => { if (e.group) counts[e.group] = (counts[e.group] ?? 0) + 1; });
   const groups = Object.keys(counts).sort();
   if (groups.length === 0) {
-    return <span style={{ fontSize: 11, color: 'var(--text-3)' }}>No events with groups yet.</span>;
+    return <span style={{ fontSize: 12, color: 'var(--text-3)', fontStyle: 'italic' }}>No events with groups yet.</span>;
   }
   const groupColors: Record<string, string> = { school: 'var(--accent)', personal: '#22C55E', work: '#F59E0B' };
   return (
@@ -415,11 +501,11 @@ function GroupsPanel({ events }: { events: CalendarEvent[] }) {
         return (
           <div key={g} style={{
             display: 'flex', alignItems: 'center', gap: 6,
-            padding: '3px 10px', borderRadius: 20,
+            padding: '4px 12px', borderRadius: 20,
             background: `${c}15`, border: `1px solid ${c}30`,
           }}>
-            <span style={{ fontSize: 10, color: c, fontWeight: 600 }}>{g.charAt(0).toUpperCase() + g.slice(1)}</span>
-            <span style={{ fontSize: 10, color: 'var(--text-3)' }}>{counts[g]}</span>
+            <span style={{ fontSize: 11, color: c, fontWeight: 600 }}>{g.charAt(0).toUpperCase() + g.slice(1)}</span>
+            <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{counts[g]}</span>
           </div>
         );
       })}
