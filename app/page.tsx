@@ -55,7 +55,9 @@ export default function Home() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <GreetingRow state={appState} />
+      <div style={{ marginBottom: 10 }}>
+        <GreetingRow state={appState} />
+      </div>
       <AlertBanner state={appState} />
       <StatsRow state={appState} />
       <div style={{

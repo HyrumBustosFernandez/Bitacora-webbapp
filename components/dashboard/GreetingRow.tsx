@@ -13,12 +13,6 @@ function getGreeting(): string {
   return 'Good evening';
 }
 
-function formatDate(): string {
-  return new Date().toLocaleDateString('en-US', {
-    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
-  });
-}
-
 export default function GreetingRow({ state }: Props) {
   const name = (state.userName as string) || 'Hyrum';
   const [streak, setStreak] = useState(0);
@@ -43,9 +37,6 @@ export default function GreetingRow({ state }: Props) {
             letterSpacing: '-0.025em', lineHeight: 1.2,
           }}>
             {getGreeting()}, {name} 👋
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--text-3)', fontWeight: 500, marginTop: 3 }}>
-            {formatDate()}
           </div>
         </div>
 
