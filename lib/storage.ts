@@ -2,18 +2,100 @@ import { COURSES, START_DATE, TARGET_DATE, type Course } from './courses';
 
 export type AppState = Record<string, string | number | boolean>;
 
+// ── Per-course progress storage (stable-ID format) ──────────────────────────
+
+function loadCourseProgress(courseId: string): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem(`course_progress_${courseId}`);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function saveCourseProgress(courseId: string, progress: Record<string, string>): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(`course_progress_${courseId}`, JSON.stringify(progress));
+  } catch {}
+}
+
+// ── One-time migration from bitacora_v2 (positional) → per-course (stable ID) ──
+
+export function runMigration(): void {
+  if (typeof window === 'undefined') return;
+  if (localStorage.getItem('bitacora_migration_v2') === 'done') return;
+
+  try {
+    const old: Record<string, string> = JSON.parse(localStorage.getItem('bitacora_v2') || '{}');
+    COURSES.forEach(c => {
+      const progress: Record<string, string> = {};
+      c.weeks.forEach((w, wi) => {
+        w.items.forEach((item, ii) => {
+          const oldKey = `${c.id}_w${wi}_i${ii}`;
+          const val = old[oldKey];
+          if (val === 'done' || val === 'partial') {
+            progress[item.id] = val;
+          }
+        });
+      });
+      if (Object.keys(progress).length > 0) {
+        saveCourseProgress(c.id, progress);
+      }
+    });
+    localStorage.setItem('bitacora_migration_v2', 'done');
+    // Keep bitacora_v2 for 1 session as backup — not deleted here
+  } catch { /* ignore */ }
+}
+
+// ── State loading ────────────────────────────────────────────────────────────
+
 export function loadState(): AppState {
   if (typeof window === 'undefined') return {};
-  try { return JSON.parse(localStorage.getItem('bitacora_v2') || '{}'); }
-  catch { return {}; }
+  runMigration();
+
+  const state: AppState = {};
+
+  // Copy non-item keys (userName, etc.) from the legacy store
+  try {
+    const legacy: Record<string, unknown> = JSON.parse(localStorage.getItem('bitacora_v2') || '{}');
+    Object.entries(legacy).forEach(([k, v]) => {
+      if (!k.match(/^c\d+_w\d+_i\d+$/)) {
+        state[k] = v as string | number | boolean;
+      }
+    });
+  } catch { /* ignore */ }
+
+  // Rebuild item states from per-course stable-ID storage
+  COURSES.forEach(c => {
+    const progress = loadCourseProgress(c.id);
+    c.weeks.forEach((w, wi) => {
+      w.items.forEach((item, ii) => {
+        const val = progress[item.id];
+        if (val) state[`${c.id}_w${wi}_i${ii}`] = val;
+      });
+    });
+  });
+
+  return state;
 }
 
 export function saveState(patch: Partial<AppState>): void {
   if (typeof window === 'undefined') return;
   const s = loadState();
   Object.assign(s, patch);
-  try { localStorage.setItem('bitacora_v2', JSON.stringify(s)); } catch {}
+  // Only persist non-item keys to bitacora_v2
+  const legacyPatch: Record<string, unknown> = {};
+  Object.entries(patch).forEach(([k, v]) => {
+    if (!k.match(/^c\d+_w\d+_i\d+$/)) legacyPatch[k] = v;
+  });
+  try {
+    const existing: Record<string, unknown> = JSON.parse(localStorage.getItem('bitacora_v2') || '{}');
+    Object.assign(existing, legacyPatch);
+    localStorage.setItem('bitacora_v2', JSON.stringify(existing));
+  } catch {}
 }
+
+// ── Item state helpers ───────────────────────────────────────────────────────
 
 export function getItemState(
   c: Course, wi: number, ii: number, state: AppState
@@ -31,11 +113,23 @@ export function getItemState(
 }
 
 export function toggleItemDone(c: Course, wi: number, ii: number): void {
-  const key = `${c.id}_w${wi}_i${ii}`;
-  const state = loadState();
-  const current = getItemState(c, wi, ii, state);
-  saveState({ [key]: current === 'done' ? '' : 'done' });
+  const item = c.weeks[wi]?.items[ii];
+  if (!item) return;
+
+  const progress = loadCourseProgress(c.id);
+  // Determine current effective state
+  const stored = progress[item.id];
+  const current = stored ?? (item.done ? 'done' : item.partial ? 'partial' : '');
+
+  if (current === 'done') {
+    delete progress[item.id];
+  } else {
+    progress[item.id] = 'done';
+  }
+  saveCourseProgress(c.id, progress);
 }
+
+// ── Progress calculations ────────────────────────────────────────────────────
 
 export function getCourseProgress(c: Course, state: AppState): number {
   let total = 0, done = 0;

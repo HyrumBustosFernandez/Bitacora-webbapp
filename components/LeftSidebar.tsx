@@ -8,6 +8,7 @@ import {
   IconLayoutGrid, IconBook2, IconBolt, IconCalendar,
   IconChartBar, IconUsers, IconSettings2,
   IconTag, IconBell, IconChevronDown,
+  IconHome, IconClock, IconFileText, IconStack2, IconTrendingUp,
 } from '@tabler/icons-react';
 
 /* ── Sidebar brand colors ── */
@@ -46,15 +47,24 @@ const LABEL_MOTION = {
 };
 
 const CAL_SUBSECTIONS = [
-  { label: 'Types',     Icon: IconTag  },
-  { label: 'Reminders', Icon: IconBell },
+  { label: 'Types',     Icon: IconTag   },
+  { label: 'Reminders', Icon: IconBell  },
   { label: 'Groups',    Icon: IconUsers },
+];
+
+const STUDY_SUBSECTIONS = [
+  { label: 'Overview',   Icon: IconHome,        route: '/study'            },
+  { label: 'Timer',      Icon: IconClock,       route: '/study/timer'      },
+  { label: 'Notes',      Icon: IconFileText,    route: '/study/notes'      },
+  { label: 'Flashcards', Icon: IconStack2,      route: '/study/flashcards' },
+  { label: 'Progress',   Icon: IconTrendingUp,  route: '/study/progress'   },
 ];
 
 export default function LeftSidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [calExpanded, setCalExpanded] = useState(true);
+  const [calExpanded,   setCalExpanded]   = useState(true);
+  const [studyExpanded, setStudyExpanded] = useState(true);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function handleMouseEnter() {
@@ -112,9 +122,12 @@ export default function LeftSidebar() {
       {/* ── Main nav ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
         {NAV_MAIN.map(({ href, Icon, label }) => {
-          const active = isActive(href);
+          const active     = isActive(href);
           const isCalendar = href === '/calendar';
-          const showSubs = isCalendar && active && open && calExpanded;
+          const isStudy    = href === '/study';
+          const showCalSubs   = isCalendar && active && open && calExpanded;
+          const showStudySubs = isStudy    && active && open && studyExpanded;
+
           return (
             <div key={href}>
               <Link
@@ -157,7 +170,8 @@ export default function LeftSidebar() {
                     </motion.span>
                   )}
                 </AnimatePresence>
-                {/* Chevron for calendar expand/collapse */}
+
+                {/* Chevron for calendar */}
                 {isCalendar && active && open && (
                   <motion.div
                     animate={{ rotate: calExpanded ? 0 : -90 }}
@@ -168,11 +182,23 @@ export default function LeftSidebar() {
                     <IconChevronDown size={12} />
                   </motion.div>
                 )}
+
+                {/* Chevron for study */}
+                {isStudy && active && open && (
+                  <motion.div
+                    animate={{ rotate: studyExpanded ? 0 : -90 }}
+                    transition={{ duration: 0.18 }}
+                    onClick={e => { e.preventDefault(); setStudyExpanded(v => !v); }}
+                    style={{ marginLeft: 'auto', color: SB_TEXT, flexShrink: 0, display: 'flex' }}
+                  >
+                    <IconChevronDown size={12} />
+                  </motion.div>
+                )}
               </Link>
 
               {/* Calendar subsections */}
               <AnimatePresence>
-                {showSubs && (
+                {showCalSubs && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
@@ -213,6 +239,59 @@ export default function LeftSidebar() {
                   </motion.div>
                 )}
               </AnimatePresence>
+
+              {/* Study subsections */}
+              <AnimatePresence>
+                {showStudySubs && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.18 }}
+                    style={{ overflow: 'hidden', paddingLeft: 10 }}
+                  >
+                    {STUDY_SUBSECTIONS.map(({ label: subLabel, Icon: SubIcon, route }) => {
+                      const subActive = pathname === route;
+                      return (
+                        <Link
+                          key={route}
+                          href={route}
+                          title={subLabel}
+                          style={{
+                            display: 'flex', alignItems: 'center',
+                            gap: 8, height: 30, padding: '0 9px',
+                            borderRadius: 7, textDecoration: 'none',
+                            color: subActive ? SB_TEXT_ACTIVE : SB_TEXT,
+                            background: subActive ? 'rgba(255,255,255,0.08)' : 'transparent',
+                            fontSize: 11, fontWeight: subActive ? 500 : 400,
+                            whiteSpace: 'nowrap', overflow: 'hidden',
+                            transition: 'background 130ms ease, color 130ms ease',
+                            borderLeft: '1px solid rgba(255,255,255,0.08)',
+                            marginLeft: 8,
+                          }}
+                          onMouseEnter={e => {
+                            if (!subActive) {
+                              (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
+                              (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
+                            }
+                          }}
+                          onMouseLeave={e => {
+                            if (!subActive) {
+                              (e.currentTarget as HTMLElement).style.background = 'transparent';
+                              (e.currentTarget as HTMLElement).style.color = SB_TEXT;
+                            }
+                          }}
+                        >
+                          <SubIcon size={13} strokeWidth={1.6} style={{ flexShrink: 0, opacity: subActive ? 1 : 0.7 }} />
+                          <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden' }}>
+                            {subLabel}
+                          </motion.span>
+                        </Link>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           );
         })}
@@ -222,7 +301,6 @@ export default function LeftSidebar() {
 
       {/* ── Bottom items ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
-        {/* Settings */}
         {(() => {
           const active = isActive('/settings');
           return (
