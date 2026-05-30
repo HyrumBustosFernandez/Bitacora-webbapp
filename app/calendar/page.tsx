@@ -1,17 +1,16 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import {
-  IconChevronLeft, IconChevronRight, IconPlus,
-} from '@tabler/icons-react';
-import { CalendarEvent, loadEvents, deleteEvent, EVENT_TYPE_COLORS, EVENT_TYPE_LABELS } from '@/lib/events';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { IconChevronLeft, IconChevronRight, IconPlus, IconLayoutList } from '@tabler/icons-react';
+import { CalendarEvent, loadEvents, deleteEvent, EVENT_TYPE_COLORS, EVENT_TYPE_LABELS, loadTasks, Task } from '@/lib/events';
 import MonthView from '@/components/calendar/MonthView';
 import WeekView from '@/components/calendar/WeekView';
 import DayView from '@/components/calendar/DayView';
 import CreateEventModal from '@/components/calendar/CreateEventModal';
+import TasksSidebar from '@/components/calendar/TasksSidebar';
 
 type ViewMode = 'month' | 'week' | 'day';
-type TabMode  = 'events' | 'types' | 'reminders' | 'groups';
+type TabMode  = 'events' | 'tasks';
 
 function twoDigit(n: number) { return String(n).padStart(2, '0'); }
 function toDateStr(d: Date)   { return `${d.getFullYear()}-${twoDigit(d.getMonth() + 1)}-${twoDigit(d.getDate())}`; }
@@ -25,21 +24,60 @@ function getWeekStart(d: Date): Date {
   return day;
 }
 
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTHS = ['January','February','March','April','May','June',
+                'July','August','September','October','November','December'];
 
 export default function CalendarPage() {
-  const [view,         setView]         = useState<ViewMode>('month');
-  const [tab,          setTab]          = useState<TabMode>('events');
-  const [current,      setCurrent]      = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [events,       setEvents]       = useState<CalendarEvent[]>([]);
-  const [showModal,    setShowModal]    = useState(false);
-  const [modalDate,    setModalDate]    = useState<string | undefined>();
-  const [modalTime,    setModalTime]    = useState<string | undefined>();
-  const [detailEvent,  setDetailEvent]  = useState<CalendarEvent | null>(null);
+  const [view,          setView]         = useState<ViewMode>('month');
+  const [tab,           setTab]          = useState<TabMode>('events');
+  const [current,       setCurrent]      = useState(new Date());
+  const [events,        setEvents]       = useState<CalendarEvent[]>([]);
+  const [tasks,         setTasks]        = useState<Task[]>([]);
+  const [showModal,     setShowModal]    = useState(false);
+  const [modalDate,     setModalDate]    = useState<string | undefined>();
+  const [modalMode,     setModalMode]    = useState<'event' | 'task'>('event');
+  const [detailEvent,   setDetailEvent]  = useState<CalendarEvent | null>(null);
+  const [tasksVisible,  setTasksVisible] = useState(true);
+  const [refreshKey,    setRefreshKey]   = useState(0);
 
-  const refresh = useCallback(() => setEvents(loadEvents()), []);
+  /* Indicator refs for arc tabs */
+  const arcGroupRef  = useRef<HTMLDivElement>(null);
+  const arcIndRef    = useRef<HTMLDivElement>(null);
+  const viewGroupRef = useRef<HTMLDivElement>(null);
+  const viewIndRef   = useRef<HTMLDivElement>(null);
+
+  const refresh = useCallback(() => {
+    setEvents(loadEvents());
+    setTasks(loadTasks());
+    setRefreshKey(k => k + 1);
+  }, []);
+
   useEffect(() => { refresh(); }, [refresh]);
+
+  /* Position arc indicator */
+  function positionIndicator(
+    groupRef: React.RefObject<HTMLDivElement | null>,
+    indRef:   React.RefObject<HTMLDivElement | null>,
+  ) {
+    const group = groupRef.current;
+    const ind   = indRef.current;
+    if (!group || !ind) return;
+    const active = group.querySelector<HTMLElement>('[data-active="true"]');
+    if (!active) return;
+    ind.style.left  = `${active.offsetLeft}px`;
+    ind.style.width = `${active.offsetWidth}px`;
+  }
+
+  useEffect(() => { positionIndicator(arcGroupRef,  arcIndRef);  }, [tab]);
+  useEffect(() => { positionIndicator(viewGroupRef, viewIndRef); }, [view]);
+
+  /* Reposition on mount after layout */
+  useEffect(() => {
+    setTimeout(() => {
+      positionIndicator(arcGroupRef,  arcIndRef);
+      positionIndicator(viewGroupRef, viewIndRef);
+    }, 50);
+  }, []);
 
   const year  = current.getFullYear();
   const month = current.getMonth();
@@ -87,239 +125,344 @@ export default function CalendarPage() {
     return current.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   }
 
+  /* Clicking a date cell opens the creation modal */
   function handleDayClick(dateStr: string) {
-    setSelectedDate(dateStr);
-    const d = new Date(dateStr + 'T00:00:00');
-    setCurrent(d);
-    setView('day');
+    setModalDate(dateStr);
+    setModalMode(tab === 'tasks' ? 'task' : 'event');
+    setShowModal(true);
   }
 
   function handleSlotClick(dateStr: string, time: string) {
     setModalDate(dateStr);
-    setModalTime(time);
+    setModalMode('event');
     setShowModal(true);
   }
 
-  function handleAddEvent() {
+  function handleAddNew() {
     setModalDate(view === 'day' ? toDateStr(current) : undefined);
-    setModalTime(undefined);
+    setModalMode(tab === 'tasks' ? 'task' : 'event');
     setShowModal(true);
   }
 
-  /* ── shared button styles ── */
-  const btnBase: React.CSSProperties = {
-    background: 'transparent',
-    border: '1px solid var(--border-default)',
-    borderRadius: 8, padding: '5px 11px',
-    fontSize: 12, fontWeight: 500,
-    color: 'var(--text-2)', cursor: 'pointer',
-    transition: 'all 130ms ease', whiteSpace: 'nowrap',
+  /* Circular nav button style */
+  const circleNavBtn: React.CSSProperties = {
+    width: 32, height: 32,
+    borderRadius: '50%',
+    background: 'rgba(255,255,255,0.07)',
+    border: 'none',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    cursor: 'pointer',
+    color: 'var(--text-2)',
+    flexShrink: 0,
+    transition: 'background 150ms cubic-bezier(0.4,0,0.2,1), color 150ms ease, transform 120ms ease',
   };
-  const btnActive: React.CSSProperties = {
-    ...btnBase,
+
+  /* Arc tab button style */
+  function arcTabStyle(active: boolean): React.CSSProperties {
+    return {
+      background: 'transparent', border: 'none',
+      padding: '6px 14px 10px',
+      fontSize: 12, fontWeight: active ? 600 : 400,
+      color: active ? 'var(--text-1)' : 'var(--text-3)',
+      cursor: 'pointer',
+      transition: 'color 200ms cubic-bezier(0.4,0,0.2,1)',
+      whiteSpace: 'nowrap',
+    };
+  }
+
+  /* View pill button style */
+  const pillTrackStyle: React.CSSProperties = {
+    display: 'flex',
     background: 'var(--bg-elevated)',
-    color: 'var(--text-1)',
-    border: '1px solid var(--border-hover)',
+    border: '1px solid var(--border-subtle)',
+    borderRadius: 10, padding: 3,
+    gap: 0, flexShrink: 0,
+    position: 'relative',
   };
-  const tabBtn = (t: TabMode): React.CSSProperties => ({
-    background: 'transparent', border: 0,
-    padding: '6px 12px', fontSize: 12,
-    fontWeight: tab === t ? 600 : 400,
-    color: tab === t ? 'var(--text-1)' : 'var(--text-3)',
-    cursor: 'pointer', borderRadius: 6,
-    borderBottom: tab === t ? '2px solid var(--accent)' : '2px solid transparent',
-    transition: 'all 130ms ease', whiteSpace: 'nowrap',
-  });
+  function pillBtnStyle(active: boolean): React.CSSProperties {
+    return {
+      background: 'transparent', border: 'none',
+      padding: '5px 13px', borderRadius: 7,
+      fontSize: 12, fontWeight: active ? 600 : 400,
+      color: active ? 'var(--text-1)' : 'var(--text-3)',
+      cursor: 'pointer',
+      transition: 'color 200ms cubic-bezier(0.4,0,0.2,1)',
+      whiteSpace: 'nowrap',
+      position: 'relative', zIndex: 1,
+    };
+  }
 
   return (
-    /* ── Outer page — fills the main scroll area ── */
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      /* 
-        The main element already provides 24px padding on all sides.
-        We use a negative margin trick to pull the calendar to the full
-        available height while keeping side breathing room via the card container.
-      */
-    }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
       {/* ── Page title row ── */}
       <div style={{
         display: 'flex', alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 16,
-        flexShrink: 0,
+        marginBottom: 16, flexShrink: 0,
       }}>
-        <div>
-          <h1 style={{
-            fontSize: 18, fontWeight: 700,
-            color: 'var(--text-1)',
-            letterSpacing: '-0.02em', lineHeight: 1.2,
-            margin: 0,
-          }}>
-            Calendar
-          </h1>
-          <p style={{
-            fontSize: 12, color: 'var(--text-3)',
-            margin: '3px 0 0', fontWeight: 400,
-          }}>
-            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
-          </p>
-        </div>
+        <h1 style={{
+          fontSize: 18, fontWeight: 700,
+          color: 'var(--text-1)',
+          letterSpacing: '-0.02em', lineHeight: 1.2, margin: 0,
+        }}>
+          Calendar
+        </h1>
 
-        <button
-          type="button" onClick={handleAddEvent}
-          className="btn btn-primary"
-          style={{ gap: 6, padding: '7px 16px', fontSize: 12 }}
-        >
-          <IconPlus size={14} />
-          Add event
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* Tasks toggle button */}
+          <button
+            type="button"
+            onClick={() => setTasksVisible(v => !v)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '7px 13px',
+              background: tasksVisible ? 'var(--accent-subtle)' : 'transparent',
+              border: `1px solid ${tasksVisible ? 'var(--accent-border)' : 'var(--border-default)'}`,
+              borderRadius: 8, fontSize: 12, fontWeight: 500,
+              color: tasksVisible ? 'var(--accent)' : 'var(--text-2)',
+              cursor: 'pointer',
+              transition: 'all 150ms ease',
+            }}
+          >
+            <IconLayoutList size={13} />
+            My Tasks
+          </button>
+
+          <button
+            type="button" onClick={handleAddNew}
+            className="btn btn-primary"
+            style={{ gap: 6, padding: '7px 16px', fontSize: 12 }}
+          >
+            <IconPlus size={14} />
+            {tab === 'tasks' ? 'Add task' : 'Add event'}
+          </button>
+        </div>
       </div>
 
-      {/* ── Calendar card ── */}
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        background: 'var(--bg-surface)',
-        border: '1px solid var(--border-subtle)',
-        borderRadius: 16,
-        boxShadow: 'var(--shadow-elevated)',
-        overflow: 'hidden',
-        minHeight: 0,
-      }}>
+      {/* ── Calendar + Tasks layout ── */}
+      <div style={{ flex: 1, display: 'flex', gap: 16, minHeight: 0, overflow: 'hidden' }}>
 
-        {/* ── Controls row ── */}
+        {/* ── Calendar card ── */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 10,
-          padding: '12px 20px',
-          borderBottom: '1px solid var(--border-subtle)',
-          flexShrink: 0, flexWrap: 'wrap',
-          background: 'var(--bg-surface)',
-          zIndex: 5,
-        }}>
-          {/* Nav arrows + month label */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-            <button
-              type="button" onClick={navPrev}
-              style={{ ...btnBase, padding: '5px 9px' }}
-              onMouseEnter={e => Object.assign((e.currentTarget as HTMLElement).style, { background: 'var(--bg-elevated)', color: 'var(--text-1)' })}
-              onMouseLeave={e => Object.assign((e.currentTarget as HTMLElement).style, { background: 'transparent', color: 'var(--text-2)' })}
-            >
-              <IconChevronLeft size={14} />
-            </button>
-            <span style={{
-              fontSize: 14, fontWeight: 600,
-              color: 'var(--text-1)',
-              minWidth: 148, textAlign: 'center',
-              letterSpacing: '-0.01em',
-            }}>
-              {headerLabel()}
-            </span>
-            <button
-              type="button" onClick={navNext}
-              style={{ ...btnBase, padding: '5px 9px' }}
-              onMouseEnter={e => Object.assign((e.currentTarget as HTMLElement).style, { background: 'var(--bg-elevated)', color: 'var(--text-1)' })}
-              onMouseLeave={e => Object.assign((e.currentTarget as HTMLElement).style, { background: 'transparent', color: 'var(--text-2)' })}
-            >
-              <IconChevronRight size={14} />
-            </button>
-            <button
-              type="button" onClick={navToday}
-              style={{ ...btnBase, marginLeft: 4 }}
-              onMouseEnter={e => Object.assign((e.currentTarget as HTMLElement).style, { background: 'var(--bg-elevated)', color: 'var(--text-1)', borderColor: 'var(--border-hover)' })}
-              onMouseLeave={e => Object.assign((e.currentTarget as HTMLElement).style, { background: 'transparent', color: 'var(--text-2)', borderColor: 'var(--border-default)' })}
-            >
-              Today
-            </button>
-          </div>
-
-          {/* Tab bar */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 2,
-            flex: 1, justifyContent: 'center',
-          }}>
-            {(['events','types','reminders','groups'] as TabMode[]).map(t => (
-              <button key={t} type="button" style={tabBtn(t)} onClick={() => setTab(t)}>
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-              </button>
-            ))}
-          </div>
-
-          {/* View toggle */}
-          <div style={{
-            display: 'flex',
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 9, padding: 3, gap: 2,
-            flexShrink: 0,
-          }}>
-            {(['day','week','month'] as ViewMode[]).map(v => (
-              <button
-                key={v} type="button"
-                style={view === v ? btnActive : btnBase}
-                onClick={() => setView(v)}
-              >
-                {v.charAt(0).toUpperCase() + v.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Tab content strip ── */}
-        {tab !== 'events' && (
-          <div style={{
-            padding: '10px 20px',
-            borderBottom: '1px solid var(--border-subtle)',
-            flexShrink: 0,
-            background: 'var(--bg-surface)',
-          }}>
-            {tab === 'types'     && <TypesPanel events={events} />}
-            {tab === 'reminders' && <RemindersPanel />}
-            {tab === 'groups'    && <GroupsPanel events={events} />}
-          </div>
-        )}
-
-        {/* ── Calendar view ── */}
-        <div style={{
-          flex: 1, overflow: 'hidden',
+          flex: 1,
           display: 'flex', flexDirection: 'column',
-          minHeight: 0,
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: 16,
+          boxShadow: 'var(--shadow-elevated)',
+          overflow: 'hidden', minHeight: 0,
+          transition: 'border-color 240ms cubic-bezier(0.4,0,0.2,1), box-shadow 240ms cubic-bezier(0.4,0,0.2,1)',
         }}>
-          {view === 'month' && (
-            <MonthView
-              year={year} month={month} events={events}
-              onDayClick={handleDayClick}
-              onEventClick={ev => setDetailEvent(ev)}
-            />
-          )}
-          {view === 'week' && (
-            <WeekView
-              year={year} month={month}
-              weekStart={getWeekStart(current)}
-              events={events}
-              onSlotClick={handleSlotClick}
-              onEventClick={ev => setDetailEvent(ev)}
-            />
-          )}
-          {view === 'day' && (
-            <DayView
-              date={current} events={events}
-              onSlotClick={handleSlotClick}
-              onEventClick={ev => setDetailEvent(ev)}
-            />
-          )}
+
+          {/* ── Controls row ── */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '12px 20px',
+            borderBottom: '1px solid var(--border-subtle)',
+            flexShrink: 0, flexWrap: 'wrap',
+            background: 'var(--bg-surface)', zIndex: 5,
+          }}>
+
+            {/* Circular nav + label */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+              <button
+                type="button" onClick={navPrev}
+                style={circleNavBtn}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.14)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--text-1)';
+                  (e.currentTarget as HTMLElement).style.transform = 'scale(1.08)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.07)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--text-2)';
+                  (e.currentTarget as HTMLElement).style.transform = '';
+                }}
+              >
+                <IconChevronLeft size={14} />
+              </button>
+
+              <span style={{
+                fontSize: 14, fontWeight: 600,
+                color: 'var(--text-1)',
+                minWidth: 148, textAlign: 'center',
+                letterSpacing: '-0.01em',
+              }}>
+                {headerLabel()}
+              </span>
+
+              <button
+                type="button" onClick={navNext}
+                style={circleNavBtn}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.14)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--text-1)';
+                  (e.currentTarget as HTMLElement).style.transform = 'scale(1.08)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.07)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--text-2)';
+                  (e.currentTarget as HTMLElement).style.transform = '';
+                }}
+              >
+                <IconChevronRight size={14} />
+              </button>
+
+              <button
+                type="button" onClick={navToday}
+                style={{
+                  height: 32, borderRadius: 8, padding: '0 12px',
+                  background: 'rgba(255,255,255,0.07)',
+                  border: 'none', fontSize: 11, fontWeight: 600,
+                  color: 'var(--text-2)', cursor: 'pointer',
+                  marginLeft: 2,
+                  transition: 'background 150ms ease, color 150ms ease',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.14)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--text-1)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.07)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--text-2)';
+                }}
+              >
+                Today
+              </button>
+            </div>
+
+            {/* Arc tab — Events | Tasks */}
+            <div
+              ref={arcGroupRef}
+              style={{ display: 'flex', alignItems: 'center', flex: 1, justifyContent: 'center', position: 'relative' }}
+            >
+              {(['events', 'tasks'] as TabMode[]).map(t => (
+                <button
+                  key={t} type="button"
+                  data-active={tab === t ? 'true' : 'false'}
+                  onClick={() => setTab(t)}
+                  style={arcTabStyle(tab === t)}
+                >
+                  {t.charAt(0).toUpperCase() + t.slice(1)}
+                </button>
+              ))}
+              {/* Sliding arc underline */}
+              <div
+                ref={arcIndRef}
+                style={{
+                  position: 'absolute', bottom: 0, height: 3,
+                  background: 'linear-gradient(90deg, transparent, var(--accent) 20%, #7474E0 50%, var(--accent) 80%, transparent)',
+                  borderRadius: '3px 3px 0 0',
+                  clipPath: 'ellipse(50% 100% at 50% 100%)',
+                  boxShadow: '0 0 8px rgba(91,91,214,0.5)',
+                  transition: 'left 250ms cubic-bezier(0.4,0,0.2,1), width 250ms cubic-bezier(0.4,0,0.2,1)',
+                  pointerEvents: 'none',
+                }}
+              />
+            </div>
+
+            {/* View toggle pill — Day | Week | Month */}
+            <div ref={viewGroupRef} style={pillTrackStyle}>
+              {/* Sliding pill indicator */}
+              <div
+                ref={viewIndRef}
+                style={{
+                  position: 'absolute',
+                  top: 3, bottom: 3,
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--border-default)',
+                  borderRadius: 7,
+                  boxShadow: '0 0 0 1px rgba(91,91,214,0.10) inset',
+                  transition: 'left 250ms cubic-bezier(0.4,0,0.2,1), width 250ms cubic-bezier(0.4,0,0.2,1)',
+                  pointerEvents: 'none',
+                  zIndex: 0,
+                }}
+              />
+              {(['day', 'week', 'month'] as ViewMode[]).map(v => (
+                <button
+                  key={v} type="button"
+                  data-active={view === v ? 'true' : 'false'}
+                  onClick={() => setView(v)}
+                  style={pillBtnStyle(view === v)}
+                >
+                  {v.charAt(0).toUpperCase() + v.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Calendar view ── */}
+          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            {view === 'month' && (
+              <MonthView
+                year={year} month={month}
+                events={events} tasks={tasks}
+                onDayClick={handleDayClick}
+                onEventClick={ev => setDetailEvent(ev)}
+              />
+            )}
+            {view === 'week' && (
+              <WeekView
+                year={year} month={month}
+                weekStart={getWeekStart(current)}
+                events={events}
+                onSlotClick={handleSlotClick}
+                onEventClick={ev => setDetailEvent(ev)}
+              />
+            )}
+            {view === 'day' && (
+              <DayView
+                date={current} events={events}
+                onSlotClick={handleSlotClick}
+                onEventClick={ev => setDetailEvent(ev)}
+              />
+            )}
+          </div>
         </div>
+
+        {/* ── Tasks sidebar ── */}
+        <TasksSidebar
+          collapsed={!tasksVisible}
+          onToggle={() => setTasksVisible(v => !v)}
+          onOpenCreate={(mode) => {
+            setModalMode(mode);
+            setModalDate(undefined);
+            setShowModal(true);
+          }}
+          refreshKey={refreshKey}
+        />
+
       </div>
 
+      {/* ── Creation modal ── */}
+      {showModal && (
+        <CreateEventModal
+          initialDate={modalDate}
+          initialMode={modalMode}
+          onClose={() => setShowModal(false)}
+          onSaved={refresh}
+        />
+      )}
+
+      {/* ── Event detail modal ── */}
+      {detailEvent && (
+        <EventDetailModal
+          event={detailEvent}
+          onClose={() => setDetailEvent(null)}
+          onDeleted={() => {
+            deleteEvent(detailEvent.id);
+            setDetailEvent(null);
+            refresh();
+          }}
+        />
+      )}
     </div>
   );
 }
 
 /* ─────────────────────────────────────
-   Event detail modal
+   Event detail modal (inline)
 ───────────────────────────────────── */
 function EventDetailModal({ event, onClose, onDeleted }: {
   event: CalendarEvent;
@@ -351,12 +494,11 @@ function EventDetailModal({ event, onClose, onDeleted }: {
             ✕
           </button>
         </div>
-
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <Row label="Date"  value={event.date} />
-          {event.time && <Row label="Time" value={event.time + (event.endTime ? ` – ${event.endTime}` : '')} />}
-          <Row label="Type"  value={EVENT_TYPE_LABELS[event.type] ?? event.type} color={c} />
-          {event.group && <Row label="Group" value={event.group.charAt(0).toUpperCase() + event.group.slice(1)} />}
+          <DetailRow label="Date"  value={event.date} />
+          {event.time && <DetailRow label="Time" value={event.time + (event.endTime ? ` – ${event.endTime}` : '')} />}
+          <DetailRow label="Type"  value={EVENT_TYPE_LABELS[event.type] ?? event.type} color={c} />
+          {event.group && <DetailRow label="Group" value={event.group.charAt(0).toUpperCase() + event.group.slice(1)} />}
           {event.description && (
             <div style={{ marginTop: 4 }}>
               <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Notes</span>
@@ -364,17 +506,14 @@ function EventDetailModal({ event, onClose, onDeleted }: {
             </div>
           )}
         </div>
-
-        <button
-          type="button" onClick={onDeleted}
+        <button type="button" onClick={onDeleted}
           style={{
             marginTop: 4, padding: '9px 0',
             background: 'var(--color-red-subtle)',
             border: '1px solid var(--color-red-border)',
             borderRadius: 9, fontSize: 12, fontWeight: 500,
             color: 'var(--color-red)', cursor: 'pointer',
-          }}
-        >
+          }}>
           Delete event
         </button>
       </div>
@@ -382,133 +521,11 @@ function EventDetailModal({ event, onClose, onDeleted }: {
   );
 }
 
-function Row({ label, value, color }: { label: string; value: string; color?: string }) {
+function DetailRow({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
     <div style={{ display: 'flex', gap: 12, alignItems: 'baseline' }}>
       <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.4px', minWidth: 46 }}>{label}</span>
       <span style={{ fontSize: 12, color: color ?? 'var(--text-2)' }}>{value}</span>
-    </div>
-  );
-}
-
-/* ── Types panel ── */
-function TypesPanel({ events }: { events: CalendarEvent[] }) {
-  const counts: Record<string, number> = {};
-  events.forEach(e => { counts[e.type] = (counts[e.type] ?? 0) + 1; });
-  const types = Object.keys(EVENT_TYPE_LABELS) as (keyof typeof EVENT_TYPE_COLORS)[];
-  return (
-    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-      {types.map(t => {
-        const c = EVENT_TYPE_COLORS[t];
-        const n = counts[t] ?? 0;
-        return (
-          <div key={t} style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '4px 12px', borderRadius: 20,
-            background: `${c}15`, border: `1px solid ${c}30`,
-          }}>
-            <span style={{ fontSize: 11, color: c, fontWeight: 600 }}>{EVENT_TYPE_LABELS[t]}</span>
-            <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{n}</span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-/* ── Reminders panel ── */
-function RemindersPanel() {
-  const [text, setText]   = useState('');
-  const [items, setItems] = useState<{ id: string; text: string; done: boolean }[]>([]);
-
-  useEffect(() => {
-    try { setItems(JSON.parse(localStorage.getItem('paceup_quick_reminders') || '[]')); } catch { /* ignore */ }
-  }, []);
-
-  function save(arr: typeof items) {
-    setItems(arr);
-    localStorage.setItem('paceup_quick_reminders', JSON.stringify(arr));
-  }
-
-  function add() {
-    if (!text.trim()) return;
-    save([...items, { id: `${Date.now()}`, text: text.trim(), done: false }]);
-    setText('');
-  }
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <div style={{ display: 'flex', gap: 8 }}>
-        <input
-          value={text} onChange={e => setText(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && add()}
-          placeholder="Add a reminder…"
-          style={{
-            flex: 1, background: 'var(--bg-elevated)',
-            border: '1px solid var(--border-default)',
-            borderRadius: 8, padding: '6px 12px',
-            fontSize: 12, color: 'var(--text-1)', outline: 'none',
-          }}
-        />
-        <button type="button" onClick={add}
-          style={{
-            background: 'var(--accent)', border: 0, borderRadius: 8,
-            padding: '6px 14px', fontSize: 12, fontWeight: 600,
-            color: '#fff', cursor: 'pointer',
-          }}>
-          Add
-        </button>
-      </div>
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-        {items.map(item => (
-          <div key={item.id} style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '4px 10px 4px 6px', borderRadius: 20,
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--border-default)',
-            opacity: item.done ? 0.5 : 1,
-          }}>
-            <input type="checkbox" checked={item.done}
-              onChange={() => save(items.map(i => i.id === item.id ? { ...i, done: !i.done } : i))}
-              style={{ cursor: 'pointer', accentColor: 'var(--accent)' }}
-            />
-            <span style={{ fontSize: 11, color: 'var(--text-2)', textDecoration: item.done ? 'line-through' : 'none' }}>{item.text}</span>
-            <button type="button"
-              onClick={() => save(items.filter(i => i.id !== item.id))}
-              style={{ background: 'transparent', border: 0, color: 'var(--text-4)', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 0 }}>
-              ×
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ── Groups panel ── */
-function GroupsPanel({ events }: { events: CalendarEvent[] }) {
-  const counts: Record<string, number> = {};
-  events.forEach(e => { if (e.group) counts[e.group] = (counts[e.group] ?? 0) + 1; });
-  const groups = Object.keys(counts).sort();
-  if (groups.length === 0) {
-    return <span style={{ fontSize: 12, color: 'var(--text-3)', fontStyle: 'italic' }}>No events with groups yet.</span>;
-  }
-  const groupColors: Record<string, string> = { school: 'var(--accent)', personal: '#22C55E', work: '#F59E0B' };
-  return (
-    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-      {groups.map(g => {
-        const c = groupColors[g] ?? '#6B7280';
-        return (
-          <div key={g} style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '4px 12px', borderRadius: 20,
-            background: `${c}15`, border: `1px solid ${c}30`,
-          }}>
-            <span style={{ fontSize: 11, color: c, fontWeight: 600 }}>{g.charAt(0).toUpperCase() + g.slice(1)}</span>
-            <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{counts[g]}</span>
-          </div>
-        );
-      })}
     </div>
   );
 }

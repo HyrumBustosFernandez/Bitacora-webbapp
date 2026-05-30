@@ -97,3 +97,52 @@ export function toDateKey(date: Date): string {
 export function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
+
+/* ─────────────────────────────────────
+   TASK TYPE
+───────────────────────────────────── */
+export type TaskPriority = 'low' | 'medium' | 'high';
+export type TaskStatus   = 'todo' | 'inprogress' | 'done';
+
+export interface Task {
+  id: string;
+  name: string;
+  dueDate: string;        // YYYY-MM-DD
+  priority: TaskPriority;
+  status: TaskStatus;
+  description?: string;
+  list?: string;          // e.g. 'CCST Prep', 'Personal'
+  createdAt: string;
+}
+
+export const PRIORITY_COLORS: Record<TaskPriority, string> = {
+  low:    '#22C55E',
+  medium: '#F59E0B',
+  high:   '#EF4444',
+};
+
+export const PRIORITY_LABELS: Record<TaskPriority, string> = {
+  low: 'Low', medium: 'Medium', high: 'High',
+};
+
+export const STATUS_LABELS: Record<TaskStatus, string> = {
+  todo: 'To do', inprogress: 'In progress', done: 'Done',
+};
+
+export function loadTasks(): Task[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    return JSON.parse(localStorage.getItem('paceup_tasks') || '[]');
+  } catch { return []; }
+}
+
+export function saveTask(task: Task): void {
+  const tasks = loadTasks();
+  const idx = tasks.findIndex(t => t.id === task.id);
+  if (idx >= 0) tasks[idx] = task; else tasks.push(task);
+  localStorage.setItem('paceup_tasks', JSON.stringify(tasks));
+}
+
+export function deleteTask(id: string): void {
+  localStorage.setItem('paceup_tasks', JSON.stringify(loadTasks().filter(t => t.id !== id)));
+}

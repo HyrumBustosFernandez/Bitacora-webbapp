@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   IconLayoutGrid, IconBook2, IconBolt, IconCalendar,
   IconChartBar, IconUsers, IconSettings2,
+  IconTag, IconBell, IconChevronDown,
 } from '@tabler/icons-react';
 
 /* ── Sidebar brand colors ── */
@@ -44,9 +45,16 @@ const LABEL_MOTION = {
   transition: { duration: 0.14, delay: 0.05 },
 };
 
+const CAL_SUBSECTIONS = [
+  { label: 'Types',     Icon: IconTag  },
+  { label: 'Reminders', Icon: IconBell },
+  { label: 'Groups',    Icon: IconUsers },
+];
+
 export default function LeftSidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [calExpanded, setCalExpanded] = useState(true);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function handleMouseEnter() {
@@ -105,50 +113,107 @@ export default function LeftSidebar() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
         {NAV_MAIN.map(({ href, Icon, label }) => {
           const active = isActive(href);
+          const isCalendar = href === '/calendar';
+          const showSubs = isCalendar && active && open && calExpanded;
           return (
-            <Link
-              key={href}
-              href={href}
-              title={!open ? label : undefined}
-              style={{
-                display: 'flex', alignItems: 'center',
-                gap: 10, height: 36, padding: '0 9px',
-                borderRadius: 8, textDecoration: 'none',
-                color: active ? SB_TEXT_ACTIVE : SB_TEXT,
-                background: active ? SB_ACTIVE_BG : 'transparent',
-                whiteSpace: 'nowrap', overflow: 'hidden',
-                fontWeight: active ? 600 : 500,
-                fontSize: 12,
-                position: 'relative',
-                transition: 'color 130ms ease, background-color 130ms ease',
-              }}
-              onMouseEnter={e => {
-                if (!active) (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
-                if (!active) (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
-              }}
-              onMouseLeave={e => {
-                if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent';
-                if (!active) (e.currentTarget as HTMLElement).style.color = SB_TEXT;
-              }}
-            >
-              {/* Left border indicator */}
-              {active && (
-                <span style={{
-                  position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%)',
-                  width: 2.5, height: 18,
-                  background: SB_BORDER_L,
-                  borderRadius: '0 2px 2px 0',
-                }} />
-              )}
-              <Icon size={17} strokeWidth={active ? 2 : 1.75} style={{ flexShrink: 0 }} />
+            <div key={href}>
+              <Link
+                href={href}
+                title={!open ? label : undefined}
+                style={{
+                  display: 'flex', alignItems: 'center',
+                  gap: 10, height: 36, padding: '0 9px',
+                  borderRadius: 8, textDecoration: 'none',
+                  color: active ? SB_TEXT_ACTIVE : SB_TEXT,
+                  background: active ? SB_ACTIVE_BG : 'transparent',
+                  whiteSpace: 'nowrap', overflow: 'hidden',
+                  fontWeight: active ? 600 : 500,
+                  fontSize: 12,
+                  position: 'relative',
+                  transition: 'color 130ms ease, background-color 130ms ease',
+                }}
+                onMouseEnter={e => {
+                  if (!active) (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
+                  if (!active) (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
+                }}
+                onMouseLeave={e => {
+                  if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent';
+                  if (!active) (e.currentTarget as HTMLElement).style.color = SB_TEXT;
+                }}
+              >
+                {active && (
+                  <span style={{
+                    position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%)',
+                    width: 2.5, height: 18,
+                    background: SB_BORDER_L,
+                    borderRadius: '0 2px 2px 0',
+                  }} />
+                )}
+                <Icon size={17} strokeWidth={active ? 2 : 1.75} style={{ flexShrink: 0 }} />
+                <AnimatePresence>
+                  {open && (
+                    <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden', flex: 1 }}>
+                      {label}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+                {/* Chevron for calendar expand/collapse */}
+                {isCalendar && active && open && (
+                  <motion.div
+                    animate={{ rotate: calExpanded ? 0 : -90 }}
+                    transition={{ duration: 0.18 }}
+                    onClick={e => { e.preventDefault(); setCalExpanded(v => !v); }}
+                    style={{ marginLeft: 'auto', color: SB_TEXT, flexShrink: 0, display: 'flex' }}
+                  >
+                    <IconChevronDown size={12} />
+                  </motion.div>
+                )}
+              </Link>
+
+              {/* Calendar subsections */}
               <AnimatePresence>
-                {open && (
-                  <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden' }}>
-                    {label}
-                  </motion.span>
+                {showSubs && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.18 }}
+                    style={{ overflow: 'hidden', paddingLeft: 10 }}
+                  >
+                    {CAL_SUBSECTIONS.map(({ label: subLabel, Icon: SubIcon }) => (
+                      <div
+                        key={subLabel}
+                        title={subLabel}
+                        style={{
+                          display: 'flex', alignItems: 'center',
+                          gap: 8, height: 30, padding: '0 9px',
+                          borderRadius: 7, cursor: 'pointer',
+                          color: SB_TEXT,
+                          fontSize: 11, fontWeight: 400,
+                          whiteSpace: 'nowrap', overflow: 'hidden',
+                          transition: 'background 130ms ease, color 130ms ease',
+                          borderLeft: '1px solid rgba(255,255,255,0.08)',
+                          marginLeft: 8,
+                        }}
+                        onMouseEnter={e => {
+                          (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
+                          (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
+                        }}
+                        onMouseLeave={e => {
+                          (e.currentTarget as HTMLElement).style.background = 'transparent';
+                          (e.currentTarget as HTMLElement).style.color = SB_TEXT;
+                        }}
+                      >
+                        <SubIcon size={13} strokeWidth={1.6} style={{ flexShrink: 0, opacity: 0.7 }} />
+                        <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden' }}>
+                          {subLabel}
+                        </motion.span>
+                      </div>
+                    ))}
+                  </motion.div>
                 )}
               </AnimatePresence>
-            </Link>
+            </div>
           );
         })}
       </div>
@@ -157,20 +222,6 @@ export default function LeftSidebar() {
 
       {/* ── Bottom items ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
-        {/* Groups — locked */}
-        <div title="Groups — coming soon" style={{
-          display: 'flex', alignItems: 'center', gap: 10,
-          height: 36, padding: '0 9px', borderRadius: 8,
-          color: SB_TEXT, pointerEvents: 'none', opacity: 0.25,
-          whiteSpace: 'nowrap', overflow: 'hidden',
-          fontSize: 12, fontWeight: 500,
-        }}>
-          <IconUsers size={17} strokeWidth={1.75} style={{ flexShrink: 0 }} />
-          <AnimatePresence>
-            {open && <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden' }}>Groups</motion.span>}
-          </AnimatePresence>
-        </div>
-
         {/* Settings */}
         {(() => {
           const active = isActive('/settings');

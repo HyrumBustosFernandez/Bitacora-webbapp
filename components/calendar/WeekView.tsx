@@ -58,7 +58,7 @@ export default function WeekView({ weekStart, events, onSlotClick, onEventClick 
       <div style={{
         display: 'grid',
         gridTemplateColumns: `${GUTTER_W}px repeat(7, 1fr)`,
-        borderBottom: '1px solid var(--border-subtle)',
+        borderBottom: '1px solid var(--separator-subtle)',
         flexShrink: 0, position: 'sticky', top: 0,
         background: 'var(--bg-surface)', zIndex: 2,
       }}>
@@ -69,7 +69,7 @@ export default function WeekView({ weekStart, events, onSlotClick, onEventClick 
           return (
             <div key={i} style={{
               padding: '12px 0 10px', textAlign: 'center',
-              borderLeft: '1px solid var(--border-subtle)',
+              borderLeft: '1px solid var(--separator-subtle)',
               background: isToday ? 'var(--accent-subtle)' : 'transparent',
             }}>
               <div style={{
@@ -123,7 +123,7 @@ export default function WeekView({ weekStart, events, onSlotClick, onEventClick 
             <div key={h} style={{
               position: 'absolute', left: 0, right: 0,
               top: hi * HOUR_PX, height: 1,
-              background: 'var(--border-subtle)', zIndex: 0,
+              background: 'var(--separator-subtle)', zIndex: 0,
             }} />
           ))}
 
@@ -151,7 +151,7 @@ export default function WeekView({ weekStart, events, onSlotClick, onEventClick 
             const dayEvents = (eventsByDate.get(ds) ?? []).filter(e => e.time);
             return (
               <div key={di} style={{
-                borderLeft: '1px solid var(--border-subtle)',
+                borderLeft: '1px solid var(--separator-subtle)',
                 position: 'relative', height: totalH,
                 background: isToday ? 'rgba(91,91,214,0.03)' : 'transparent',
               }}>
