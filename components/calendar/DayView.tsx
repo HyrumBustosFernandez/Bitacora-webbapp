@@ -48,7 +48,7 @@ export default function DayView({ date, events, onSlotClick, onEventClick }: Pro
       {/* Day header */}
       <div style={{
         padding: '14px 24px 12px',
-        borderBottom: '1px solid var(--border-subtle)',
+        borderBottom: '1px solid var(--separator-subtle)',
         flexShrink: 0, position: 'sticky', top: 0,
         background: 'var(--bg-surface)', zIndex: 2,
       }}>
@@ -116,7 +116,7 @@ export default function DayView({ date, events, onSlotClick, onEventClick }: Pro
         {/* Event column */}
         <div style={{
           flex: 1, position: 'relative',
-          borderLeft: '1px solid var(--border-subtle)',
+          borderLeft: '1px solid var(--separator-subtle)',
           paddingRight: 24, // right breathing room
         }}>
           {/* Hour lines */}
@@ -124,7 +124,7 @@ export default function DayView({ date, events, onSlotClick, onEventClick }: Pro
             <div key={h} style={{
               position: 'absolute', left: 0, right: 24,
               top: hi * HOUR_PX, height: 1,
-              background: 'var(--border-subtle)',
+              background: 'var(--separator-subtle)',
             }} />
           ))}
 

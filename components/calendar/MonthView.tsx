@@ -2,10 +2,13 @@
 
 import { CalendarEvent, EVENT_TYPE_COLORS } from '@/lib/events';
 
+import { Task, PRIORITY_COLORS } from '@/lib/events';
+
 interface Props {
   year: number;
   month: number;
   events: CalendarEvent[];
+  tasks: Task[];
   onDayClick: (date: string) => void;
   onEventClick: (event: CalendarEvent) => void;
 }
@@ -14,7 +17,7 @@ const DOW_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 function twoDigit(n: number) { return String(n).padStart(2, '0'); }
 
-export default function MonthView({ year, month, events, onDayClick, onEventClick }: Props) {
+export default function MonthView({ year, month, events, tasks, onDayClick, onEventClick }: Props) {
   const today = new Date();
   const isThisMonth = today.getFullYear() === year && today.getMonth() === month;
 
@@ -55,16 +58,23 @@ export default function MonthView({ year, month, events, onDayClick, onEventClic
     eventsByDate.set(e.date, arr);
   });
 
+  const tasksByDate = new Map<string, Task[]>();
+  tasks.forEach(t => {
+    const arr = tasksByDate.get(t.dueDate) ?? [];
+    arr.push(t);
+    tasksByDate.set(t.dueDate, arr);
+  });
+
   const rows = Math.ceil(cells.length / 7);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
 
-      {/* Day-of-week header — taller, more breathing room */}
+      {/* Day-of-week header */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(7, 1fr)',
-        borderBottom: '1px solid var(--border-subtle)',
+        borderBottom: '1px solid var(--separator-subtle)',
         flexShrink: 0,
       }}>
         {DOW_LABELS.map(d => (
@@ -91,29 +101,37 @@ export default function MonthView({ year, month, events, onDayClick, onEventClic
       }}>
         {cells.map((cell, i) => {
           const dayEvents = eventsByDate.get(cell.dateStr) ?? [];
+          const dayTasks  = tasksByDate.get(cell.dateStr) ?? [];
           const isWeekend = (i % 7 === 5 || i % 7 === 6);
+          const totalItems = dayEvents.length + dayTasks.length;
+          const maxVisible = 3;
           return (
             <div
               key={i}
               onClick={() => cell.curMonth && onDayClick(cell.dateStr)}
               style={{
-                borderRight: (i + 1) % 7 !== 0 ? '1px solid var(--border-subtle)' : undefined,
-                borderBottom: i < cells.length - 7 ? '1px solid var(--border-subtle)' : undefined,
+                borderRight: (i + 1) % 7 !== 0 ? '1px solid var(--separator-subtle)' : undefined,
+                borderBottom: i < cells.length - 7 ? '1px solid var(--separator-subtle)' : undefined,
                 padding: '10px 12px 8px',
                 cursor: cell.curMonth ? 'pointer' : 'default',
                 opacity: cell.curMonth ? 1 : 0.28,
                 background: isWeekend && cell.curMonth ? 'rgba(0,0,0,0.012)' : 'transparent',
                 display: 'flex', flexDirection: 'column', gap: 4,
-                transition: 'background 130ms ease',
+                transition: 'background 200ms cubic-bezier(0.4,0,0.2,1), transform 200ms cubic-bezier(0.4,0,0.2,1), box-shadow 200ms cubic-bezier(0.4,0,0.2,1)',
                 minHeight: 0,
               }}
               onMouseEnter={e => {
-                if (cell.curMonth)
-                  (e.currentTarget as HTMLElement).style.background = 'var(--bg-elevated)';
+                if (!cell.curMonth) return;
+                const el = e.currentTarget as HTMLElement;
+                el.style.background = 'var(--bg-elevated)';
+                el.style.transform = 'translateY(-2px)';
+                el.style.boxShadow = '0 4px 12px rgba(91,91,214,0.15)';
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.background =
-                  isWeekend && cell.curMonth ? 'rgba(0,0,0,0.012)' : 'transparent';
+                const el = e.currentTarget as HTMLElement;
+                el.style.background = isWeekend && cell.curMonth ? 'rgba(0,0,0,0.012)' : 'transparent';
+                el.style.transform = '';
+                el.style.boxShadow = '';
               }}
             >
               {/* Date number */}
@@ -133,9 +151,9 @@ export default function MonthView({ year, month, events, onDayClick, onEventClic
                 {cell.day}
               </span>
 
-              {/* Event pills */}
+              {/* Event + task pills */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 3, overflow: 'hidden' }}>
-                {dayEvents.slice(0, 3).map(ev => {
+                {dayEvents.slice(0, maxVisible).map(ev => {
                   const c = ev.color || EVENT_TYPE_COLORS[ev.type] || '#6B7280';
                   return (
                     <button
@@ -166,12 +184,41 @@ export default function MonthView({ year, month, events, onDayClick, onEventClic
                     </button>
                   );
                 })}
-                {dayEvents.length > 3 && (
-                  <span style={{
-                    fontSize: 10, color: 'var(--text-3)',
-                    paddingLeft: 3, fontWeight: 500,
-                  }}>
-                    +{dayEvents.length - 3} more
+                {dayTasks.slice(0, Math.max(0, maxVisible - dayEvents.length)).map(task => {
+                  const pc = PRIORITY_COLORS[task.priority];
+                  return (
+                    <div
+                      key={task.id}
+                      title={task.name}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 5,
+                        padding: '2px 6px', borderRadius: 5,
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid var(--border-subtle)',
+                        width: '100%', overflow: 'hidden',
+                      }}
+                    >
+                      <div style={{
+                        width: 9, height: 9, borderRadius: '50%',
+                        border: `1.5px solid ${pc}`, flexShrink: 0,
+                        background: task.status === 'done' ? pc : 'transparent',
+                      }} />
+                      <span style={{
+                        fontSize: 10, color: 'var(--text-2)',
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        flex: 1, lineHeight: 1.5,
+                        textDecoration: task.status === 'done' ? 'line-through' : 'none',
+                        opacity: task.status === 'done' ? 0.5 : 1,
+                      }}>
+                        {task.name}
+                      </span>
+                      <div style={{ width: 5, height: 5, borderRadius: '50%', background: pc, flexShrink: 0 }} />
+                    </div>
+                  );
+                })}
+                {totalItems > maxVisible && (
+                  <span style={{ fontSize: 10, color: 'var(--text-3)', paddingLeft: 3, fontWeight: 500 }}>
+                    +{totalItems - maxVisible} more
                   </span>
                 )}
               </div>
