@@ -27,7 +27,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <LeftSidebar />
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', minWidth: 0 }}>
+      <div className="glass-surface" style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', minWidth: 0 }}>
         <TopNav />
         <main style={{ flex: 1, overflowY: 'auto', padding: 24, minHeight: 0 }}>
           {children}

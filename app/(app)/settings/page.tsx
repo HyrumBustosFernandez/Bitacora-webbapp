@@ -1,33 +1,50 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { IconSun, IconMoon, IconPrinter, IconEye } from '@tabler/icons-react';
+import { IconSun, IconMoon, IconPrinter, IconEye, IconPhoto, IconCheck } from '@tabler/icons-react';
 import { useTheme } from '@/components/ThemeProvider';
+import { type Lang, LANG_LABELS, LANG_FLAGS, APP } from '@/lib/i18n';
 
 const DEFAULT_DUOC_URL = 'https://campusvirtual.duoc.cl/';
 
+const BACKGROUNDS = [
+  { file: 'none',                    label: 'None'       },
+  { file: 'blob-red.heic',           label: 'Blob Red'   },
+  { file: 'blue_distortion_1.heic',  label: 'Blue Distortion 1' },
+  { file: 'blue_distortion_2.heic',  label: 'Blue Distortion 2' },
+  { file: 'chromatic_light_2.heic',  label: 'Chromatic Light'   },
+  { file: 'cube_mono.heic',          label: 'Cube Mono'  },
+  { file: 'glaze_1.heic',            label: 'Glaze 1'    },
+  { file: 'glaze_1_alt.heic',        label: 'Glaze 1 Alt'},
+  { file: 'glaze_2.heic',            label: 'Glaze 2'    },
+  { file: 'loupe.heic',              label: 'Loupe'      },
+  { file: 'loupe-mono-light.heic',   label: 'Loupe Mono Light' },
+  { file: 'mono_dark_distortion_2.heic', label: 'Mono Dark'  },
+  { file: 'mono_light_distortion_1.heic',label: 'Mono Light' },
+  { file: 'red_distortion_4.heic',   label: 'Red Distortion' },
+];
+
 const INPUT: React.CSSProperties = {
   width: '100%', boxSizing: 'border-box',
-  background: 'var(--bg-input)',
-  border: '1px solid var(--border-default)',
+  background: 'var(--bg-input)', border: '1px solid var(--border-default)',
   borderRadius: 8, padding: '8px 10px',
-  color: 'var(--text-1)', fontSize: 12,
-  outline: 'none', fontFamily: 'inherit',
+  color: 'var(--text-1)', fontSize: 12, outline: 'none', fontFamily: 'inherit',
   transition: 'border-color 130ms ease',
 };
 
 const SECTION: React.CSSProperties = {
-  background: 'var(--bg-surface)',
-  border: '1px solid var(--border-default)',
+  background: 'var(--bg-surface)', border: '1px solid var(--border-default)',
   borderRadius: 12, padding: '16px 18px',
   display: 'flex', flexDirection: 'column', gap: 14,
   boxShadow: 'var(--shadow-card)',
+  backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
 };
 
 export default function SettingsPage() {
-  const { theme, toggle } = useTheme();
-  const [duocUrl,    setDuocUrl]    = useState(DEFAULT_DUOC_URL);
-  const [saved,      setSaved]      = useState(false);
+  const { theme, toggle, bg, setBg, lang, setLang } = useTheme();
+  const t = APP[lang];
+  const [duocUrl, setDuocUrl] = useState(DEFAULT_DUOC_URL);
+  const [saved,   setSaved]   = useState(false);
   const [colorBlind, setColorBlind] = useState(false);
 
   useEffect(() => {
@@ -53,14 +70,15 @@ export default function SettingsPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-1)' }}>Settings</span>
+      <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-1)' }}>{t.nav.settings}</span>
 
       {/* ── Appearance ── */}
       <div style={SECTION}>
-        <span className="label-section">Appearance</span>
+        <span className="label-section">{t.settings.appearance}</span>
 
+        {/* Theme */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-2)' }}>Theme</span>
+          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-2)' }}>{t.settings.theme}</span>
           <div style={{ display: 'flex', gap: 8 }}>
             <button type="button" onClick={() => theme !== 'dark' && toggle()}
               className={theme === 'dark' ? 'btn btn-primary' : 'btn btn-secondary'} style={{ gap: 7 }}>
@@ -73,32 +91,95 @@ export default function SettingsPage() {
           </div>
         </div>
 
+        {/* Language */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-2)' }}>Accent color</span>
+          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-2)' }}>{t.settings.language}</span>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {[
-              { color: '#4F6BFB', label: 'Indigo' },
-              { color: '#8B5CF6', label: 'Purple' },
-              { color: '#06B6D4', label: 'Cyan'   },
-              { color: '#3DD68C', label: 'Green'  },
-              { color: '#F5A623', label: 'Amber'  },
-            ].map(({ color, label }) => (
-              <button key={color} type="button" title={label} style={{
-                width: 24, height: 24, borderRadius: '50%',
-                background: color, border: 0, cursor: 'pointer',
-                outline: color === '#4F6BFB' ? '2px solid var(--text-2)' : '2px solid transparent',
-                outlineOffset: 2,
-                transition: 'outline 130ms ease, transform 130ms ease',
-                transform: color === '#4F6BFB' ? 'scale(1.15)' : 'scale(1)',
-              }} />
+            {(['en', 'es', 'pt'] as Lang[]).map(l => (
+              <button
+                key={l} type="button"
+                onClick={() => setLang(l)}
+                className={lang === l ? 'btn btn-primary' : 'btn btn-secondary'}
+                style={{ gap: 6 }}
+              >
+                <span style={{ fontSize: 14 }}>{LANG_FLAGS[l]}</span>
+                {LANG_LABELS[l]}
+              </button>
             ))}
           </div>
-          <span style={{ fontSize: 10, color: 'var(--text-4)' }}>More accent colors coming soon.</span>
         </div>
 
-        {/* Color-blind mode */}
+        {/* Background */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <IconPhoto size={13} color="var(--text-2)" />
+            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-2)' }}>{t.settings.background}</span>
+          </div>
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: 8,
+          }}>
+            {BACKGROUNDS.map(({ file, label }) => {
+              const active = bg === file || (file === 'none' && (!bg || bg === 'none'));
+              return (
+                <button
+                  key={file} type="button"
+                  onClick={() => setBg(file === 'none' ? 'none' : file)}
+                  style={{
+                    position: 'relative', borderRadius: 10, overflow: 'hidden',
+                    height: 72, border: active ? '2px solid var(--accent)' : '2px solid var(--border-default)',
+                    cursor: 'pointer', transition: 'border-color 150ms ease, box-shadow 150ms ease',
+                    boxShadow: active ? '0 0 0 2px var(--accent-glow)' : 'none',
+                    background: file === 'none' ? 'var(--bg-elevated)' : 'transparent',
+                  }}
+                >
+                  {file !== 'none' && (
+                    <img
+                      src={`/backgrounds/${file}`}
+                      alt={label}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                  )}
+                  {file === 'none' && (
+                    <div style={{
+                      width: '100%', height: '100%',
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
+                    }}>
+                      <span style={{ fontSize: 18 }}>✕</span>
+                      <span style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500 }}>{t.settings.noBackground}</span>
+                    </div>
+                  )}
+                  {/* Overlay label */}
+                  {file !== 'none' && (
+                    <div style={{
+                      position: 'absolute', bottom: 0, left: 0, right: 0,
+                      background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%)',
+                      padding: '4px 6px 5px',
+                    }}>
+                      <span style={{ fontSize: 9, fontWeight: 600, color: '#fff', lineHeight: 1 }}>{label}</span>
+                    </div>
+                  )}
+                  {active && (
+                    <div style={{
+                      position: 'absolute', top: 5, right: 5,
+                      width: 18, height: 18, borderRadius: '50%',
+                      background: 'var(--accent)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <IconCheck size={11} color="#fff" />
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <span style={{ fontSize: 10, color: 'var(--text-4)' }}>
+            Glassmorphism is applied automatically when a background is active.
+          </span>
+        </div>
+
+        {/* Accessibility */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-2)' }}>Accessibility</span>
+          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-2)' }}>{t.settings.accessibility}</span>
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '10px 14px', background: 'var(--bg-elevated)',

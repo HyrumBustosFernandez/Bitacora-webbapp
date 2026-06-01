@@ -1,13 +1,14 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { COURSES, type CourseItem, type Course } from '@/lib/courses';
 import { getItemState, toggleItemDone, loadState, getCourseProgress, type AppState } from '@/lib/storage';
 import { loadEvents, type CalendarEvent } from '@/lib/events';
 import { useToast } from '@/components/Toast';
 import Confetti from '@/components/Confetti';
-import { useState } from 'react';
+import { useTheme } from '@/components/ThemeProvider';
+import { APP } from '@/lib/i18n';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -101,6 +102,8 @@ interface Props {
 
 export default function TodayCards({ state, onRefresh }: Props) {
   const { toast } = useToast();
+  const { lang } = useTheme();
+  const t = APP[lang];
   const [showConfetti, setShowConfetti] = useState(false);
 
   const today      = useMemo(() => new Date(), []);
@@ -161,9 +164,10 @@ export default function TodayCards({ state, onRefresh }: Props) {
       {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
       <section style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span className="label-section">Today</span>
+          <span className="label-section">{t.today}</span>
           <span style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 500 }}>{headerDate}</span>
         </div>
+        <p style={{ margin: 0, fontSize: 11, color: 'var(--text-3)', lineHeight: 1.5 }}>{t.todayTip}</p>
 
         {cards.length === 0 ? (
           <div style={{

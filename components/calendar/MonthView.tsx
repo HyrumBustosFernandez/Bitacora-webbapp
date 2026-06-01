@@ -112,25 +112,23 @@ export default function MonthView({ year, month, events, tasks, onDayClick, onEv
               style={{
                 borderRight: (i + 1) % 7 !== 0 ? '1px solid var(--separator-subtle)' : undefined,
                 borderBottom: i < cells.length - 7 ? '1px solid var(--separator-subtle)' : undefined,
-                padding: '10px 12px 8px',
+                padding: '8px 8px 6px',
                 cursor: cell.curMonth ? 'pointer' : 'default',
                 opacity: cell.curMonth ? 1 : 0.28,
                 background: isWeekend && cell.curMonth ? 'rgba(0,0,0,0.012)' : 'transparent',
-                display: 'flex', flexDirection: 'column', gap: 4,
-                transition: 'background 200ms cubic-bezier(0.4,0,0.2,1), transform 200ms cubic-bezier(0.4,0,0.2,1), box-shadow 200ms cubic-bezier(0.4,0,0.2,1)',
-                minHeight: 0,
+                display: 'flex', flexDirection: 'column', gap: 3,
+                overflow: 'hidden', minHeight: 0,
+                transition: 'background 200ms cubic-bezier(0.4,0,0.2,1), box-shadow 200ms cubic-bezier(0.4,0,0.2,1)',
               }}
               onMouseEnter={e => {
                 if (!cell.curMonth) return;
                 const el = e.currentTarget as HTMLElement;
                 el.style.background = 'var(--bg-elevated)';
-                el.style.transform = 'translateY(-2px)';
-                el.style.boxShadow = '0 4px 12px rgba(91,91,214,0.15)';
+                el.style.boxShadow = '0 0 0 1px rgba(91,91,214,0.15) inset';
               }}
               onMouseLeave={e => {
                 const el = e.currentTarget as HTMLElement;
                 el.style.background = isWeekend && cell.curMonth ? 'rgba(0,0,0,0.012)' : 'transparent';
-                el.style.transform = '';
                 el.style.boxShadow = '';
               }}
             >

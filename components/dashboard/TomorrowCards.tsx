@@ -4,6 +4,8 @@ import { useMemo, useState } from 'react';
 import { COURSES, type CourseItem, type Course } from '@/lib/courses';
 import { getItemState, type AppState } from '@/lib/storage';
 import { loadEvents, type CalendarEvent } from '@/lib/events';
+import { useTheme } from '@/components/ThemeProvider';
+import { APP } from '@/lib/i18n';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -92,6 +94,8 @@ interface Props {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function TomorrowCards({ state }: Props) {
+  const { lang } = useTheme();
+  const t = APP[lang];
   const tomorrow = useMemo(() => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
@@ -135,9 +139,10 @@ export default function TomorrowCards({ state }: Props) {
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span className="label-section">Tomorrow</span>
+        <span className="label-section">{t.tomorrow}</span>
         <span style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 500 }}>{headerDate}</span>
       </div>
+      <p style={{ margin: 0, fontSize: 11, color: 'var(--text-3)', lineHeight: 1.5 }}>{t.tomorrowTip}</p>
 
       {cards.length === 0 ? (
         <div style={{

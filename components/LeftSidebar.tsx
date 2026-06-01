@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   IconLayoutGrid, IconBook2, IconBolt, IconCalendar,
   IconChartBar, IconUsers, IconSettings2,
-  IconHome, IconClock, IconFileText, IconStack2, IconTrendingUp,
+  IconHome, IconClock, IconFileText, IconStack2, IconTrendingUp, IconBrain,
 } from '@tabler/icons-react';
 
 /* ── Sidebar brand colors ── */
@@ -32,13 +32,13 @@ function PandaLogo({ size = 26 }: { size?: number }) {
 }
 
 const NAV_TOP = [
-  { href: '/home',      Icon: IconLayoutGrid, label: 'Home'     },
-  { href: '/courses',   Icon: IconBook2,      label: 'Courses'  },
+  { href: '/home',      Icon: IconLayoutGrid, label: 'Home'      },
+  { href: '/courses',   Icon: IconBook2,      label: 'Courses'   },
 ];
 
-const NAV_BOTTOM = [
-  { href: '/calendar',  Icon: IconCalendar,   label: 'Calendar' },
-  { href: '/analytics', Icon: IconChartBar,   label: 'Overview' },
+const NAV_CALENDAR = [
+  { href: '/calendar',  Icon: IconCalendar,   label: 'Calendar'  },
+  { href: '/analytics', Icon: IconChartBar,   label: 'Overview'  },
 ];
 
 const STUDY_SUBSECTIONS = [
@@ -155,6 +155,7 @@ export default function LeftSidebar() {
       onMouseLeave={handleMouseLeave}
       animate={{ width: open ? 200 : 52 }}
       transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="glass-surface"
       style={{
         background: SB_BG,
         boxShadow: '2px 0 20px rgba(20,30,70,0.22), 1px 0 0 rgba(255,255,255,0.04)',
@@ -190,9 +191,19 @@ export default function LeftSidebar() {
         </AnimatePresence>
       </Link>
 
-      {/* ── Top nav: Home, Courses ── */}
+      {/* ── Home, Courses ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
         {NAV_TOP.map(({ href, Icon, label }) => (
+          <NavItem key={href} href={href} Icon={Icon} label={label} />
+        ))}
+      </div>
+
+      {/* ── Separator ── */}
+      <Separator open={open} />
+
+      {/* ── Calendar, Overview ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
+        {NAV_CALENDAR.map(({ href, Icon, label }) => (
           <NavItem key={href} href={href} Icon={Icon} label={label} />
         ))}
       </div>
@@ -298,11 +309,9 @@ export default function LeftSidebar() {
       {/* ── Separator ── */}
       <Separator open={open} />
 
-      {/* ── Calendar, Analytics ── */}
+      {/* ── AI Assistant ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
-        {NAV_BOTTOM.map(({ href, Icon, label }) => (
-          <NavItem key={href} href={href} Icon={Icon} label={label} />
-        ))}
+        <NavItem href="/ai" Icon={IconBrain} label="AI Assistant" />
       </div>
 
       <div style={{ flex: 1 }} />
