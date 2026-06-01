@@ -60,13 +60,13 @@ export default function Home() {
         text="This is your home dashboard. Check today's tasks, monitor progress, and navigate quickly with the actions below."
       />
 
-      <QuickActions />
-
       <StatsRow state={appState} />
 
       <TodayCards state={appState} onRefresh={refresh} />
 
       <TomorrowCards state={appState} />
+
+      <QuickActions />
 
       <ExternalToolsStrip />
     </div>
