@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   IconBolt, IconBook2, IconCalendar, IconChartBar,
   IconClock, IconStack2, IconTarget, IconShieldCheck,
@@ -56,13 +55,16 @@ function LangSelector({ lang, onChange }: { lang: Lang; onChange: (l: Lang) => v
         <IconChevronDown size={11} style={{ transition: 'transform 180ms', transform: open ? 'rotate(180deg)' : 'none' }} />
       </button>
       {open && (
-        <div style={{
-          position: 'absolute', top: 'calc(100% + 6px)', right: 0, zIndex: 200,
-          background: 'rgba(18,18,25,0.96)', backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10,
-          padding: 4, minWidth: 160,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.50)',
-        }}>
+        <div
+          style={{
+            position: 'absolute', top: 'calc(100% + 6px)', right: 0, zIndex: 200,
+            background: 'rgba(18,18,25,0.96)', backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10,
+            padding: 4, minWidth: 160,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.50)',
+            animation: 'modal-panel-in 160ms cubic-bezier(0.16,1,0.3,1) both',
+          }}
+        >
           {langs.map(l => (
             <button
               key={l}
@@ -89,16 +91,12 @@ function LangSelector({ lang, onChange }: { lang: Lang; onChange: (l: Lang) => v
   );
 }
 
-export default function RootPage() {
-  const router = useRouter();
+export default function LandingPage() {
   const [lang, setLang] = useState<Lang>('en');
 
   useEffect(() => {
-    if (localStorage.getItem('paceup_authed')) {
-      router.replace('/home');
-    }
     setLang(getStoredLang());
-  }, [router]);
+  }, []);
 
   function handleLangChange(l: Lang) {
     setLang(l);
@@ -113,6 +111,7 @@ export default function RootPage() {
       background: '#0A0A0F', color: '#F0EEF8',
       fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
     }}>
+      {/* Gradient */}
       <div style={{
         position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0,
         background: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(91,91,214,0.18) 0%, transparent 60%)',
@@ -145,7 +144,7 @@ export default function RootPage() {
             >
               <IconBrandGithub size={13} /> GitHub
             </a>
-            <a href="/login" style={{
+            <a href="/login" target="_blank" rel="noopener noreferrer" style={{
               padding: '6px 14px', borderRadius: 8, textDecoration: 'none',
               background: '#5B5BD6', color: '#fff', fontSize: 12, fontWeight: 700, transition: 'background 150ms ease',
             }}
@@ -185,7 +184,7 @@ export default function RootPage() {
             {t.heroSub}
           </p>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <a href="/login" style={{
+            <a href="/login" target="_blank" rel="noopener noreferrer" style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               padding: '12px 24px', borderRadius: 12, textDecoration: 'none',
               background: '#5B5BD6', color: '#fff', fontSize: 14, fontWeight: 700,
@@ -210,12 +209,13 @@ export default function RootPage() {
           </div>
         </section>
 
-        {/* App preview */}
+        {/* App mockup / preview */}
         <section style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px 100px' }}>
           <div style={{
             borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)',
             overflow: 'hidden', boxShadow: '0 40px 120px rgba(0,0,0,0.70)', background: '#171717',
           }}>
+            {/* Browser chrome */}
             <div style={{
               height: 40, background: '#1a1a1a', borderBottom: '1px solid rgba(255,255,255,0.06)',
               display: 'flex', alignItems: 'center', padding: '0 16px', gap: 6,
@@ -231,12 +231,16 @@ export default function RootPage() {
                 <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>paceup.app</span>
               </div>
             </div>
-            <div style={{ padding: '32px 32px 24px', background: 'linear-gradient(135deg, #171717 0%, #1a1a2e 50%, #171717 100%)' }}>
+            {/* Preview cards carousel */}
+            <div style={{
+              padding: '32px 32px 24px',
+              background: 'linear-gradient(135deg, #171717 0%, #1a1a2e 50%, #171717 100%)',
+            }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 16 }}>
                 {[
-                  { label: 'Courses',    value: '9',  sub: 'active this term',  color: '#5B5BD6' },
-                  { label: 'Items Done', value: '11', sub: 'of 117 total',       color: '#22C55E' },
-                  { label: 'Days Left',  value: '10', sub: 'until exam',         color: '#F59E0B' },
+                  { label: 'Courses', value: '9', sub: 'active this term', color: '#5B5BD6' },
+                  { label: 'Items Done', value: '11', sub: 'of 117 total', color: '#22C55E' },
+                  { label: 'Days Left', value: '10', sub: 'until exam', color: '#F59E0B' },
                 ].map(({ label, value, sub, color }) => (
                   <div key={label} style={{
                     background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
@@ -253,9 +257,9 @@ export default function RootPage() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
                 {[
-                  { icon: '＋', label: 'Create Task',   color: '#5B5BD6' },
-                  { icon: '📅', label: 'Add Event',     color: '#22C55E' },
-                  { icon: '📚', label: 'Open Courses',  color: '#F59E0B' },
+                  { icon: '＋', label: 'Create Task', color: '#5B5BD6' },
+                  { icon: '📅', label: 'Add Event',   color: '#22C55E' },
+                  { icon: '📚', label: 'Open Courses', color: '#F59E0B' },
                   { icon: '🗓️', label: 'Open Calendar', color: '#EF4444' },
                 ].map(({ icon, label, color }) => (
                   <div key={label} style={{
@@ -272,7 +276,7 @@ export default function RootPage() {
                 ))}
               </div>
               <div style={{ textAlign: 'center', marginTop: 20 }}>
-                <a href="/login" style={{
+                <a href="/login" target="_blank" rel="noopener noreferrer" style={{
                   display: 'inline-flex', alignItems: 'center', gap: 6,
                   padding: '8px 18px', borderRadius: 9, textDecoration: 'none',
                   background: 'rgba(91,91,214,0.20)', border: '1px solid rgba(91,91,214,0.35)',
@@ -368,12 +372,12 @@ export default function RootPage() {
             border: '1px solid rgba(91,91,214,0.22)', borderRadius: 24, padding: '64px 40px',
           }}>
             <h2 style={{ fontSize: 'clamp(24px, 4vw, 44px)', fontWeight: 800, letterSpacing: '-0.02em', margin: '0 0 14px' }}>
-              Ready to pace up?
+              {t.heroTitle1} {t.heroTitle2}
             </h2>
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', margin: '0 0 32px', lineHeight: 1.6 }}>
-              Free, local-first, and built for students serious about passing.
+              {t.heroSub}
             </p>
-            <a href="/login" style={{
+            <a href="/login" target="_blank" rel="noopener noreferrer" style={{
               display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px',
               borderRadius: 12, textDecoration: 'none', background: '#5B5BD6', color: '#fff',
               fontSize: 14, fontWeight: 700, boxShadow: '0 4px 28px rgba(91,91,214,0.45)', transition: 'all 150ms ease',
@@ -397,7 +401,7 @@ export default function RootPage() {
                 <IconBolt size={11} color="#fff" />
               </div>
               <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>PaceUp</span>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>{t.footerCopy} Hyrum Bustos</span>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>{t.footerCopy}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               {[

@@ -1,11 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { IconBolt, IconCheck, IconArrowRight } from '@tabler/icons-react';
 import {
-  getFocusInfo, getItemState, toggleItemDone, getTrackInfo,
+  getFocusInfo, getItemState, toggleItemDone, getTrackInfo, loadState, getCourseProgress,
   type AppState,
 } from '@/lib/storage';
+import { useToast } from '@/components/Toast';
+import Confetti from '@/components/Confetti';
 
 interface Props {
   state: AppState;
@@ -19,6 +22,8 @@ const DIVIDER: React.CSSProperties = {
 };
 
 export default function FocusTodayCard({ state, onRefresh }: Props) {
+  const { toast } = useToast();
+  const [showConfetti, setShowConfetti] = useState(false);
   const focus = getFocusInfo(state);
 
   if (!focus) {
@@ -42,11 +47,33 @@ export default function FocusTodayCard({ state, onRefresh }: Props) {
   const isBehind  = track.status === 'behind';
 
   function handleToggle(ii: number) {
+    const wasDone = getItemState(course, weekIndex, ii, state) === 'done';
+    const wasComplete = getCourseProgress(course, state) === 100;
+
     toggleItemDone(course, weekIndex, ii);
     onRefresh();
+
+    const newState = loadState();
+    const isNowComplete = getCourseProgress(course, newState) === 100;
+
+    if (!wasComplete && isNowComplete) {
+      setShowConfetti(true);
+      toast(`🎓 ${course.title} complete!`, { type: 'success', duration: 5000 });
+    } else {
+      toast(wasDone ? 'Item unmarked' : 'Item marked complete', {
+        type: 'success',
+        duration: 3500,
+        action: {
+          label: 'Undo',
+          onClick: () => { toggleItemDone(course, weekIndex, ii); onRefresh(); },
+        },
+      });
+    }
   }
 
   return (
+    <>
+    {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
     <div className="card" style={{ padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
       {/* Chip */}
@@ -205,6 +232,7 @@ export default function FocusTodayCard({ state, onRefresh }: Props) {
         <IconArrowRight size={14} strokeWidth={2.5} />
       </Link>
     </div>
+    </>
   );
 }
 

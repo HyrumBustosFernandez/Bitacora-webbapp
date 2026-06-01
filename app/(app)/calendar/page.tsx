@@ -2,12 +2,16 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { IconChevronLeft, IconChevronRight, IconPlus, IconLayoutList } from '@tabler/icons-react';
-import { CalendarEvent, loadEvents, deleteEvent, EVENT_TYPE_COLORS, EVENT_TYPE_LABELS, loadTasks, Task } from '@/lib/events';
+import {
+  CalendarEvent, loadEvents, deleteEvent, saveEvent,
+  EVENT_TYPE_COLORS, EVENT_TYPE_LABELS, loadTasks, Task,
+} from '@/lib/events';
 import MonthView from '@/components/calendar/MonthView';
 import WeekView from '@/components/calendar/WeekView';
 import DayView from '@/components/calendar/DayView';
 import CreateEventModal from '@/components/calendar/CreateEventModal';
 import TasksSidebar from '@/components/calendar/TasksSidebar';
+import ContextualTip from '@/components/ContextualTip';
 
 type ViewMode = 'month' | 'week' | 'day';
 type TabMode  = 'events' | 'tasks';
@@ -36,6 +40,7 @@ export default function CalendarPage() {
   const [showModal,     setShowModal]    = useState(false);
   const [modalDate,     setModalDate]    = useState<string | undefined>();
   const [modalMode,     setModalMode]    = useState<'event' | 'task'>('event');
+  const [editEvent,     setEditEvent]    = useState<CalendarEvent | null>(null);
   const [detailEvent,   setDetailEvent]  = useState<CalendarEvent | null>(null);
   const [tasksVisible,  setTasksVisible] = useState(true);
   const [refreshKey,    setRefreshKey]   = useState(0);
@@ -64,8 +69,9 @@ export default function CalendarPage() {
     if (!group || !ind) return;
     const active = group.querySelector<HTMLElement>('[data-active="true"]');
     if (!active) return;
-    ind.style.left  = `${active.offsetLeft}px`;
-    ind.style.width = `${active.offsetWidth}px`;
+    ind.style.left    = `${active.offsetLeft}px`;
+    ind.style.width   = `${active.offsetWidth}px`;
+    ind.style.opacity = '1';
   }
 
   useEffect(() => { positionIndicator(arcGroupRef,  arcIndRef);  }, [tab]);
@@ -125,35 +131,40 @@ export default function CalendarPage() {
     return current.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   }
 
-  /* Clicking a date cell opens the creation modal */
   function handleDayClick(dateStr: string) {
     setModalDate(dateStr);
     setModalMode(tab === 'tasks' ? 'task' : 'event');
+    setEditEvent(null);
     setShowModal(true);
   }
 
-  function handleSlotClick(dateStr: string, time: string) {
+  function handleSlotClick(dateStr: string, _time: string) {
     setModalDate(dateStr);
     setModalMode('event');
+    setEditEvent(null);
     setShowModal(true);
   }
 
   function handleAddNew() {
     setModalDate(view === 'day' ? toDateStr(current) : undefined);
     setModalMode(tab === 'tasks' ? 'task' : 'event');
+    setEditEvent(null);
+    setShowModal(true);
+  }
+
+  function handleEditEvent(ev: CalendarEvent) {
+    setDetailEvent(null);
+    setEditEvent(ev);
+    setModalMode('event');
     setShowModal(true);
   }
 
   /* Circular nav button style */
   const circleNavBtn: React.CSSProperties = {
-    width: 32, height: 32,
-    borderRadius: '50%',
-    background: 'rgba(255,255,255,0.07)',
-    border: 'none',
+    width: 32, height: 32, borderRadius: '50%',
+    background: 'rgba(255,255,255,0.07)', border: 'none',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    cursor: 'pointer',
-    color: 'var(--text-2)',
-    flexShrink: 0,
+    cursor: 'pointer', color: 'var(--text-2)', flexShrink: 0,
     transition: 'background 150ms cubic-bezier(0.4,0,0.2,1), color 150ms ease, transform 120ms ease',
   };
 
@@ -176,8 +187,7 @@ export default function CalendarPage() {
     background: 'var(--bg-elevated)',
     border: '1px solid var(--border-subtle)',
     borderRadius: 10, padding: 3,
-    gap: 0, flexShrink: 0,
-    position: 'relative',
+    gap: 0, flexShrink: 0, position: 'relative',
   };
   function pillBtnStyle(active: boolean): React.CSSProperties {
     return {
@@ -187,8 +197,7 @@ export default function CalendarPage() {
       color: active ? 'var(--text-1)' : 'var(--text-3)',
       cursor: 'pointer',
       transition: 'color 200ms cubic-bezier(0.4,0,0.2,1)',
-      whiteSpace: 'nowrap',
-      position: 'relative', zIndex: 1,
+      whiteSpace: 'nowrap', position: 'relative', zIndex: 1,
     };
   }
 
@@ -199,7 +208,7 @@ export default function CalendarPage() {
       <div style={{
         display: 'flex', alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 16, flexShrink: 0,
+        marginBottom: 10, flexShrink: 0,
       }}>
         <h1 style={{
           fontSize: 18, fontWeight: 700,
@@ -210,7 +219,6 @@ export default function CalendarPage() {
         </h1>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {/* Tasks toggle button */}
           <button
             type="button"
             onClick={() => setTasksVisible(v => !v)}
@@ -221,8 +229,7 @@ export default function CalendarPage() {
               border: `1px solid ${tasksVisible ? 'var(--accent-border)' : 'var(--border-default)'}`,
               borderRadius: 8, fontSize: 12, fontWeight: 500,
               color: tasksVisible ? 'var(--accent)' : 'var(--text-2)',
-              cursor: 'pointer',
-              transition: 'all 150ms ease',
+              cursor: 'pointer', transition: 'all 150ms ease',
             }}
           >
             <IconLayoutList size={13} />
@@ -238,6 +245,14 @@ export default function CalendarPage() {
             {tab === 'tasks' ? 'Add task' : 'Add event'}
           </button>
         </div>
+      </div>
+
+      {/* ── Contextual tip (below title, with spacing) ── */}
+      <div style={{ marginBottom: 12, flexShrink: 0 }}>
+        <ContextualTip
+          id="calendar-tip"
+          text="Use the Calendar to create events, schedule study sessions, and track deadlines. Switch between Month, Week, and Day views with the controls above."
+        />
       </div>
 
       {/* ── Calendar + Tasks layout ── */}
@@ -267,8 +282,7 @@ export default function CalendarPage() {
             {/* Circular nav + label */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
               <button
-                type="button" onClick={navPrev}
-                style={circleNavBtn}
+                type="button" onClick={navPrev} style={circleNavBtn}
                 onMouseEnter={e => {
                   (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.14)';
                   (e.currentTarget as HTMLElement).style.color = 'var(--text-1)';
@@ -284,17 +298,14 @@ export default function CalendarPage() {
               </button>
 
               <span style={{
-                fontSize: 14, fontWeight: 600,
-                color: 'var(--text-1)',
-                minWidth: 148, textAlign: 'center',
-                letterSpacing: '-0.01em',
+                fontSize: 14, fontWeight: 600, color: 'var(--text-1)',
+                minWidth: 148, textAlign: 'center', letterSpacing: '-0.01em',
               }}>
                 {headerLabel()}
               </span>
 
               <button
-                type="button" onClick={navNext}
-                style={circleNavBtn}
+                type="button" onClick={navNext} style={circleNavBtn}
                 onMouseEnter={e => {
                   (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.14)';
                   (e.currentTarget as HTMLElement).style.color = 'var(--text-1)';
@@ -313,10 +324,9 @@ export default function CalendarPage() {
                 type="button" onClick={navToday}
                 style={{
                   height: 32, borderRadius: 8, padding: '0 12px',
-                  background: 'rgba(255,255,255,0.07)',
-                  border: 'none', fontSize: 11, fontWeight: 600,
-                  color: 'var(--text-2)', cursor: 'pointer',
-                  marginLeft: 2,
+                  background: 'rgba(255,255,255,0.07)', border: 'none',
+                  fontSize: 11, fontWeight: 600, color: 'var(--text-2)',
+                  cursor: 'pointer', marginLeft: 2,
                   transition: 'background 150ms ease, color 150ms ease',
                 }}
                 onMouseEnter={e => {
@@ -347,16 +357,17 @@ export default function CalendarPage() {
                   {t.charAt(0).toUpperCase() + t.slice(1)}
                 </button>
               ))}
-              {/* Sliding arc underline */}
+              {/* Sliding arc underline — starts hidden until positioned */}
               <div
                 ref={arcIndRef}
                 style={{
                   position: 'absolute', bottom: 0, height: 3,
+                  width: 0, left: 0, opacity: 0,
                   background: 'linear-gradient(90deg, transparent, var(--accent) 20%, #7474E0 50%, var(--accent) 80%, transparent)',
                   borderRadius: '3px 3px 0 0',
                   clipPath: 'ellipse(50% 100% at 50% 100%)',
                   boxShadow: '0 0 8px rgba(91,91,214,0.5)',
-                  transition: 'left 250ms cubic-bezier(0.4,0,0.2,1), width 250ms cubic-bezier(0.4,0,0.2,1)',
+                  transition: 'left 250ms cubic-bezier(0.4,0,0.2,1), width 250ms cubic-bezier(0.4,0,0.2,1), opacity 150ms ease',
                   pointerEvents: 'none',
                 }}
               />
@@ -364,19 +375,17 @@ export default function CalendarPage() {
 
             {/* View toggle pill — Day | Week | Month */}
             <div ref={viewGroupRef} style={pillTrackStyle}>
-              {/* Sliding pill indicator */}
               <div
                 ref={viewIndRef}
                 style={{
-                  position: 'absolute',
-                  top: 3, bottom: 3,
+                  position: 'absolute', top: 3, bottom: 3,
+                  width: 0, left: 0, opacity: 0,
                   background: 'var(--bg-surface)',
                   border: '1px solid var(--border-default)',
                   borderRadius: 7,
                   boxShadow: '0 0 0 1px rgba(91,91,214,0.10) inset',
-                  transition: 'left 250ms cubic-bezier(0.4,0,0.2,1), width 250ms cubic-bezier(0.4,0,0.2,1)',
-                  pointerEvents: 'none',
-                  zIndex: 0,
+                  transition: 'left 250ms cubic-bezier(0.4,0,0.2,1), width 250ms cubic-bezier(0.4,0,0.2,1), opacity 150ms ease',
+                  pointerEvents: 'none', zIndex: 0,
                 }}
               />
               {(['day', 'week', 'month'] as ViewMode[]).map(v => (
@@ -435,12 +444,13 @@ export default function CalendarPage() {
 
       </div>
 
-      {/* ── Creation modal ── */}
+      {/* ── Creation / edit modal ── */}
       {showModal && (
         <CreateEventModal
           initialDate={modalDate}
           initialMode={modalMode}
-          onClose={() => setShowModal(false)}
+          editEvent={editEvent ?? undefined}
+          onClose={() => { setShowModal(false); setEditEvent(null); }}
           onSaved={refresh}
         />
       )}
@@ -450,6 +460,7 @@ export default function CalendarPage() {
         <EventDetailModal
           event={detailEvent}
           onClose={() => setDetailEvent(null)}
+          onEdit={() => handleEditEvent(detailEvent)}
           onDeleted={() => {
             deleteEvent(detailEvent.id);
             setDetailEvent(null);
@@ -464,19 +475,20 @@ export default function CalendarPage() {
 /* ─────────────────────────────────────
    Event detail modal (inline)
 ───────────────────────────────────── */
-function EventDetailModal({ event, onClose, onDeleted }: {
+function EventDetailModal({ event, onClose, onEdit, onDeleted }: {
   event: CalendarEvent;
   onClose: () => void;
+  onEdit: () => void;
   onDeleted: () => void;
 }) {
   const c = event.color || EVENT_TYPE_COLORS[event.type] || '#6B7280';
   return (
-    <div onClick={onClose} style={{
+    <div onClick={onClose} className="modal-backdrop" style={{
       position: 'fixed', inset: 0, zIndex: 100,
-      background: 'var(--overlay)', backdropFilter: 'blur(4px)',
+      background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
     }}>
-      <div onClick={e => e.stopPropagation()} style={{
+      <div onClick={e => e.stopPropagation()} className="modal-panel" style={{
         background: 'var(--bg-surface)',
         border: '1px solid var(--border-default)',
         borderRadius: 16, padding: 24,
@@ -497,7 +509,6 @@ function EventDetailModal({ event, onClose, onDeleted }: {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <DetailRow label="Date"  value={event.date} />
           {event.time && <DetailRow label="Time" value={event.time + (event.endTime ? ` – ${event.endTime}` : '')} />}
-          <DetailRow label="Type"  value={EVENT_TYPE_LABELS[event.type] ?? event.type} color={c} />
           {event.group && <DetailRow label="Group" value={event.group.charAt(0).toUpperCase() + event.group.slice(1)} />}
           {event.description && (
             <div style={{ marginTop: 4 }}>
@@ -506,16 +517,28 @@ function EventDetailModal({ event, onClose, onDeleted }: {
             </div>
           )}
         </div>
-        <button type="button" onClick={onDeleted}
-          style={{
-            marginTop: 4, padding: '9px 0',
-            background: 'var(--color-red-subtle)',
-            border: '1px solid var(--color-red-border)',
-            borderRadius: 9, fontSize: 12, fontWeight: 500,
-            color: 'var(--color-red)', cursor: 'pointer',
-          }}>
-          Delete event
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button type="button" onClick={onEdit}
+            style={{
+              flex: 1, padding: '9px 0',
+              background: 'var(--accent-subtle)',
+              border: '1px solid var(--accent-border)',
+              borderRadius: 9, fontSize: 12, fontWeight: 500,
+              color: 'var(--accent)', cursor: 'pointer',
+            }}>
+            Edit
+          </button>
+          <button type="button" onClick={onDeleted}
+            style={{
+              flex: 1, padding: '9px 0',
+              background: 'var(--color-red-subtle)',
+              border: '1px solid var(--color-red-border)',
+              borderRadius: 9, fontSize: 12, fontWeight: 500,
+              color: 'var(--color-red)', cursor: 'pointer',
+            }}>
+            Delete
+          </button>
+        </div>
       </div>
     </div>
   );
