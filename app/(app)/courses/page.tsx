@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { COURSES } from '@/lib/courses';
 import {
   loadState, getCourseProgress, getGlobalItems,
   getDaysLeft, getTrackInfo, type AppState,
 } from '@/lib/storage';
+import FocusTodayCard from '@/components/dashboard/FocusTodayCard';
+import ContextualTip from '@/components/ContextualTip';
 
 function Ring({ pct, accent }: { pct: number; accent: string }) {
   const size = 44, sw = 4, r = (size - sw) / 2;
@@ -65,6 +67,7 @@ export default function CoursesPage() {
   const [mounted,       setMounted]       = useState(false);
   const [hideCompleted, setHideCompleted] = useState(false);
 
+  const refresh = useCallback(() => setAppState(loadState()), []);
   useEffect(() => { setMounted(true); setAppState(loadState()); }, []);
 
   if (!mounted) return <Skeleton />;
@@ -91,6 +94,13 @@ export default function CoursesPage() {
           </button>
         )}
       </div>
+
+      <ContextualTip
+        id="courses-tip"
+        text="Browse all your certification courses here. Click a course to see its full curriculum, or use Focus Today below to work on your highest-priority module."
+      />
+
+      <FocusTodayCard state={appState} onRefresh={refresh} />
 
       <div className="rg-4">
         <MiniStatCard label="Total Courses"  value={String(COURSES.length)} sub="active this term" />

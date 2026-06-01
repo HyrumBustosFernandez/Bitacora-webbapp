@@ -1,10 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import {
-  IconChevronLeft, IconChevronRight,
-  IconNote, IconCalendarPlus, IconClock, IconBook,
-} from '@tabler/icons-react';
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { getUpcomingDeadlines, type AppState } from '@/lib/storage';
 import { loadEvents, toDateKey, EVENT_COLORS, type CalendarEvent } from '@/lib/events';
 import CreateEventModal from '@/components/calendar/CreateEventModal';
@@ -234,22 +231,6 @@ export default function CalendarCard({ state }: Props) {
           )}
         </div>
 
-        {/* Quick actions */}
-        <div className="card" style={{ padding: '16px 18px' }}>
-          <div style={{
-            fontSize: 9, fontWeight: 700, textTransform: 'uppercase',
-            letterSpacing: '0.07em', color: 'var(--text-3)', marginBottom: 10,
-          }}>
-            Quick actions
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-            <QuickAction icon={<IconNote size={14} />}         label="Add note"  href="/study" />
-            <QuickAction icon={<IconCalendarPlus size={14} />} label="Add event" onClick={() => { setModalDate(todayStr); setModalOpen(true); }} />
-            <QuickAction icon={<IconClock size={14} />}        label="Timer"     href="/study" />
-            <QuickAction icon={<IconBook size={14} />}         label="Courses"   href="/courses" />
-          </div>
-        </div>
-
       </div>
 
       {modalOpen && (
@@ -295,39 +276,3 @@ function LegendDot({ color, label }: { color: string; label: string }) {
   );
 }
 
-function QuickAction({ icon, label, href, onClick }: {
-  icon: React.ReactNode; label: string; href?: string; onClick?: () => void;
-}) {
-  const style: React.CSSProperties = {
-    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-    padding: '10px 8px',
-    background: 'var(--bg-elevated)',
-    border: '1px solid var(--border-subtle)',
-    borderRadius: 9, textDecoration: 'none',
-    color: 'var(--text-3)', cursor: 'pointer', width: '100%',
-    transition: 'border-color 130ms, background 130ms, color 130ms',
-  };
-
-  const handleEnter = (e: React.MouseEvent) => {
-    (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-hover)';
-    (e.currentTarget as HTMLElement).style.background = 'var(--bg-surface)';
-    (e.currentTarget as HTMLElement).style.color = 'var(--text-1)';
-  };
-  const handleLeave = (e: React.MouseEvent) => {
-    (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-subtle)';
-    (e.currentTarget as HTMLElement).style.background = 'var(--bg-elevated)';
-    (e.currentTarget as HTMLElement).style.color = 'var(--text-3)';
-  };
-
-  const inner = (
-    <>
-      {icon}
-      <span style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</span>
-    </>
-  );
-
-  if (onClick) {
-    return <button type="button" onClick={onClick} style={style} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>{inner}</button>;
-  }
-  return <a href={href} style={style} onMouseEnter={handleEnter} onMouseLeave={handleLeave}>{inner}</a>;
-}

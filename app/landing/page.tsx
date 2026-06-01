@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 import {
   IconBolt, IconBook2, IconCalendar, IconChartBar,
@@ -95,7 +94,7 @@ export default function LandingPage() {
             >
               <IconBrandGithub size={13} /> GitHub
             </a>
-            <Link href="/login" style={{
+            <a href="/login" target="_blank" rel="noopener noreferrer" style={{
               padding: '6px 14px', borderRadius: 8, textDecoration: 'none',
               background: '#5B5BD6', color: '#fff', fontSize: 12, fontWeight: 700, transition: 'background 150ms ease',
             }}
@@ -103,7 +102,7 @@ export default function LandingPage() {
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#5B5BD6'; }}
             >
               Open App
-            </Link>
+            </a>
           </div>
         </div>
       </header>
@@ -136,7 +135,7 @@ export default function LandingPage() {
             Know exactly what to study, track your progress, and never fall behind again.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <Link href="/login" style={{
+            <a href="/login" target="_blank" rel="noopener noreferrer" style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               padding: '12px 24px', borderRadius: 12, textDecoration: 'none',
               background: '#5B5BD6', color: '#fff', fontSize: 14, fontWeight: 700,
@@ -146,7 +145,7 @@ export default function LandingPage() {
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#5B5BD6'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
             >
               Start for free <IconArrowRight size={15} />
-            </Link>
+            </a>
             <a href="https://github.com/HyrumBustosFernandez" target="_blank" rel="noopener noreferrer" style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               padding: '12px 24px', borderRadius: 12, textDecoration: 'none',
@@ -198,11 +197,11 @@ export default function LandingPage() {
                 <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>PaceUp Dashboard</p>
                 <p style={{ margin: '4px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>App preview</p>
               </div>
-              <Link href="/login" style={{
+              <a href="/login" target="_blank" rel="noopener noreferrer" style={{
                 padding: '8px 18px', borderRadius: 9, textDecoration: 'none',
                 background: 'rgba(91,91,214,0.20)', border: '1px solid rgba(91,91,214,0.35)',
                 color: '#818CF8', fontSize: 12, fontWeight: 600,
-              }}>Open live app →</Link>
+              }}>Open live app →</a>
             </div>
           </div>
         </section>
@@ -286,7 +285,7 @@ export default function LandingPage() {
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', margin: '0 0 32px', lineHeight: 1.6 }}>
               Free, local-first, and built for students serious about passing.
             </p>
-            <Link href="/login" style={{
+            <a href="/login" target="_blank" rel="noopener noreferrer" style={{
               display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px',
               borderRadius: 12, textDecoration: 'none', background: '#5B5BD6', color: '#fff',
               fontSize: 14, fontWeight: 700, boxShadow: '0 4px 28px rgba(91,91,214,0.45)', transition: 'all 150ms ease',
@@ -295,7 +294,7 @@ export default function LandingPage() {
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#5B5BD6'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
             >
               Open PaceUp free <IconArrowRight size={15} />
-            </Link>
+            </a>
           </div>
         </section>
 

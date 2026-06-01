@@ -5,13 +5,13 @@ import { loadState, type AppState } from '@/lib/storage';
 import GreetingRow from '@/components/dashboard/GreetingRow';
 import AlertBanner from '@/components/dashboard/AlertBanner';
 import StatsRow from '@/components/dashboard/StatsRow';
-import QuickActions from '@/components/dashboard/QuickActions';
-import FocusTodayCard from '@/components/dashboard/FocusTodayCard';
 import OverallProgressCard from '@/components/dashboard/OverallProgressCard';
 import CalendarCard from '@/components/dashboard/CalendarCard';
 import ExternalToolsStrip from '@/components/dashboard/ExternalToolsStrip';
-import TodayAgenda from '@/components/dashboard/TodayAgenda';
+import TodayCards from '@/components/dashboard/TodayCards';
+import TomorrowCards from '@/components/dashboard/TomorrowCards';
 import ExamCountdown from '@/components/dashboard/ExamCountdown';
+import ContextualTip from '@/components/ContextualTip';
 
 function Skeleton() {
   return (
@@ -61,18 +61,25 @@ export default function Home() {
       <AlertBanner state={appState} />
       <ExamCountdown state={appState} />
 
-      <StatsRow state={appState} />
-      <QuickActions />
+      <ContextualTip
+        id="home-tip"
+        text="This is your home dashboard. Check today's tasks, monitor progress, and use the mini-calendar to stay on top of deadlines."
+      />
 
+      {/* Row 1: Stats */}
+      <StatsRow state={appState} />
+
+      {/* Row 2: Today cards */}
+      <TodayCards state={appState} onRefresh={refresh} />
+
+      {/* Row 3: Tomorrow cards + calendar */}
       <div className="rg-home">
-        {/* Left column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <TodayAgenda state={appState} />
-          <FocusTodayCard state={appState} onRefresh={refresh} />
+          <TomorrowCards state={appState} />
           <OverallProgressCard state={appState} />
         </div>
 
-        {/* Right column */}
+        {/* Calendar always visible */}
         <CalendarCard state={appState} />
       </div>
 
