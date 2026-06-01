@@ -1,15 +1,139 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   IconBolt, IconBook2, IconCalendar, IconChartBar,
   IconClock, IconStack2, IconTarget, IconShieldCheck,
   IconBrandGithub, IconArrowRight, IconChevronDown, IconLanguage,
+  IconChevronLeft, IconChevronRight,
 } from '@tabler/icons-react';
 import { type Lang, LANG_LABELS, LANG_FLAGS, LANDING, getStoredLang, setStoredLang } from '@/lib/i18n';
 
 const FEATURE_ICONS = [IconTarget, IconChartBar, IconCalendar, IconClock, IconStack2, IconShieldCheck];
+
+const SLIDES = [
+  { src: '/screenshots/home.jpg',     label: 'Home',        desc: 'Daily overview, stats and tasks'  },
+  { src: '/screenshots/courses.jpg',  label: 'Courses',     desc: 'All your certification courses'   },
+  { src: '/screenshots/overview.jpg', label: 'Overview',    desc: 'Progress & catch-up timeline'     },
+  { src: '/screenshots/calendar.jpg', label: 'Calendar',    desc: 'Events, deadlines and tasks'      },
+  { src: '/screenshots/ai.jpg',       label: 'AI Assistant',desc: 'Coming-soon AI study assistant'   },
+];
+
+function AppCarousel() {
+  const [active, setActive] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const next = useCallback(() => setActive(i => (i + 1) % SLIDES.length), []);
+  const prev = useCallback(() => setActive(i => (i - 1 + SLIDES.length) % SLIDES.length), []);
+
+  useEffect(() => {
+    timerRef.current = setInterval(next, 4000);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [next]);
+
+  function pause() { if (timerRef.current) clearInterval(timerRef.current); }
+  function resume() { timerRef.current = setInterval(next, 4000); }
+
+  return (
+    <div onMouseEnter={pause} onMouseLeave={resume} style={{ position: 'relative' }}>
+      {/* Browser chrome */}
+      <div style={{
+        borderRadius: 20, border: '1px solid rgba(255,255,255,0.10)',
+        overflow: 'hidden', boxShadow: '0 40px 120px rgba(0,0,0,0.75)',
+        background: '#111',
+      }}>
+        {/* Title bar */}
+        <div style={{
+          height: 38, background: '#1a1a1a',
+          borderBottom: '1px solid rgba(255,255,255,0.07)',
+          display: 'flex', alignItems: 'center', padding: '0 14px', gap: 6,
+        }}>
+          {['#FF5F57','#FEBC2E','#28C840'].map((c, i) => (
+            <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
+          ))}
+          <div style={{
+            flex: 1, marginLeft: 10, height: 22, borderRadius: 5,
+            background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(91,91,214,0.6)' }} />
+            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace' }}>
+              paceup.app/{SLIDES[active].label.toLowerCase().replace(' ', '-')}
+            </span>
+          </div>
+        </div>
+
+        {/* Slide image */}
+        <div style={{ position: 'relative', overflow: 'hidden', lineHeight: 0 }}>
+          {SLIDES.map((slide, i) => (
+            <div
+              key={slide.src}
+              style={{
+                position: i === 0 ? 'relative' : 'absolute',
+                inset: 0,
+                opacity: i === active ? 1 : 0,
+                transition: 'opacity 500ms cubic-bezier(0.4,0,0.2,1)',
+                pointerEvents: i === active ? 'auto' : 'none',
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={slide.src}
+                alt={slide.label}
+                style={{ width: '100%', display: 'block' }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Prev / Next arrows */}
+      {[{ dir: 'prev', fn: prev, icon: IconChevronLeft }, { dir: 'next', fn: next, icon: IconChevronRight }].map(({ dir, fn, icon: Icon }) => (
+        <button
+          key={dir} type="button" onClick={fn}
+          style={{
+            position: 'absolute', top: '50%',
+            [dir === 'prev' ? 'left' : 'right']: -20,
+            transform: 'translateY(-50%)',
+            width: 40, height: 40, borderRadius: '50%',
+            background: 'rgba(18,18,25,0.85)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: 'rgba(255,255,255,0.8)',
+            transition: 'all 150ms ease', zIndex: 10,
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(91,91,214,0.70)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(91,91,214,0.5)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(18,18,25,0.85)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.12)'; }}
+        >
+          <Icon size={18} />
+        </button>
+      ))}
+
+      {/* Slide label + dots */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginTop: 20 }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>{SLIDES[active].label}</div>
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{SLIDES[active].desc}</div>
+        </div>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 12 }}>
+        {SLIDES.map((_, i) => (
+          <button
+            key={i} type="button" onClick={() => setActive(i)}
+            style={{
+              width: i === active ? 20 : 6, height: 6,
+              borderRadius: 3, border: 'none', cursor: 'pointer', padding: 0,
+              background: i === active ? '#5B5BD6' : 'rgba(255,255,255,0.2)',
+              transition: 'width 250ms ease, background 250ms ease',
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -210,82 +334,9 @@ export default function RootPage() {
           </div>
         </section>
 
-        {/* App preview */}
-        <section style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px 100px' }}>
-          <div style={{
-            borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)',
-            overflow: 'hidden', boxShadow: '0 40px 120px rgba(0,0,0,0.70)', background: '#171717',
-          }}>
-            <div style={{
-              height: 40, background: '#1a1a1a', borderBottom: '1px solid rgba(255,255,255,0.06)',
-              display: 'flex', alignItems: 'center', padding: '0 16px', gap: 6,
-            }}>
-              {['#FF5F57', '#FEBC2E', '#28C840'].map((c, i) => (
-                <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
-              ))}
-              <div style={{
-                flex: 1, marginLeft: 12, height: 22, borderRadius: 5,
-                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>paceup.app</span>
-              </div>
-            </div>
-            <div style={{ padding: '32px 32px 24px', background: 'linear-gradient(135deg, #171717 0%, #1a1a2e 50%, #171717 100%)' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 16 }}>
-                {[
-                  { label: 'Courses',    value: '9',  sub: 'active this term',  color: '#5B5BD6' },
-                  { label: 'Items Done', value: '11', sub: 'of 117 total',       color: '#22C55E' },
-                  { label: 'Days Left',  value: '10', sub: 'until exam',         color: '#F59E0B' },
-                ].map(({ label, value, sub, color }) => (
-                  <div key={label} style={{
-                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: 12, padding: '14px 16px',
-                  }}>
-                    <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>{label}</div>
-                    <div style={{ fontSize: 28, fontWeight: 800, color, lineHeight: 1 }}>{value}</div>
-                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>{sub}</div>
-                    <div style={{ height: 2, borderRadius: 2, background: `${color}30`, marginTop: 10, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: '60%', background: color, borderRadius: 2 }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
-                {[
-                  { icon: '＋', label: 'Create Task',   color: '#5B5BD6' },
-                  { icon: '📅', label: 'Add Event',     color: '#22C55E' },
-                  { icon: '📚', label: 'Open Courses',  color: '#F59E0B' },
-                  { icon: '🗓️', label: 'Open Calendar', color: '#EF4444' },
-                ].map(({ icon, label, color }) => (
-                  <div key={label} style={{
-                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)',
-                    borderRadius: 10, padding: '12px 12px', display: 'flex', flexDirection: 'column', gap: 8,
-                  }}>
-                    <div style={{
-                      width: 28, height: 28, borderRadius: 7,
-                      background: `${color}20`, border: `1px solid ${color}30`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13,
-                    }}>{icon}</div>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>{label}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ textAlign: 'center', marginTop: 20 }}>
-                <a href="/login" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  padding: '8px 18px', borderRadius: 9, textDecoration: 'none',
-                  background: 'rgba(91,91,214,0.20)', border: '1px solid rgba(91,91,214,0.35)',
-                  color: '#818CF8', fontSize: 12, fontWeight: 600, transition: 'all 150ms ease',
-                }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(91,91,214,0.30)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(91,91,214,0.20)'; }}
-                >
-                  {t.openApp} →
-                </a>
-              </div>
-            </div>
-          </div>
+        {/* App carousel */}
+        <section style={{ maxWidth: 1100, margin: '0 auto', padding: '0 48px 100px' }}>
+          <AppCarousel />
         </section>
 
         {/* Features */}
