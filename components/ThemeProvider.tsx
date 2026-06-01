@@ -46,7 +46,11 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     setTheme(initial);
     document.documentElement.setAttribute('data-theme', initial);
 
-    const storedBg = localStorage.getItem(BG_KEY) ?? 'none';
+    let storedBg = localStorage.getItem(BG_KEY) ?? 'none';
+    if (storedBg.endsWith('.heic')) {
+      storedBg = storedBg.replace('.heic', '.jpg');
+      localStorage.setItem(BG_KEY, storedBg);
+    }
     setBgState(storedBg);
     applyBg(storedBg);
 

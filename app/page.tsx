@@ -12,12 +12,232 @@ import { type Lang, LANG_LABELS, LANG_FLAGS, LANDING, getStoredLang, setStoredLa
 
 const FEATURE_ICONS = [IconTarget, IconChartBar, IconCalendar, IconClock, IconStack2, IconShieldCheck];
 
+/* ── Slide mock-up components ── */
+
+function SlideHome() {
+  return (
+    <div style={{ background: '#0E0E0E', padding: '20px 20px 16px', fontFamily: 'inherit' }}>
+      {/* header row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div>
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 2 }}>Good morning, Hyrum 👋</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#F0EEF8' }}>Today's Overview</div>
+        </div>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <div style={{ fontSize: 10, color: '#22C55E', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: 20, padding: '3px 10px', fontWeight: 600 }}>🔥 14-day streak</div>
+        </div>
+      </div>
+      {/* stat cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 14 }}>
+        {[
+          { label: 'Courses', value: '9', sub: 'active', color: '#5B5BD6' },
+          { label: 'Done Today', value: '4', sub: 'of 8 tasks', color: '#22C55E' },
+          { label: 'Days Left', value: '10', sub: 'to exam', color: '#F59E0B' },
+        ].map(({ label, value, sub, color }) => (
+          <div key={label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '10px 12px' }}>
+            <div style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>{label}</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color, lineHeight: 1 }}>{value}</div>
+            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', marginTop: 3 }}>{sub}</div>
+            <div style={{ height: 2, borderRadius: 2, background: `${color}25`, marginTop: 8 }}>
+              <div style={{ height: '100%', width: '60%', background: color, borderRadius: 2 }} />
+            </div>
+          </div>
+        ))}
+      </div>
+      {/* today tasks */}
+      <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '10px 12px' }}>
+        <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Today's Tasks</div>
+        {[
+          { text: 'Review OSI Model layers', done: true,  tag: 'CCST' },
+          { text: 'Practice subnetting /24–/28', done: true,  tag: 'CCST' },
+          { text: 'Read Azure Identity chapter', done: false, tag: 'AZ-900' },
+          { text: 'Watch DNS lab recording', done: false, tag: 'CCST' },
+        ].map(({ text, done, tag }) => (
+          <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <div style={{ width: 14, height: 14, borderRadius: 4, flexShrink: 0, border: done ? 'none' : '1.5px solid rgba(255,255,255,0.2)', background: done ? '#5B5BD6' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {done && <span style={{ fontSize: 8, color: '#fff' }}>✓</span>}
+            </div>
+            <span style={{ fontSize: 10, color: done ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.75)', textDecoration: done ? 'line-through' : 'none', flex: 1 }}>{text}</span>
+            <span style={{ fontSize: 8, color: '#5B5BD6', background: 'rgba(91,91,214,0.12)', border: '1px solid rgba(91,91,214,0.2)', borderRadius: 4, padding: '1px 5px', fontWeight: 600 }}>{tag}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SlideCalendar() {
+  const days = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+  const today = 3;
+  const events = [
+    { time: '9:00 AM',  title: 'CCST Lab Practice',    color: '#5B5BD6', dur: '1h' },
+    { time: '11:30 AM', title: 'Subnetting Quiz',       color: '#F59E0B', dur: '45m' },
+    { time: '2:00 PM',  title: 'AZ-900 Study Session',  color: '#22C55E', dur: '2h' },
+    { time: '4:30 PM',  title: 'Mock Exam Simulation',  color: '#EF4444', dur: '1.5h' },
+  ];
+  return (
+    <div style={{ background: '#0E0E0E', padding: '20px 20px 16px', fontFamily: 'inherit' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#F0EEF8' }}>June 2026</div>
+        <div style={{ fontSize: 10, color: '#5B5BD6', background: 'rgba(91,91,214,0.12)', border: '1px solid rgba(91,91,214,0.2)', borderRadius: 6, padding: '3px 10px', fontWeight: 600 }}>4 events today</div>
+      </div>
+      {/* mini week strip */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 4, marginBottom: 14 }}>
+        {days.map((d, i) => (
+          <div key={d} style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.3)', marginBottom: 4 }}>{d}</div>
+            <div style={{
+              width: 26, height: 26, borderRadius: '50%', margin: '0 auto',
+              background: i === today ? '#5B5BD6' : 'transparent',
+              border: i === today ? 'none' : '1px solid rgba(255,255,255,0.07)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 10, fontWeight: i === today ? 700 : 400,
+              color: i === today ? '#fff' : 'rgba(255,255,255,0.55)',
+            }}>{i + 1}</div>
+          </div>
+        ))}
+      </div>
+      {/* events list */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {events.map(({ time, title, color, dur }) => (
+          <div key={title} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '8px 10px' }}>
+            <div style={{ width: 3, height: 32, borderRadius: 2, background: color, flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>{title}</div>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{time} · {dur}</div>
+            </div>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: color }} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SlideCourses() {
+  const courses = [
+    { name: 'CCST Networking',        pct: 68, color: '#5B5BD6', tag: 'Cisco', items: 34 },
+    { name: 'AZ-900 Fundamentals',    pct: 42, color: '#22C55E', tag: 'Azure', items: 28 },
+    { name: 'Network+ Prep',          pct: 15, color: '#F59E0B', tag: 'CompTIA', items: 55 },
+    { name: 'SC-900 Security',        pct: 5,  color: '#EF4444', tag: 'Azure', items: 20 },
+  ];
+  return (
+    <div style={{ background: '#0E0E0E', padding: '20px 20px 16px', fontFamily: 'inherit' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#F0EEF8' }}>My Courses</div>
+        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>4 active</div>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {courses.map(({ name, pct, color, tag, items }) => (
+          <div key={name} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '12px 14px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginBottom: 2 }}>{name}</div>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <span style={{ fontSize: 8, color, background: `${color}18`, border: `1px solid ${color}30`, borderRadius: 4, padding: '1px 6px', fontWeight: 600 }}>{tag}</span>
+                  <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.3)' }}>{items} items</span>
+                </div>
+              </div>
+              <span style={{ fontSize: 14, fontWeight: 800, color }}>{pct}%</span>
+            </div>
+            <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.07)' }}>
+              <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 2, transition: 'width 600ms ease' }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SlideOverview() {
+  return (
+    <div style={{ background: '#0E0E0E', padding: '20px 20px 16px', fontFamily: 'inherit' }}>
+      <div style={{ fontSize: 16, fontWeight: 700, color: '#F0EEF8', marginBottom: 14 }}>Study Analytics</div>
+      {/* weekly bar chart */}
+      <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '12px 14px', marginBottom: 10 }}>
+        <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Items completed · this week</div>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 50 }}>
+          {[3,7,5,9,4,8,6].map((v, i) => (
+            <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+              <div style={{ width: '100%', background: i === 3 ? '#5B5BD6' : 'rgba(91,91,214,0.35)', borderRadius: '3px 3px 0 0', height: `${(v / 9) * 50}px`, transition: 'height 600ms ease' }} />
+              <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.3)' }}>{['M','T','W','T','F','S','S'][i]}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* progress rings row */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+        {[
+          { label: 'CCST', pct: 68, color: '#5B5BD6' },
+          { label: 'AZ-900', pct: 42, color: '#22C55E' },
+          { label: 'Net+', pct: 15, color: '#F59E0B' },
+        ].map(({ label, pct, color }) => (
+          <div key={label} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '10px', textAlign: 'center' }}>
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ display: 'block', margin: '0 auto 6px' }}>
+              <circle cx="24" cy="24" r="19" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="5" />
+              <circle cx="24" cy="24" r="19" fill="none" stroke={color} strokeWidth="5"
+                strokeDasharray={`${(pct / 100) * 119.4} 119.4`}
+                strokeLinecap="round" transform="rotate(-90 24 24)" />
+              <text x="24" y="28" textAnchor="middle" fontSize="10" fontWeight="800" fill={color}>{pct}%</text>
+            </svg>
+            <div style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>{label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SlideAI() {
+  const msgs = [
+    { role: 'user', text: 'Explain the difference between TCP and UDP simply.' },
+    { role: 'ai',   text: 'TCP is like a phone call — it confirms every packet arrived in order. UDP is like sending postcards — faster, but no guarantee they all arrive. Use TCP for reliability (web, email), UDP for speed (video, gaming).' },
+    { role: 'user', text: 'Give me 3 practice questions on subnetting.' },
+  ];
+  return (
+    <div style={{ background: '#0E0E0E', padding: '20px 20px 16px', fontFamily: 'inherit' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+        <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(91,91,214,0.15)', border: '1px solid rgba(91,91,214,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>✦</div>
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#F0EEF8' }}>AI Study Assistant</div>
+          <div style={{ fontSize: 9, color: '#5B5BD6' }}>CCST · AZ-900 context loaded</div>
+        </div>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
+        {msgs.map(({ role, text }, i) => (
+          <div key={i} style={{ display: 'flex', justifyContent: role === 'user' ? 'flex-end' : 'flex-start' }}>
+            <div style={{
+              maxWidth: '80%', padding: '8px 10px', borderRadius: role === 'user' ? '10px 10px 2px 10px' : '10px 10px 10px 2px',
+              background: role === 'user' ? 'rgba(91,91,214,0.25)' : 'rgba(255,255,255,0.05)',
+              border: `1px solid ${role === 'user' ? 'rgba(91,91,214,0.35)' : 'rgba(255,255,255,0.08)'}`,
+              fontSize: 10, color: 'rgba(255,255,255,0.82)', lineHeight: 1.5,
+            }}>{text}</div>
+          </div>
+        ))}
+        <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+          <div style={{ padding: '8px 12px', borderRadius: '10px 10px 10px 2px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'flex', gap: 4 }}>
+              {[0,1,2].map(i => <div key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(255,255,255,0.4)', animation: `pulse 1.2s ${i * 0.2}s infinite` }} />)}
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* input bar */}
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(91,91,214,0.25)', borderRadius: 8, padding: '6px 10px' }}>
+        <span style={{ flex: 1, fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>Ask anything about your courses…</span>
+        <div style={{ width: 20, height: 20, borderRadius: 5, background: '#5B5BD6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#fff' }}>↑</div>
+      </div>
+    </div>
+  );
+}
+
 const SLIDES = [
-  { src: '/screenshots/home.jpg',     label: 'Home',        desc: 'Daily overview, stats and tasks'  },
-  { src: '/screenshots/courses.jpg',  label: 'Courses',     desc: 'All your certification courses'   },
-  { src: '/screenshots/overview.jpg', label: 'Overview',    desc: 'Progress & catch-up timeline'     },
-  { src: '/screenshots/calendar.jpg', label: 'Calendar',    desc: 'Events, deadlines and tasks'      },
-  { src: '/screenshots/ai.jpg',       label: 'AI Assistant',desc: 'Coming-soon AI study assistant'   },
+  { label: 'Home',         desc: 'Daily overview, tasks & streak',    route: 'home',      content: <SlideHome /> },
+  { label: 'Calendar',     desc: 'Events, deadlines and study blocks', route: 'calendar',  content: <SlideCalendar /> },
+  { label: 'Courses',      desc: 'All your certification courses',     route: 'courses',   content: <SlideCourses /> },
+  { label: 'Analytics',    desc: 'Progress charts & catch-up view',    route: 'overview',  content: <SlideOverview /> },
+  { label: 'AI Assistant', desc: 'Chat with your AI study partner',    route: 'ai',        content: <SlideAI /> },
 ];
 
 function AppCarousel() {
@@ -41,7 +261,7 @@ function AppCarousel() {
       <div style={{
         borderRadius: 20, border: '1px solid rgba(255,255,255,0.10)',
         overflow: 'hidden', boxShadow: '0 40px 120px rgba(0,0,0,0.75)',
-        background: '#111',
+        background: '#0E0E0E',
       }}>
         {/* Title bar */}
         <div style={{
@@ -59,16 +279,16 @@ function AppCarousel() {
           }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(91,91,214,0.6)' }} />
             <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace' }}>
-              paceup.app/{SLIDES[active].label.toLowerCase().replace(' ', '-')}
+              paceup.app/{SLIDES[active].route}
             </span>
           </div>
         </div>
 
-        {/* Slide image */}
-        <div style={{ position: 'relative', overflow: 'hidden', lineHeight: 0 }}>
+        {/* Slides */}
+        <div style={{ position: 'relative', overflow: 'hidden', minHeight: 300 }}>
           {SLIDES.map((slide, i) => (
             <div
-              key={slide.src}
+              key={slide.label}
               style={{
                 position: i === 0 ? 'relative' : 'absolute',
                 inset: 0,
@@ -77,12 +297,7 @@ function AppCarousel() {
                 pointerEvents: i === active ? 'auto' : 'none',
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={slide.src}
-                alt={slide.label}
-                style={{ width: '100%', display: 'block' }}
-              />
+              {slide.content}
             </div>
           ))}
         </div>
