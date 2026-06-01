@@ -30,13 +30,11 @@ const NAV_TOP = [
 
 const NAV_CALENDAR = [
   { href: '/calendar',  Icon: IconCalendar,   label: 'Calendar'  },
-  { href: '/analytics', Icon: IconChartBar,   label: 'Overview'  },
 ];
 
 const STUDY_SUBSECTIONS = [
   { label: 'Overview',    Icon: IconHome,       route: '/study'            },
   { label: 'Quick Study', Icon: IconBolt,       route: '/study/quick'      },
-  { label: 'Timer',       Icon: IconClock,      route: '/study/timer'      },
   { label: 'Notes',       Icon: IconFileText,   route: '/study/notes'      },
   { label: 'Flashcards',  Icon: IconStack2,     route: '/study/flashcards' },
   { label: 'Progress',    Icon: IconTrendingUp, route: '/study/progress'   },
@@ -320,9 +318,17 @@ export default function LeftSidebar() {
         <NavItem href="/ai" Icon={IconBrain} label="AI Assistant" />
       </div>
 
+      {/* ── Separator ── */}
+      <Separator open={open} />
+
+      {/* ── Overview (analytics) ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
+        <NavItem href="/analytics" Icon={IconChartBar} label="Overview" />
+      </div>
+
       <div style={{ flex: 1 }} />
 
-      {/* ── Groups (coming soon) + Settings ── */}
+      {/* ── Groups (coming soon) + Preferences ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
         <NavItem href="/groups" Icon={IconUsers} label="Groups" comingSoon />
 
@@ -331,7 +337,7 @@ export default function LeftSidebar() {
           return (
             <Link
               href="/settings"
-              title={!open ? 'Settings' : undefined}
+              title={!open ? 'Preferences' : undefined}
               style={{
                 display: 'flex', alignItems: 'center',
                 gap: 10, height: 36, padding: '0 9px',
@@ -360,7 +366,7 @@ export default function LeftSidebar() {
               )}
               <IconSettings2 size={17} strokeWidth={active ? 2 : 1.75} style={{ flexShrink: 0 }} />
               <AnimatePresence>
-                {open && <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden' }}>Settings</motion.span>}
+                {open && <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden' }}>Preferences</motion.span>}
               </AnimatePresence>
             </Link>
           );
