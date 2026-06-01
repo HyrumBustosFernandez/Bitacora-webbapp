@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   IconLayoutGrid, IconBook2, IconBolt, IconCalendar,
   IconChartBar, IconUsers, IconSettings2,
-  IconTag, IconBell, IconChevronDown,
+  IconTag, IconBell,
   IconHome, IconClock, IconFileText, IconStack2, IconTrendingUp,
 } from '@tabler/icons-react';
 
@@ -64,8 +64,6 @@ const STUDY_SUBSECTIONS = [
 export default function LeftSidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [calExpanded,   setCalExpanded]   = useState(true);
-  const [studyExpanded, setStudyExpanded] = useState(true);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function handleMouseEnter() {
@@ -133,8 +131,8 @@ export default function LeftSidebar() {
           const active     = isActive(href);
           const isCalendar = href === '/calendar';
           const isStudy    = href === '/study';
-          const showCalSubs   = isCalendar && active && open && calExpanded;
-          const showStudySubs = isStudy    && active && open && studyExpanded;
+          const showCalSubs   = isCalendar && active;
+          const showStudySubs = isStudy    && active;
 
           return (
             <div key={href}>
@@ -152,10 +150,6 @@ export default function LeftSidebar() {
                   fontSize: 12,
                   position: 'relative',
                   transition: 'color 130ms ease, background-color 130ms ease',
-                }}
-                onClick={e => {
-                  if (isCalendar && active && open) { e.preventDefault(); setCalExpanded(v => !v); }
-                  if (isStudy && active && open) { e.preventDefault(); setStudyExpanded(v => !v); }
                 }}
                 onMouseEnter={e => {
                   if (!active) (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
@@ -183,123 +177,100 @@ export default function LeftSidebar() {
                   )}
                 </AnimatePresence>
 
-                {/* Chevron for calendar */}
-                {isCalendar && active && open && (
-                  <motion.div
-                    animate={{ rotate: calExpanded ? 0 : -90 }}
-                    transition={{ duration: 0.18 }}
-                    style={{ marginLeft: 'auto', color: SB_TEXT, flexShrink: 0, display: 'flex' }}
-                  >
-                    <IconChevronDown size={12} />
-                  </motion.div>
-                )}
-
-                {/* Chevron for study */}
-                {isStudy && active && open && (
-                  <motion.div
-                    animate={{ rotate: studyExpanded ? 0 : -90 }}
-                    transition={{ duration: 0.18 }}
-                    style={{ marginLeft: 'auto', color: SB_TEXT, flexShrink: 0, display: 'flex' }}
-                  >
-                    <IconChevronDown size={12} />
-                  </motion.div>
-                )}
               </Link>
 
               {/* Calendar subsections */}
-              <AnimatePresence>
-                {showCalSubs && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.18 }}
-                    style={{ overflow: 'hidden', paddingLeft: 10 }}
-                  >
-                    {CAL_SUBSECTIONS.map(({ label: subLabel, Icon: SubIcon }) => (
-                      <div
-                        key={subLabel}
-                        title={subLabel}
-                        style={{
-                          display: 'flex', alignItems: 'center',
-                          gap: 8, height: 30, padding: '0 9px',
-                          borderRadius: 7, cursor: 'pointer',
-                          color: SB_TEXT,
-                          fontSize: 11, fontWeight: 400,
-                          whiteSpace: 'nowrap', overflow: 'hidden',
-                          transition: 'background 130ms ease, color 130ms ease',
-                          marginLeft: 8,
-                        }}
-                        onMouseEnter={e => {
-                          (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
-                          (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
-                        }}
-                        onMouseLeave={e => {
-                          (e.currentTarget as HTMLElement).style.background = 'transparent';
-                          (e.currentTarget as HTMLElement).style.color = SB_TEXT;
-                        }}
-                      >
-                        <SubIcon size={13} strokeWidth={1.6} style={{ flexShrink: 0, opacity: 0.7 }} />
-                        <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden' }}>
-                          {subLabel}
-                        </motion.span>
-                      </div>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Study subsections */}
-              <AnimatePresence>
-                {showStudySubs && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.18 }}
-                    style={{ overflow: 'hidden', paddingLeft: 10 }}
-                  >
-                    {STUDY_SUBSECTIONS.map(({ label: subLabel, Icon: SubIcon, route }) => {
-                      const subActive = pathname === route;
-                      return (
-                        <Link
-                          key={route}
-                          href={route}
-                          title={subLabel}
-                          style={{
-                            display: 'flex', alignItems: 'center',
-                            gap: 8, height: 30, padding: '0 9px',
-                            borderRadius: 7, textDecoration: 'none',
-                            color: subActive ? SB_TEXT_ACTIVE : SB_TEXT,
-                            background: subActive ? 'rgba(255,255,255,0.08)' : 'transparent',
-                            fontSize: 11, fontWeight: subActive ? 500 : 400,
-                            whiteSpace: 'nowrap', overflow: 'hidden',
-                            transition: 'background 130ms ease, color 130ms ease',
-                            marginLeft: 8,
-                          }}
-                          onMouseEnter={e => {
-                            if (!subActive) {
-                              (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
-                              (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
-                            }
-                          }}
-                          onMouseLeave={e => {
-                            if (!subActive) {
-                              (e.currentTarget as HTMLElement).style.background = 'transparent';
-                              (e.currentTarget as HTMLElement).style.color = SB_TEXT;
-                            }
-                          }}
-                        >
-                          <SubIcon size={13} strokeWidth={1.6} style={{ flexShrink: 0, opacity: subActive ? 1 : 0.7 }} />
+              {showCalSubs && (
+                <div style={{ paddingLeft: open ? 10 : 0 }}>
+                  {CAL_SUBSECTIONS.map(({ label: subLabel, Icon: SubIcon }) => (
+                    <div
+                      key={subLabel}
+                      title={!open ? subLabel : undefined}
+                      style={{
+                        display: 'flex', alignItems: 'center',
+                        gap: 8,
+                        height: open ? 30 : 36,
+                        padding: '0 9px',
+                        borderRadius: open ? 7 : 8,
+                        cursor: 'pointer',
+                        color: SB_TEXT,
+                        fontSize: 11, fontWeight: 400,
+                        whiteSpace: 'nowrap', overflow: 'hidden',
+                        transition: 'background 130ms ease, color 130ms ease',
+                        marginLeft: open ? 8 : 0,
+                      }}
+                      onMouseEnter={e => {
+                        (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
+                        (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
+                      }}
+                      onMouseLeave={e => {
+                        (e.currentTarget as HTMLElement).style.background = 'transparent';
+                        (e.currentTarget as HTMLElement).style.color = SB_TEXT;
+                      }}
+                    >
+                      <SubIcon size={open ? 13 : 17} strokeWidth={1.6} style={{ flexShrink: 0, opacity: 0.7 }} />
+                      <AnimatePresence>
+                        {open && (
                           <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden' }}>
                             {subLabel}
                           </motion.span>
-                        </Link>
-                      );
-                    })}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Study subsections */}
+              {showStudySubs && (
+                <div style={{ paddingLeft: open ? 10 : 0 }}>
+                  {STUDY_SUBSECTIONS.map(({ label: subLabel, Icon: SubIcon, route }) => {
+                    const subActive = pathname === route;
+                    return (
+                      <Link
+                        key={route}
+                        href={route}
+                        title={!open ? subLabel : undefined}
+                        style={{
+                          display: 'flex', alignItems: 'center',
+                          gap: 8,
+                          height: open ? 30 : 36,
+                          padding: '0 9px',
+                          borderRadius: open ? 7 : 8,
+                          textDecoration: 'none',
+                          color: subActive ? SB_TEXT_ACTIVE : SB_TEXT,
+                          background: subActive ? 'rgba(255,255,255,0.08)' : 'transparent',
+                          fontSize: 11, fontWeight: subActive ? 500 : 400,
+                          whiteSpace: 'nowrap', overflow: 'hidden',
+                          transition: 'background 130ms ease, color 130ms ease',
+                          marginLeft: open ? 8 : 0,
+                        }}
+                        onMouseEnter={e => {
+                          if (!subActive) {
+                            (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
+                            (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
+                          }
+                        }}
+                        onMouseLeave={e => {
+                          if (!subActive) {
+                            (e.currentTarget as HTMLElement).style.background = 'transparent';
+                            (e.currentTarget as HTMLElement).style.color = SB_TEXT;
+                          }
+                        }}
+                      >
+                        <SubIcon size={open ? 13 : 17} strokeWidth={1.6} style={{ flexShrink: 0, opacity: subActive ? 1 : 0.7 }} />
+                        <AnimatePresence>
+                          {open && (
+                            <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden' }}>
+                              {subLabel}
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           );
         })}
