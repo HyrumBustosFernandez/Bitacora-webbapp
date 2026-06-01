@@ -127,7 +127,7 @@ export default function CalendarCard({ state }: Props) {
               return (
                 <div
                   key={i}
-                  onClick={() => cell.kind === 'cur' && setModalDate(dateStr) && setModalOpen(true)}
+                  onClick={() => { if (cell.kind === 'cur') { setModalDate(dateStr); setModalOpen(true); } }}
                   style={{
                     display: 'flex', flexDirection: 'column',
                     alignItems: 'center', justifyContent: 'center',

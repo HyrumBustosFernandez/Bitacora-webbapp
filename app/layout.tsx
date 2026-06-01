@@ -5,6 +5,9 @@ import TopNav from "@/components/TopNav";
 import LeftSidebar from "@/components/LeftSidebar";
 import BottomBar from "@/components/BottomBar";
 import StreakInit from "@/components/StreakInit";
+import MobileNav from "@/components/MobileNav";
+import { ToastProvider } from "@/components/Toast";
+import KeyboardShortcuts from "@/components/KeyboardShortcuts";
 
 export const metadata: Metadata = {
   title: "PaceUp",
@@ -25,34 +28,42 @@ export default function RootLayout({
         }}
       >
         <ThemeProvider>
-          <StreakInit />
+          <ToastProvider>
+            <StreakInit />
+            <KeyboardShortcuts />
 
-          {/* Sidebar — full viewport height */}
-          <LeftSidebar />
+            {/* Sidebar — desktop only */}
+            <div className="desktop-sidebar" style={{ flexShrink: 0 }}>
+              <LeftSidebar />
+            </div>
 
-          {/* Right column — topnav + scrollable main + footer */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              flex: 1,
-              overflow: "hidden",
-              minWidth: 0,
-            }}
-          >
-            <TopNav />
-            <main
+            {/* Right column */}
+            <div
               style={{
+                display: "flex",
+                flexDirection: "column",
                 flex: 1,
-                overflowY: "auto",
-                padding: 24,
-                minHeight: 0,
+                overflow: "hidden",
+                minWidth: 0,
               }}
             >
-              {children}
-            </main>
-            <BottomBar />
-          </div>
+              <TopNav />
+              <main
+                style={{
+                  flex: 1,
+                  overflowY: "auto",
+                  padding: 24,
+                  minHeight: 0,
+                }}
+              >
+                {children}
+              </main>
+              <div className="desktop-footer"><BottomBar /></div>
+            </div>
+
+            {/* Mobile bottom nav */}
+            <MobileNav />
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

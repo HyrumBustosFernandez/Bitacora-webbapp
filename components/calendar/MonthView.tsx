@@ -82,7 +82,7 @@ export default function MonthView({ year, month, events, tasks, onDayClick, onEv
             padding: '12px 0 10px',
             textAlign: 'center',
             fontSize: 10, fontWeight: 700,
-            color: 'var(--text-3)',
+            color: 'var(--text-2)',
             letterSpacing: '0.06em',
             textTransform: 'uppercase',
           }}>
@@ -143,8 +143,8 @@ export default function MonthView({ year, month, events, tasks, onDayClick, onEv
                 textAlign: 'center',
                 borderRadius: cell.isToday ? '50%' : 4,
                 background: cell.isToday ? 'var(--accent)' : 'transparent',
-                color: cell.isToday ? '#fff' : 'var(--text-3)',
-                fontSize: 12, fontWeight: cell.isToday ? 700 : 400,
+                color: cell.isToday ? '#fff' : 'var(--text-1)',
+                fontSize: 12, fontWeight: cell.isToday ? 700 : 500,
                 padding: cell.isToday ? 0 : '0 3px',
                 flexShrink: 0,
               }}>

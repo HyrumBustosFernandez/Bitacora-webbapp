@@ -28,7 +28,6 @@ export default function AlertBanner({ state }: Props) {
       display: 'flex', alignItems: 'flex-start', gap: 12,
       background: 'var(--color-amber-subtle)',
       border: '1px solid var(--color-amber-border)',
-      borderLeft: '3px solid var(--color-amber)',
       borderRadius: 10,
       padding: '11px 14px',
     }}>

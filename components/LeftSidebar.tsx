@@ -36,7 +36,7 @@ const NAV_MAIN = [
   { href: '/courses',   Icon: IconBook2,      label: 'Courses'   },
   { href: '/study',     Icon: IconBolt,       label: 'Study'     },
   { href: '/calendar',  Icon: IconCalendar,   label: 'Calendar'  },
-  { href: '/analytics', Icon: IconChartBar,   label: 'Analytics' },
+  { href: '/analytics', Icon: IconChartBar,   label: 'Overview'  },
 ];
 
 const LABEL_MOTION = {
@@ -53,11 +53,12 @@ const CAL_SUBSECTIONS = [
 ];
 
 const STUDY_SUBSECTIONS = [
-  { label: 'Overview',   Icon: IconHome,        route: '/study'            },
-  { label: 'Timer',      Icon: IconClock,       route: '/study/timer'      },
-  { label: 'Notes',      Icon: IconFileText,    route: '/study/notes'      },
-  { label: 'Flashcards', Icon: IconStack2,      route: '/study/flashcards' },
-  { label: 'Progress',   Icon: IconTrendingUp,  route: '/study/progress'   },
+  { label: 'Overview',    Icon: IconHome,        route: '/study'            },
+  { label: 'Quick Study', Icon: IconBolt,        route: '/study/quick'      },
+  { label: 'Timer',       Icon: IconClock,       route: '/study/timer'      },
+  { label: 'Notes',       Icon: IconFileText,    route: '/study/notes'      },
+  { label: 'Flashcards',  Icon: IconStack2,      route: '/study/flashcards' },
+  { label: 'Progress',    Icon: IconTrendingUp,  route: '/study/progress'   },
 ];
 
 export default function LeftSidebar() {
@@ -98,12 +99,19 @@ export default function LeftSidebar() {
       }}
     >
       {/* ── Logo zone ── */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 10,
-        height: 52, padding: '0 13px',
-        marginBottom: 10, flexShrink: 0,
-        color: '#ffffff',
-      }}>
+      <Link
+        href="/"
+        style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          height: 52, padding: '0 13px',
+          marginBottom: 10, flexShrink: 0,
+          color: '#ffffff', textDecoration: 'none',
+          borderRadius: 8,
+          transition: 'opacity 130ms ease',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
+        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+      >
         <PandaLogo size={26} />
         <AnimatePresence>
           {open && (
@@ -117,7 +125,7 @@ export default function LeftSidebar() {
             </motion.span>
           )}
         </AnimatePresence>
-      </div>
+      </Link>
 
       {/* ── Main nav ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
@@ -144,6 +152,10 @@ export default function LeftSidebar() {
                   fontSize: 12,
                   position: 'relative',
                   transition: 'color 130ms ease, background-color 130ms ease',
+                }}
+                onClick={e => {
+                  if (isCalendar && active && open) { e.preventDefault(); setCalExpanded(v => !v); }
+                  if (isStudy && active && open) { e.preventDefault(); setStudyExpanded(v => !v); }
                 }}
                 onMouseEnter={e => {
                   if (!active) (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
@@ -176,7 +188,6 @@ export default function LeftSidebar() {
                   <motion.div
                     animate={{ rotate: calExpanded ? 0 : -90 }}
                     transition={{ duration: 0.18 }}
-                    onClick={e => { e.preventDefault(); setCalExpanded(v => !v); }}
                     style={{ marginLeft: 'auto', color: SB_TEXT, flexShrink: 0, display: 'flex' }}
                   >
                     <IconChevronDown size={12} />
@@ -188,7 +199,6 @@ export default function LeftSidebar() {
                   <motion.div
                     animate={{ rotate: studyExpanded ? 0 : -90 }}
                     transition={{ duration: 0.18 }}
-                    onClick={e => { e.preventDefault(); setStudyExpanded(v => !v); }}
                     style={{ marginLeft: 'auto', color: SB_TEXT, flexShrink: 0, display: 'flex' }}
                   >
                     <IconChevronDown size={12} />
@@ -218,7 +228,6 @@ export default function LeftSidebar() {
                           fontSize: 11, fontWeight: 400,
                           whiteSpace: 'nowrap', overflow: 'hidden',
                           transition: 'background 130ms ease, color 130ms ease',
-                          borderLeft: '1px solid rgba(255,255,255,0.08)',
                           marginLeft: 8,
                         }}
                         onMouseEnter={e => {
@@ -266,7 +275,6 @@ export default function LeftSidebar() {
                             fontSize: 11, fontWeight: subActive ? 500 : 400,
                             whiteSpace: 'nowrap', overflow: 'hidden',
                             transition: 'background 130ms ease, color 130ms ease',
-                            borderLeft: '1px solid rgba(255,255,255,0.08)',
                             marginLeft: 8,
                           }}
                           onMouseEnter={e => {
