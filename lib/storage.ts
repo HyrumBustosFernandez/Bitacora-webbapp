@@ -121,6 +121,21 @@ export function loadState(): AppState {
     });
   });
 
+  // Also load user-created course progress
+  try {
+    const ucRaw = localStorage.getItem('paceup_user_courses');
+    const userCourses: Course[] = ucRaw ? JSON.parse(ucRaw) : [];
+    userCourses.forEach(c => {
+      const progress = loadCourseProgress(c.id);
+      c.weeks.forEach((w, wi) => {
+        w.items.forEach((item, ii) => {
+          const val = progress[item.id];
+          if (val) state[`${c.id}_w${wi}_i${ii}`] = val;
+        });
+      });
+    });
+  } catch { /* ignore */ }
+
   return state;
 }
 

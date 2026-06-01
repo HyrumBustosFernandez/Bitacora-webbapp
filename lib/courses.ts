@@ -21,7 +21,7 @@ export interface CourseWeek {
 export interface Course {
   id: string;
   num: string;
-  tag: 'cisco' | 'ms';
+  tag: 'cisco' | 'ms' | 'custom';
   accent: string;
   hours: string;
   hoursNumeric: number;
