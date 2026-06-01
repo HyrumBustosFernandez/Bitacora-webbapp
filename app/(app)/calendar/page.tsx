@@ -44,6 +44,7 @@ export default function CalendarPage() {
   const [detailEvent,   setDetailEvent]  = useState<CalendarEvent | null>(null);
   const [tasksVisible,  setTasksVisible] = useState(true);
   const [refreshKey,    setRefreshKey]   = useState(0);
+  const [isMobile,      setIsMobile]     = useState(false);
 
   /* Indicator refs for view toggle */
   const arcGroupRef  = useRef<HTMLDivElement>(null);
@@ -57,6 +58,13 @@ export default function CalendarPage() {
   }, []);
 
   useEffect(() => { refresh(); }, [refresh]);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   /* Position arc indicator */
   function positionIndicator(
@@ -217,6 +225,7 @@ export default function CalendarPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button
             type="button"
+            className="cal-my-tasks-btn"
             onClick={() => setTasksVisible(v => !v)}
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
@@ -251,11 +260,31 @@ export default function CalendarPage() {
         />
       </div>
 
+      {/* ── Mobile-only tab switcher (always visible, controls which panel shows) ── */}
+      <div className="cal-mobile-tabs">
+        {([['events', 'Calendar'], ['tasks', 'My Tasks']] as [TabMode, string][]).map(([t, label]) => (
+          <button
+            key={t} type="button"
+            onClick={() => setTab(t)}
+            style={{
+              flex: 1, padding: '9px 0', borderRadius: 9,
+              background: tab === t ? 'var(--accent-subtle)' : 'var(--bg-surface)',
+              border: `1px solid ${tab === t ? 'var(--accent-border)' : 'var(--border-subtle)'}`,
+              fontSize: 13, fontWeight: tab === t ? 600 : 400,
+              color: tab === t ? 'var(--accent)' : 'var(--text-2)',
+              cursor: 'pointer', transition: 'all 180ms cubic-bezier(0.4,0,0.2,1)',
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       {/* ── Calendar + Tasks layout ── */}
-      <div style={{ flex: 1, display: 'flex', gap: 16, minHeight: 0, overflow: 'hidden' }}>
+      <div className="cal-content-layout" data-tab={tab} style={{ flex: 1, display: 'flex', gap: 16, minHeight: 0, overflow: 'hidden' }}>
 
         {/* ── Calendar card ── */}
-        <div style={{
+        <div className="cal-card" style={{
           flex: 1,
           display: 'flex', flexDirection: 'column',
           background: 'var(--bg-surface)',
@@ -338,8 +367,8 @@ export default function CalendarPage() {
               </button>
             </div>
 
-            {/* Tab — Events | Tasks */}
-            <div
+            {/* Tab — Events | Tasks (desktop only) */}
+            {!isMobile && <div
               ref={arcGroupRef}
               style={{ display: 'flex', alignItems: 'center', flex: 1, justifyContent: 'center', gap: 4 }}
             >
@@ -362,7 +391,7 @@ export default function CalendarPage() {
                   {t.charAt(0).toUpperCase() + t.slice(1)}
                 </button>
               ))}
-            </div>
+            </div>}
 
             {/* View toggle pill — Day | Week | Month */}
             <div ref={viewGroupRef} style={pillTrackStyle}>
@@ -422,16 +451,18 @@ export default function CalendarPage() {
         </div>
 
         {/* ── Tasks sidebar ── */}
-        <TasksSidebar
-          collapsed={!tasksVisible}
-          onToggle={() => setTasksVisible(v => !v)}
-          onOpenCreate={(mode) => {
-            setModalMode(mode);
-            setModalDate(undefined);
-            setShowModal(true);
-          }}
-          refreshKey={refreshKey}
-        />
+        <div className="cal-tasks-wrap" style={{ display: 'flex' }}>
+          <TasksSidebar
+            collapsed={isMobile ? false : !tasksVisible}
+            onToggle={() => setTasksVisible(v => !v)}
+            onOpenCreate={(mode) => {
+              setModalMode(mode);
+              setModalDate(undefined);
+              setShowModal(true);
+            }}
+            refreshKey={refreshKey}
+          />
+        </div>
 
       </div>
 
