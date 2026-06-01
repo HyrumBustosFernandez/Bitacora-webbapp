@@ -33,7 +33,7 @@ const NAV_CALENDAR = [
 ];
 
 const STUDY_SUBSECTIONS = [
-  { label: 'Overview',    Icon: IconHome,       route: '/study'            },
+  { label: 'Timer',       Icon: IconHome,       route: '/study'            },
   { label: 'Quick Study', Icon: IconBolt,       route: '/study/quick'      },
   { label: 'Notes',       Icon: IconFileText,   route: '/study/notes'      },
   { label: 'Flashcards',  Icon: IconStack2,     route: '/study/flashcards' },

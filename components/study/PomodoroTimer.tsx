@@ -121,7 +121,7 @@ export default function PomodoroTimer({ moduleId = 'general' }: Props) {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-1)' }}>🍅 Pomodoro Timer</span>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-1)' }}>Pomodoro Timer</span>
           <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
             25-min focused sprints reduce fatigue and improve retention
           </span>
