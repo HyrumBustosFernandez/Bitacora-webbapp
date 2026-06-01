@@ -499,8 +499,7 @@ div:hover > .task-delete-btn { opacity: 1 !important; }
 /* Mobile-only calendar tab bar — hidden on desktop */
 .cal-mobile-tabs {
   display: none;
-  gap: 8px;
-  margin-bottom: 12px;
+  margin: 10px 0 14px;
   flex-shrink: 0;
 }
 
