@@ -9,15 +9,7 @@ import {
   IconChartBar, IconUsers, IconSettings2,
   IconHome, IconClock, IconFileText, IconStack2, IconTrendingUp, IconBrain,
 } from '@tabler/icons-react';
-
-/* ── Sidebar brand colors ── */
-const SB_BG          = '#1a1a1a';
-const SB_ACTIVE_BG   = 'rgba(255,255,255,0.13)';
-const SB_HOVER_BG    = 'rgba(255,255,255,0.08)';
-const SB_TEXT        = 'rgba(255,255,255,0.55)';
-const SB_TEXT_ACTIVE = '#ffffff';
-const SB_BORDER_L    = 'rgba(255,255,255,0.80)';
-const SB_SEPARATOR   = 'rgba(255,255,255,0.09)';
+import { useTheme } from '@/components/ThemeProvider';
 
 /* ── Panda logo ── */
 function PandaLogo({ size = 26 }: { size?: number }) {
@@ -61,7 +53,7 @@ function Separator({ open }: { open: boolean }) {
   return (
     <div style={{
       height: 1,
-      background: SB_SEPARATOR,
+      background: 'var(--border-subtle)',
       margin: open ? '4px 10px' : '4px 12px',
       transition: 'margin 250ms ease',
       flexShrink: 0,
@@ -71,8 +63,22 @@ function Separator({ open }: { open: boolean }) {
 
 export default function LeftSidebar() {
   const pathname = usePathname();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [open, setOpen] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /* ── Theme-aware sidebar colors ── */
+  const SB_BG          = 'var(--bg-surface)';
+  const SB_ACTIVE_BG   = isDark ? 'rgba(255,255,255,0.13)' : 'rgba(0,0,0,0.07)';
+  const SB_HOVER_BG    = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)';
+  const SB_TEXT        = 'var(--text-2)';
+  const SB_TEXT_ACTIVE = 'var(--text-1)';
+  const SB_HOVER_TEXT  = isDark ? 'rgba(255,255,255,0.88)' : 'var(--text-1)';
+  const SB_BORDER_L    = isDark ? 'rgba(255,255,255,0.80)' : 'var(--accent)';
+  const SB_BOX_SHADOW  = isDark
+    ? '2px 0 20px rgba(20,30,70,0.22), 1px 0 0 rgba(255,255,255,0.04)'
+    : '2px 0 12px rgba(0,0,0,0.08), 1px 0 0 rgba(0,0,0,0.06)';
 
   function handleMouseEnter() {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -111,7 +117,7 @@ export default function LeftSidebar() {
         onMouseEnter={e => {
           if (!active && !comingSoon) {
             (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
-            (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
+            (e.currentTarget as HTMLElement).style.color = SB_HOVER_TEXT;
           }
         }}
         onMouseLeave={e => {
@@ -138,8 +144,8 @@ export default function LeftSidebar() {
         {open && comingSoon && (
           <span style={{
             fontSize: 8, fontWeight: 700, padding: '1px 4px',
-            borderRadius: 3, background: 'rgba(255,255,255,0.10)',
-            color: 'rgba(255,255,255,0.40)', letterSpacing: '0.04em',
+            borderRadius: 3, background: 'var(--border-default)',
+            color: 'var(--text-3)', letterSpacing: '0.04em',
             textTransform: 'uppercase', flexShrink: 0,
           }}>
             soon
@@ -158,7 +164,7 @@ export default function LeftSidebar() {
       className="glass-surface"
       style={{
         background: SB_BG,
-        boxShadow: '2px 0 20px rgba(20,30,70,0.22), 1px 0 0 rgba(255,255,255,0.04)',
+        boxShadow: SB_BOX_SHADOW,
         display: 'flex', flexDirection: 'column',
         height: '100vh', flexShrink: 0,
         overflow: 'hidden', position: 'relative', zIndex: 20,
@@ -171,7 +177,7 @@ export default function LeftSidebar() {
           display: 'flex', alignItems: 'center', gap: 10,
           height: 52, padding: '0 13px',
           marginBottom: 10, flexShrink: 0,
-          color: '#ffffff', textDecoration: 'none', borderRadius: 8,
+          color: 'var(--text-1)', textDecoration: 'none', borderRadius: 8,
           transition: 'opacity 130ms ease',
         }}
         onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
@@ -181,8 +187,8 @@ export default function LeftSidebar() {
         <AnimatePresence>
           {open && (
             <motion.span {...LABEL_MOTION} style={{
-              fontSize: 14, fontWeight: 700, color: '#ffffff',
-              opacity: 0.93, whiteSpace: 'nowrap', overflow: 'hidden',
+              fontSize: 14, fontWeight: 700, color: 'var(--text-1)',
+              whiteSpace: 'nowrap', overflow: 'hidden',
               letterSpacing: '-0.015em',
             }}>
               PaceUp
@@ -234,7 +240,7 @@ export default function LeftSidebar() {
               onMouseEnter={e => {
                 if (!active) {
                   (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
-                  (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
+                  (e.currentTarget as HTMLElement).style.color = SB_HOVER_TEXT;
                 }
               }}
               onMouseLeave={e => {
@@ -275,7 +281,7 @@ export default function LeftSidebar() {
                 borderRadius: open ? 7 : 8,
                 textDecoration: 'none',
                 color: subActive ? SB_TEXT_ACTIVE : SB_TEXT,
-                background: subActive ? 'rgba(255,255,255,0.08)' : 'transparent',
+                background: subActive ? SB_ACTIVE_BG : 'transparent',
                 fontSize: 11, fontWeight: subActive ? 500 : 400,
                 whiteSpace: 'nowrap', overflow: 'hidden',
                 transition: 'background 130ms ease, color 130ms ease, height 250ms ease',
@@ -283,7 +289,7 @@ export default function LeftSidebar() {
               onMouseEnter={e => {
                 if (!subActive) {
                   (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
-                  (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
+                  (e.currentTarget as HTMLElement).style.color = SB_HOVER_TEXT;
                 }
               }}
               onMouseLeave={e => {
@@ -339,7 +345,7 @@ export default function LeftSidebar() {
               }}
               onMouseEnter={e => {
                 if (!active) (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
-                if (!active) (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
+                if (!active) (e.currentTarget as HTMLElement).style.color = SB_HOVER_TEXT;
               }}
               onMouseLeave={e => {
                 if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent';
