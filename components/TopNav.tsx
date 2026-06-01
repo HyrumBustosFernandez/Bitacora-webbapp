@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import {
   IconSearch, IconSun, IconMoon,
   IconUser, IconSettings2, IconPalette,
-  IconLanguage, IconLogout, IconChevronRight,
+  IconLanguage, IconLogout, IconChevronRight, IconHome,
 } from '@tabler/icons-react';
 import { useTheme } from './ThemeProvider';
 
@@ -226,6 +226,14 @@ export default function TopNav() {
                   <span style={{ fontSize: 10, color: 'var(--text-4)', fontWeight: 600 }}>EN</span>
                 }
                 onClick={() => { setProfileOpen(false); router.push('/settings'); }}
+              />
+
+              <div style={{ height: 1, background: 'var(--border-subtle)', margin: '4px 0' }} />
+
+              <MenuItem
+                icon={IconHome}
+                label="Landing page"
+                onClick={() => { setProfileOpen(false); router.push('/'); }}
               />
 
               <div style={{ height: 1, background: 'var(--border-subtle)', margin: '4px 0' }} />

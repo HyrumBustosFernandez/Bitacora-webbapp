@@ -14,7 +14,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!localStorage.getItem('paceup_authed')) {
-      router.replace('/login');
+      router.replace('/');
     }
   }, [router]);
 

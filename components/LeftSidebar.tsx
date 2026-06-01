@@ -32,7 +32,7 @@ function PandaLogo({ size = 26 }: { size?: number }) {
 }
 
 const NAV_MAIN = [
-  { href: '/',          Icon: IconLayoutGrid, label: 'Home'      },
+  { href: '/home',      Icon: IconLayoutGrid, label: 'Home'      },
   { href: '/courses',   Icon: IconBook2,      label: 'Courses'   },
   { href: '/study',     Icon: IconBolt,       label: 'Study'     },
   { href: '/calendar',  Icon: IconCalendar,   label: 'Calendar'  },
@@ -76,7 +76,7 @@ export default function LeftSidebar() {
   }
 
   const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href);
+    href === '/home' ? pathname === '/home' : pathname.startsWith(href);
 
   return (
     <motion.aside
@@ -98,7 +98,7 @@ export default function LeftSidebar() {
     >
       {/* ── Logo zone ── */}
       <Link
-        href="/"
+        href="/home"
         style={{
           display: 'flex', alignItems: 'center', gap: 10,
           height: 52, padding: '0 13px',
