@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import ContextualTip from '@/components/ContextualTip';
 
 export default function StudyFlashcardsPage() {
   return (
@@ -14,6 +15,11 @@ export default function StudyFlashcardsPage() {
           Spaced-repetition flashcard practice
         </span>
       </div>
+
+      <ContextualTip
+        id="study-flashcards-tip"
+        text="Spaced repetition is one of the most evidence-backed study techniques. A 2008 study in Science showed that retrieving information from memory (rather than rereading) leads to dramatically better long-term retention — this is called the 'testing effect.' Flashcards with active recall leverage this to help you remember more with less time."
+      />
 
       <div style={{
         background: 'var(--bg-surface)',

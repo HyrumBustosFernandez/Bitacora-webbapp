@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import ContextualTip from '@/components/ContextualTip';
 import { COURSES, type Course, type CourseItem } from '@/lib/courses';
 import {
   loadState,
@@ -168,6 +169,7 @@ export default function QuickStudyPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       {/* Header */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+
         <Link
           href="/study"
           style={{
@@ -190,6 +192,11 @@ export default function QuickStudyPage() {
           Focused session for when you have 15–30 minutes
         </span>
       </div>
+
+      <ContextualTip
+        id="study-quick-tip"
+        text="Quick Study surfaces the highest-priority items you haven't completed yet. Even a 15-minute session has real impact — research from the Association for Psychological Science shows spaced, short study bursts outperform marathon cramming sessions for long-term retention."
+      />
 
       {/* Main card */}
       <div style={CARD}>

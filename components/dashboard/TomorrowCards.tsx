@@ -185,14 +185,18 @@ export default function TomorrowCards({ state }: Props) {
 function StudyTaskCard({ card }: { card: StudyCard }) {
   const accent = card.course.accent;
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', gap: 8,
-      padding: '12px 14px', borderRadius: 12,
-      background: 'var(--bg-surface)',
-      border: '1px solid var(--border-subtle)',
-      boxShadow: 'var(--shadow-card)',
-      opacity: card.isDone ? 0.5 : 1,
-    }}>
+    <div
+      data-done={card.isDone ? 'true' : 'false'}
+      className="day-card"
+      style={{
+        display: 'flex', flexDirection: 'column', gap: 8,
+        padding: '12px 14px', borderRadius: 12,
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border-subtle)',
+        boxShadow: 'var(--shadow-card)',
+        opacity: card.isDone ? 0.5 : 1,
+      }}
+    >
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{
           width: 16, height: 16, borderRadius: 5, flexShrink: 0,
@@ -234,13 +238,16 @@ function StudyTaskCard({ card }: { card: StudyCard }) {
 function EventTaskCard({ card }: { card: EventCard }) {
   const dotColor = EVENT_TYPE_VAR[card.type] ?? card.color;
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', gap: 8,
-      padding: '12px 14px', borderRadius: 12,
-      background: 'var(--bg-surface)',
-      border: '1px solid var(--border-subtle)',
-      boxShadow: 'var(--shadow-card)',
-    }}>
+    <div
+      className="day-card"
+      style={{
+        display: 'flex', flexDirection: 'column', gap: 8,
+        padding: '12px 14px', borderRadius: 12,
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border-subtle)',
+        boxShadow: 'var(--shadow-card)',
+      }}
+    >
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
         {card.time ? (

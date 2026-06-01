@@ -1,36 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   IconBolt, IconBook2, IconCalendar, IconChartBar,
   IconClock, IconStack2, IconTarget, IconShieldCheck,
-  IconBrandGithub, IconArrowRight, IconChevronDown,
+  IconBrandGithub, IconArrowRight, IconChevronDown, IconLanguage,
 } from '@tabler/icons-react';
+import { type Lang, LANG_LABELS, LANG_FLAGS, LANDING, getStoredLang, setStoredLang } from '@/lib/i18n';
 
-const FEATURES = [
-  { Icon: IconTarget,      title: 'Focused Study Plans',    desc: 'Course-aware task management designed for certification prep — not generic productivity apps.' },
-  { Icon: IconChartBar,    title: 'Progress Tracking',      desc: 'Know exactly how far you are, how far behind, and what to study today to catch up.' },
-  { Icon: IconCalendar,    title: 'Calendar & Tasks',       desc: 'Visual calendar with tasks, events, and daily agenda. Never miss a deadline.' },
-  { Icon: IconClock,       title: 'Pomodoro Study Timer',   desc: 'Built-in focus timer with session history to build consistent study habits.' },
-  { Icon: IconStack2,      title: 'Quick Study Mode',       desc: 'Only have 15 minutes? PaceUp tells you exactly what to study for maximum impact.' },
-  { Icon: IconShieldCheck, title: 'Exam Countdown',         desc: 'Track days remaining to each exam with urgency-aware priority sorting.' },
-];
-
-const WHY = [
-  'Built for certification prep — not generic task management',
-  'Local-first: your data stays on your device, no account needed',
-  'Designed for the student who needs to pass, not just plan',
-  'Track exactly how far behind you are and what to study next',
-];
-
-const FAQ = [
-  { q: 'Is PaceUp free?', a: 'Yes, completely free. No account required — all data is stored locally on your device.' },
-  { q: 'Which certifications does PaceUp support?', a: 'It comes pre-loaded with Cisco CCST and Microsoft certification tracks, with custom course support coming soon.' },
-  { q: 'Does my data sync across devices?', a: 'Currently local-only. Cloud sync is on the roadmap — your data stays on device until then.' },
-  { q: 'Can I use it on mobile?', a: 'Yes — PaceUp is fully responsive with a dedicated mobile navigation bar.' },
-  { q: 'Do I need to create an account?', a: 'Not yet. The app works immediately in demo mode. Accounts will be optional when cloud sync launches.' },
-  { q: 'Is the source code available?', a: 'Yes — PaceUp is open source on GitHub. Pull requests and feedback are welcome.' },
-];
+const FEATURE_ICONS = [IconTarget, IconChartBar, IconCalendar, IconClock, IconStack2, IconShieldCheck];
 
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -55,7 +33,78 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
+function LangSelector({ lang, onChange }: { lang: Lang; onChange: (l: Lang) => void }) {
+  const [open, setOpen] = useState(false);
+  const langs: Lang[] = ['en', 'es', 'pt'];
+  return (
+    <div style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8,
+          border: '1px solid rgba(255,255,255,0.12)', background: 'transparent',
+          color: 'rgba(255,255,255,0.65)', fontSize: 12, fontWeight: 500,
+          cursor: 'pointer', fontFamily: 'inherit', transition: 'all 150ms ease',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'; e.currentTarget.style.color = '#fff'; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; }}
+      >
+        <IconLanguage size={13} />
+        <span>{LANG_FLAGS[lang]}</span>
+        <span>{LANG_LABELS[lang]}</span>
+        <IconChevronDown size={11} style={{ transition: 'transform 180ms', transform: open ? 'rotate(180deg)' : 'none' }} />
+      </button>
+      {open && (
+        <div
+          style={{
+            position: 'absolute', top: 'calc(100% + 6px)', right: 0, zIndex: 200,
+            background: 'rgba(18,18,25,0.96)', backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10,
+            padding: 4, minWidth: 160,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.50)',
+            animation: 'modal-panel-in 160ms cubic-bezier(0.16,1,0.3,1) both',
+          }}
+        >
+          {langs.map(l => (
+            <button
+              key={l}
+              onClick={() => { onChange(l); setOpen(false); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                width: '100%', padding: '7px 12px', borderRadius: 7,
+                background: lang === l ? 'rgba(91,91,214,0.18)' : 'transparent',
+                border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                color: lang === l ? '#818CF8' : 'rgba(255,255,255,0.75)',
+                fontSize: 12, fontWeight: lang === l ? 600 : 400,
+                transition: 'background 120ms ease, color 120ms ease',
+              }}
+              onMouseEnter={e => { if (lang !== l) { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = '#fff'; } }}
+              onMouseLeave={e => { if (lang !== l) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.75)'; } }}
+            >
+              <span style={{ fontSize: 16 }}>{LANG_FLAGS[l]}</span>
+              {LANG_LABELS[l]}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function LandingPage() {
+  const [lang, setLang] = useState<Lang>('en');
+
+  useEffect(() => {
+    setLang(getStoredLang());
+  }, []);
+
+  function handleLangChange(l: Lang) {
+    setLang(l);
+    setStoredLang(l);
+  }
+
+  const t = LANDING[lang];
+
   return (
     <div style={{
       flex: 1, minHeight: '100vh', overflowY: 'auto',
@@ -84,6 +133,7 @@ export default function LandingPage() {
             <span style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>PaceUp</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <LangSelector lang={lang} onChange={handleLangChange} />
             <a href="https://github.com/HyrumBustosFernandez" target="_blank" rel="noopener noreferrer" style={{
               display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8,
               border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.65)',
@@ -101,7 +151,7 @@ export default function LandingPage() {
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#4A4AC4'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#5B5BD6'; }}
             >
-              Open App
+              {t.openApp}
             </a>
           </div>
         </div>
@@ -115,24 +165,23 @@ export default function LandingPage() {
             border: '1px solid rgba(91,91,214,0.35)', background: 'rgba(91,91,214,0.10)', marginBottom: 28,
           }}>
             <span style={{ fontSize: 10, fontWeight: 700, color: '#5B5BD6', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              Certification Prep Tool
+              {t.badge}
             </span>
           </div>
           <h1 style={{
             fontSize: 'clamp(40px, 7vw, 72px)', fontWeight: 800, lineHeight: 1.05,
             letterSpacing: '-0.03em', margin: '0 0 20px', color: '#F0EEF8',
           }}>
-            Study smarter.<br />
+            {t.heroTitle1}<br />
             <span style={{ background: 'linear-gradient(135deg, #5B5BD6 0%, #818CF8 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Pass faster.
+              {t.heroTitle2}
             </span>
           </h1>
           <p style={{
             fontSize: 'clamp(15px, 2.5vw, 18px)', color: 'rgba(240,238,248,0.6)',
             maxWidth: 560, margin: '0 auto 40px', lineHeight: 1.65,
           }}>
-            The student productivity tracker built for certification prep.
-            Know exactly what to study, track your progress, and never fall behind again.
+            {t.heroSub}
           </p>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
             <a href="/login" target="_blank" rel="noopener noreferrer" style={{
@@ -144,7 +193,7 @@ export default function LandingPage() {
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#4A4AC4'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#5B5BD6'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
             >
-              Start for free <IconArrowRight size={15} />
+              {t.startFree} <IconArrowRight size={15} />
             </a>
             <a href="https://github.com/HyrumBustosFernandez" target="_blank" rel="noopener noreferrer" style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -155,17 +204,18 @@ export default function LandingPage() {
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.28)'; e.currentTarget.style.color = '#fff'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)'; e.currentTarget.style.color = 'rgba(255,255,255,0.75)'; }}
             >
-              <IconBrandGithub size={15} /> View source
+              <IconBrandGithub size={15} /> {t.viewSource}
             </a>
           </div>
         </section>
 
-        {/* App mockup */}
+        {/* App mockup / preview */}
         <section style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px 100px' }}>
           <div style={{
             borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)',
             overflow: 'hidden', boxShadow: '0 40px 120px rgba(0,0,0,0.70)', background: '#171717',
           }}>
+            {/* Browser chrome */}
             <div style={{
               height: 40, background: '#1a1a1a', borderBottom: '1px solid rgba(255,255,255,0.06)',
               display: 'flex', alignItems: 'center', padding: '0 16px', gap: 6,
@@ -181,27 +231,63 @@ export default function LandingPage() {
                 <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>paceup.app</span>
               </div>
             </div>
+            {/* Preview cards carousel */}
             <div style={{
-              height: 380, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexDirection: 'column', gap: 16,
+              padding: '32px 32px 24px',
               background: 'linear-gradient(135deg, #171717 0%, #1a1a2e 50%, #171717 100%)',
             }}>
-              <div style={{
-                width: 60, height: 60, borderRadius: 16, background: '#5B5BD6',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 8px 32px rgba(91,91,214,0.40)',
-              }}>
-                <IconBolt size={30} color="#fff" />
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 16 }}>
+                {[
+                  { label: 'Courses', value: '9', sub: 'active this term', color: '#5B5BD6' },
+                  { label: 'Items Done', value: '11', sub: 'of 117 total', color: '#22C55E' },
+                  { label: 'Days Left', value: '10', sub: 'until exam', color: '#F59E0B' },
+                ].map(({ label, value, sub, color }) => (
+                  <div key={label} style={{
+                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 12, padding: '14px 16px',
+                  }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>{label}</div>
+                    <div style={{ fontSize: 28, fontWeight: 800, color, lineHeight: 1 }}>{value}</div>
+                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>{sub}</div>
+                    <div style={{ height: 2, borderRadius: 2, background: `${color}30`, marginTop: 10, overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: '60%', background: color, borderRadius: 2 }} />
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div style={{ textAlign: 'center' }}>
-                <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>PaceUp Dashboard</p>
-                <p style={{ margin: '4px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>App preview</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                {[
+                  { icon: '＋', label: 'Create Task', color: '#5B5BD6' },
+                  { icon: '📅', label: 'Add Event',   color: '#22C55E' },
+                  { icon: '📚', label: 'Open Courses', color: '#F59E0B' },
+                  { icon: '🗓️', label: 'Open Calendar', color: '#EF4444' },
+                ].map(({ icon, label, color }) => (
+                  <div key={label} style={{
+                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)',
+                    borderRadius: 10, padding: '12px 12px', display: 'flex', flexDirection: 'column', gap: 8,
+                  }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 7,
+                      background: `${color}20`, border: `1px solid ${color}30`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13,
+                    }}>{icon}</div>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>{label}</span>
+                  </div>
+                ))}
               </div>
-              <a href="/login" target="_blank" rel="noopener noreferrer" style={{
-                padding: '8px 18px', borderRadius: 9, textDecoration: 'none',
-                background: 'rgba(91,91,214,0.20)', border: '1px solid rgba(91,91,214,0.35)',
-                color: '#818CF8', fontSize: 12, fontWeight: 600,
-              }}>Open live app →</a>
+              <div style={{ textAlign: 'center', marginTop: 20 }}>
+                <a href="/login" target="_blank" rel="noopener noreferrer" style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '8px 18px', borderRadius: 9, textDecoration: 'none',
+                  background: 'rgba(91,91,214,0.20)', border: '1px solid rgba(91,91,214,0.35)',
+                  color: '#818CF8', fontSize: 12, fontWeight: 600, transition: 'all 150ms ease',
+                }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(91,91,214,0.30)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(91,91,214,0.20)'; }}
+                >
+                  {t.openApp} →
+                </a>
+              </div>
             </div>
           </div>
         </section>
@@ -210,32 +296,36 @@ export default function LandingPage() {
         <section style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px 100px' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <h2 style={{ fontSize: 'clamp(26px, 4vw, 40px)', fontWeight: 800, letterSpacing: '-0.02em', margin: '0 0 12px' }}>
-              Everything you need to pass
+              {t.featuresTitle}
             </h2>
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.45)', margin: 0, maxWidth: 440, marginInline: 'auto' }}>
-              Built around how certification studying actually works.
+              {t.featuresSub}
             </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-            {FEATURES.map(({ Icon, title, desc }) => (
-              <div key={title} style={{
-                padding: '24px 24px 22px', background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, transition: 'border-color 200ms ease, transform 200ms ease',
-              }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(91,91,214,0.30)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
-              >
-                <div style={{
-                  width: 36, height: 36, borderRadius: 9, background: 'rgba(91,91,214,0.15)',
-                  border: '1px solid rgba(91,91,214,0.25)', display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', marginBottom: 14, color: '#818CF8',
-                }}>
-                  <Icon size={18} />
+            {t.features.map(({ title, desc }, idx) => {
+              const Icon = FEATURE_ICONS[idx];
+              return (
+                <div key={title} style={{
+                  padding: '24px 24px 22px', background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16,
+                  transition: 'border-color 200ms ease, transform 200ms ease',
+                }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(91,91,214,0.30)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
+                >
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 9, background: 'rgba(91,91,214,0.15)',
+                    border: '1px solid rgba(91,91,214,0.25)', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', marginBottom: 14, color: '#818CF8',
+                  }}>
+                    <Icon size={18} />
+                  </div>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, margin: '0 0 6px', color: 'rgba(255,255,255,0.9)' }}>{title}</h3>
+                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', margin: 0, lineHeight: 1.6 }}>{desc}</p>
                 </div>
-                <h3 style={{ fontSize: 14, fontWeight: 700, margin: '0 0 6px', color: 'rgba(255,255,255,0.9)' }}>{title}</h3>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', margin: 0, lineHeight: 1.6 }}>{desc}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -247,10 +337,10 @@ export default function LandingPage() {
           }}>
             <div style={{ maxWidth: 600 }}>
               <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 36px)', fontWeight: 800, letterSpacing: '-0.02em', margin: '0 0 32px' }}>
-                Why PaceUp?
+                {t.whyTitle}
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {WHY.map((item, i) => (
+                {t.why.map((item, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                     <div style={{
                       width: 20, height: 20, borderRadius: '50%', background: 'rgba(91,91,214,0.20)',
@@ -269,8 +359,10 @@ export default function LandingPage() {
 
         {/* FAQ */}
         <section style={{ maxWidth: 700, margin: '0 auto', padding: '0 24px 100px' }}>
-          <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 36px)', fontWeight: 800, letterSpacing: '-0.02em', margin: '0 0 32px', textAlign: 'center' }}>FAQ</h2>
-          {FAQ.map(item => <FaqItem key={item.q} {...item} />)}
+          <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 36px)', fontWeight: 800, letterSpacing: '-0.02em', margin: '0 0 32px', textAlign: 'center' }}>
+            {t.faqTitle}
+          </h2>
+          {t.faq.map(item => <FaqItem key={item.q} {...item} />)}
         </section>
 
         {/* CTA */}
@@ -280,10 +372,10 @@ export default function LandingPage() {
             border: '1px solid rgba(91,91,214,0.22)', borderRadius: 24, padding: '64px 40px',
           }}>
             <h2 style={{ fontSize: 'clamp(24px, 4vw, 44px)', fontWeight: 800, letterSpacing: '-0.02em', margin: '0 0 14px' }}>
-              Ready to pace up?
+              {t.heroTitle1} {t.heroTitle2}
             </h2>
             <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', margin: '0 0 32px', lineHeight: 1.6 }}>
-              Free, local-first, and built for students serious about passing.
+              {t.heroSub}
             </p>
             <a href="/login" target="_blank" rel="noopener noreferrer" style={{
               display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 28px',
@@ -293,7 +385,7 @@ export default function LandingPage() {
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#4A4AC4'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#5B5BD6'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
             >
-              Open PaceUp free <IconArrowRight size={15} />
+              {t.startFree} <IconArrowRight size={15} />
             </a>
           </div>
         </section>
@@ -309,13 +401,13 @@ export default function LandingPage() {
                 <IconBolt size={11} color="#fff" />
               </div>
               <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>PaceUp</span>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>© 2026 Hyrum Bustos</span>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>{t.footerCopy}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               {[
-                { label: 'GitHub', href: 'https://github.com/HyrumBustosFernandez' },
+                { label: 'GitHub',   href: 'https://github.com/HyrumBustosFernandez' },
                 { label: 'LinkedIn', href: 'https://linkedin.com' },
-                { label: 'Contact', href: 'mailto:hyrum@bytebridgesystems.com' },
+                { label: 'Contact',  href: 'mailto:hyrum@bytebridgesystems.com' },
               ].map(({ label, href }) => (
                 <a key={label} href={href}
                   target={href.startsWith('mailto') ? undefined : '_blank'}

@@ -46,7 +46,7 @@ export const EVENT_TYPE_LABELS: Record<EventType, string> = {
 
 export const COLOR_PRESETS = [
   '#4875F0', '#EF4444', '#F59E0B', '#A855F7',
-  '#06B6D4', '#22C55E', '#6B7280',
+  '#06B6D4', '#22C55E', '#FF7043', '#6B7280',
 ];
 
 // Legacy support: map old type "task" → "task", no-op

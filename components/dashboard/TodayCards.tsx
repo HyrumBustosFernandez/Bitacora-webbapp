@@ -215,6 +215,8 @@ function StudyTaskCard({ card, onToggle }: { card: StudyCard; onToggle: () => vo
     <button
       type="button"
       onClick={onToggle}
+      data-done={card.isDone ? 'true' : 'false'}
+      className="day-card"
       style={{
         display: 'flex', flexDirection: 'column', gap: 8,
         padding: '12px 14px', borderRadius: 12, textAlign: 'left',
@@ -223,7 +225,6 @@ function StudyTaskCard({ card, onToggle }: { card: StudyCard; onToggle: () => vo
         boxShadow: card.isDone ? 'none' : 'var(--shadow-card)',
         cursor: 'pointer', width: '100%', fontFamily: 'inherit',
         opacity: card.isDone ? 0.6 : 1,
-        transition: 'all 150ms ease',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -269,13 +270,16 @@ function StudyTaskCard({ card, onToggle }: { card: StudyCard; onToggle: () => vo
 function EventTaskCard({ card }: { card: EventCard }) {
   const dotColor = EVENT_TYPE_VAR[card.type] ?? card.color;
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', gap: 8,
-      padding: '12px 14px', borderRadius: 12,
-      background: 'var(--bg-surface)',
-      border: '1px solid var(--border-default)',
-      boxShadow: 'var(--shadow-card)',
-    }}>
+    <div
+      className="day-card"
+      style={{
+        display: 'flex', flexDirection: 'column', gap: 8,
+        padding: '12px 14px', borderRadius: 12,
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border-default)',
+        boxShadow: 'var(--shadow-card)',
+      }}
+    >
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
         {card.time ? (

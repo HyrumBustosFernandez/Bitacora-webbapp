@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   IconLayoutGrid, IconBook2, IconBolt, IconCalendar,
   IconChartBar, IconUsers, IconSettings2,
-  IconTag, IconBell,
   IconHome, IconClock, IconFileText, IconStack2, IconTrendingUp,
 } from '@tabler/icons-react';
 
@@ -18,6 +17,7 @@ const SB_HOVER_BG    = 'rgba(255,255,255,0.08)';
 const SB_TEXT        = 'rgba(255,255,255,0.55)';
 const SB_TEXT_ACTIVE = '#ffffff';
 const SB_BORDER_L    = 'rgba(255,255,255,0.80)';
+const SB_SEPARATOR   = 'rgba(255,255,255,0.09)';
 
 /* ── Panda logo ── */
 function PandaLogo({ size = 26 }: { size?: number }) {
@@ -31,12 +31,23 @@ function PandaLogo({ size = 26 }: { size?: number }) {
   );
 }
 
-const NAV_MAIN = [
-  { href: '/home',      Icon: IconLayoutGrid, label: 'Home'      },
-  { href: '/courses',   Icon: IconBook2,      label: 'Courses'   },
-  { href: '/study',     Icon: IconBolt,       label: 'Study'     },
-  { href: '/calendar',  Icon: IconCalendar,   label: 'Calendar'  },
-  { href: '/analytics', Icon: IconChartBar,   label: 'Overview'  },
+const NAV_TOP = [
+  { href: '/home',      Icon: IconLayoutGrid, label: 'Home'     },
+  { href: '/courses',   Icon: IconBook2,      label: 'Courses'  },
+];
+
+const NAV_BOTTOM = [
+  { href: '/calendar',  Icon: IconCalendar,   label: 'Calendar' },
+  { href: '/analytics', Icon: IconChartBar,   label: 'Overview' },
+];
+
+const STUDY_SUBSECTIONS = [
+  { label: 'Overview',    Icon: IconHome,       route: '/study'            },
+  { label: 'Quick Study', Icon: IconBolt,       route: '/study/quick'      },
+  { label: 'Timer',       Icon: IconClock,      route: '/study/timer'      },
+  { label: 'Notes',       Icon: IconFileText,   route: '/study/notes'      },
+  { label: 'Flashcards',  Icon: IconStack2,     route: '/study/flashcards' },
+  { label: 'Progress',    Icon: IconTrendingUp, route: '/study/progress'   },
 ];
 
 const LABEL_MOTION = {
@@ -46,20 +57,17 @@ const LABEL_MOTION = {
   transition: { duration: 0.14, delay: 0.05 },
 };
 
-const CAL_SUBSECTIONS = [
-  { label: 'Types',     Icon: IconTag   },
-  { label: 'Reminders', Icon: IconBell  },
-  { label: 'Groups',    Icon: IconUsers },
-];
-
-const STUDY_SUBSECTIONS = [
-  { label: 'Overview',    Icon: IconHome,        route: '/study'            },
-  { label: 'Quick Study', Icon: IconBolt,        route: '/study/quick'      },
-  { label: 'Timer',       Icon: IconClock,       route: '/study/timer'      },
-  { label: 'Notes',       Icon: IconFileText,    route: '/study/notes'      },
-  { label: 'Flashcards',  Icon: IconStack2,      route: '/study/flashcards' },
-  { label: 'Progress',    Icon: IconTrendingUp,  route: '/study/progress'   },
-];
+function Separator({ open }: { open: boolean }) {
+  return (
+    <div style={{
+      height: 1,
+      background: SB_SEPARATOR,
+      margin: open ? '4px 10px' : '4px 12px',
+      transition: 'margin 250ms ease',
+      flexShrink: 0,
+    }} />
+  );
+}
 
 export default function LeftSidebar() {
   const pathname = usePathname();
@@ -78,6 +86,69 @@ export default function LeftSidebar() {
   const isActive = (href: string) =>
     href === '/home' ? pathname === '/home' : pathname.startsWith(href);
 
+  function NavItem({ href, Icon, label, comingSoon }: {
+    href: string; Icon: React.ComponentType<{ size?: number; strokeWidth?: number; style?: React.CSSProperties }>;
+    label: string; comingSoon?: boolean;
+  }) {
+    const active = isActive(href);
+    return (
+      <Link
+        href={comingSoon ? '#' : href}
+        title={!open ? label : undefined}
+        onClick={comingSoon ? (e) => e.preventDefault() : undefined}
+        style={{
+          display: 'flex', alignItems: 'center',
+          gap: 10, height: 36, padding: '0 9px',
+          borderRadius: 8, textDecoration: 'none',
+          color: active ? SB_TEXT_ACTIVE : SB_TEXT,
+          background: active ? SB_ACTIVE_BG : 'transparent',
+          whiteSpace: 'nowrap', overflow: 'hidden',
+          fontWeight: active ? 600 : 500, fontSize: 12,
+          position: 'relative',
+          opacity: comingSoon ? 0.5 : 1,
+          transition: 'color 130ms ease, background-color 130ms ease',
+        }}
+        onMouseEnter={e => {
+          if (!active && !comingSoon) {
+            (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
+            (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
+          }
+        }}
+        onMouseLeave={e => {
+          if (!active && !comingSoon) {
+            (e.currentTarget as HTMLElement).style.background = 'transparent';
+            (e.currentTarget as HTMLElement).style.color = SB_TEXT;
+          }
+        }}
+      >
+        {active && (
+          <span style={{
+            position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%)',
+            width: 2.5, height: 18, background: SB_BORDER_L, borderRadius: '0 2px 2px 0',
+          }} />
+        )}
+        <Icon size={17} strokeWidth={active ? 2 : 1.75} style={{ flexShrink: 0 }} />
+        <AnimatePresence>
+          {open && (
+            <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden', flex: 1 }}>
+              {label}
+            </motion.span>
+          )}
+        </AnimatePresence>
+        {open && comingSoon && (
+          <span style={{
+            fontSize: 8, fontWeight: 700, padding: '1px 4px',
+            borderRadius: 3, background: 'rgba(255,255,255,0.10)',
+            color: 'rgba(255,255,255,0.40)', letterSpacing: '0.04em',
+            textTransform: 'uppercase', flexShrink: 0,
+          }}>
+            soon
+          </span>
+        )}
+      </Link>
+    );
+  }
+
   return (
     <motion.aside
       onMouseEnter={handleMouseEnter}
@@ -87,13 +158,9 @@ export default function LeftSidebar() {
       style={{
         background: SB_BG,
         boxShadow: '2px 0 20px rgba(20,30,70,0.22), 1px 0 0 rgba(255,255,255,0.04)',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        flexShrink: 0,
-        overflow: 'hidden',
-        position: 'relative',
-        zIndex: 20,
+        display: 'flex', flexDirection: 'column',
+        height: '100vh', flexShrink: 0,
+        overflow: 'hidden', position: 'relative', zIndex: 20,
       }}
     >
       {/* ── Logo zone ── */}
@@ -103,8 +170,7 @@ export default function LeftSidebar() {
           display: 'flex', alignItems: 'center', gap: 10,
           height: 52, padding: '0 13px',
           marginBottom: 10, flexShrink: 0,
-          color: '#ffffff', textDecoration: 'none',
-          borderRadius: 8,
+          color: '#ffffff', textDecoration: 'none', borderRadius: 8,
           transition: 'opacity 130ms ease',
         }}
         onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
@@ -114,9 +180,8 @@ export default function LeftSidebar() {
         <AnimatePresence>
           {open && (
             <motion.span {...LABEL_MOTION} style={{
-              fontSize: 14, fontWeight: 700,
-              color: '#ffffff', opacity: 0.93,
-              whiteSpace: 'nowrap', overflow: 'hidden',
+              fontSize: 14, fontWeight: 700, color: '#ffffff',
+              opacity: 0.93, whiteSpace: 'nowrap', overflow: 'hidden',
               letterSpacing: '-0.015em',
             }}>
               PaceUp
@@ -125,161 +190,127 @@ export default function LeftSidebar() {
         </AnimatePresence>
       </Link>
 
-      {/* ── Main nav ── */}
+      {/* ── Top nav: Home, Courses ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
-        {NAV_MAIN.map(({ href, Icon, label }) => {
-          const active     = isActive(href);
-          const isCalendar = href === '/calendar';
-          const isStudy    = href === '/study';
-          const showCalSubs   = isCalendar && active;
-          const showStudySubs = isStudy    && active;
+        {NAV_TOP.map(({ href, Icon, label }) => (
+          <NavItem key={href} href={href} Icon={Icon} label={label} />
+        ))}
+      </div>
 
+      {/* ── Separator ── */}
+      <Separator open={open} />
+
+      {/* ── Study section (always visible subsections) ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
+        {/* Study parent */}
+        {(() => {
+          const active = isActive('/study');
           return (
-            <div key={href}>
-              <Link
-                href={href}
-                title={!open ? label : undefined}
-                style={{
-                  display: 'flex', alignItems: 'center',
-                  gap: 10, height: 36, padding: '0 9px',
-                  borderRadius: 8, textDecoration: 'none',
-                  color: active ? SB_TEXT_ACTIVE : SB_TEXT,
-                  background: active ? SB_ACTIVE_BG : 'transparent',
-                  whiteSpace: 'nowrap', overflow: 'hidden',
-                  fontWeight: active ? 600 : 500,
-                  fontSize: 12,
-                  position: 'relative',
-                  transition: 'color 130ms ease, background-color 130ms ease',
-                }}
-                onMouseEnter={e => {
-                  if (!active) (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
-                  if (!active) (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
-                }}
-                onMouseLeave={e => {
-                  if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent';
-                  if (!active) (e.currentTarget as HTMLElement).style.color = SB_TEXT;
-                }}
-              >
-                {active && (
-                  <span style={{
-                    position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%)',
-                    width: 2.5, height: 18,
-                    background: SB_BORDER_L,
-                    borderRadius: '0 2px 2px 0',
-                  }} />
+            <Link
+              href="/study"
+              title={!open ? 'Study' : undefined}
+              style={{
+                display: 'flex', alignItems: 'center',
+                gap: 10, height: 36, padding: '0 9px',
+                borderRadius: 8, textDecoration: 'none',
+                color: active ? SB_TEXT_ACTIVE : SB_TEXT,
+                background: active ? SB_ACTIVE_BG : 'transparent',
+                whiteSpace: 'nowrap', overflow: 'hidden',
+                fontWeight: active ? 600 : 500, fontSize: 12,
+                position: 'relative',
+                transition: 'color 130ms ease, background-color 130ms ease',
+              }}
+              onMouseEnter={e => {
+                if (!active) {
+                  (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
+                  (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
+                }
+              }}
+              onMouseLeave={e => {
+                if (!active) {
+                  (e.currentTarget as HTMLElement).style.background = 'transparent';
+                  (e.currentTarget as HTMLElement).style.color = SB_TEXT;
+                }
+              }}
+            >
+              {active && (
+                <span style={{
+                  position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%)',
+                  width: 2.5, height: 18, background: SB_BORDER_L, borderRadius: '0 2px 2px 0',
+                }} />
+              )}
+              <IconBolt size={17} strokeWidth={active ? 2 : 1.75} style={{ flexShrink: 0 }} />
+              <AnimatePresence>
+                {open && (
+                  <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden' }}>Study</motion.span>
                 )}
-                <Icon size={17} strokeWidth={active ? 2 : 1.75} style={{ flexShrink: 0 }} />
-                <AnimatePresence>
-                  {open && (
-                    <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden', flex: 1 }}>
-                      {label}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
+              </AnimatePresence>
+            </Link>
+          );
+        })()}
 
-              </Link>
-
-              {/* Calendar subsections */}
-              {showCalSubs && (
-                <div style={{ paddingLeft: open ? 10 : 0 }}>
-                  {CAL_SUBSECTIONS.map(({ label: subLabel, Icon: SubIcon }) => (
-                    <div
-                      key={subLabel}
-                      title={!open ? subLabel : undefined}
-                      style={{
-                        display: 'flex', alignItems: 'center',
-                        gap: 8,
-                        height: open ? 30 : 36,
-                        padding: '0 9px',
-                        borderRadius: open ? 7 : 8,
-                        cursor: 'pointer',
-                        color: SB_TEXT,
-                        fontSize: 11, fontWeight: 400,
-                        whiteSpace: 'nowrap', overflow: 'hidden',
-                        transition: 'background 130ms ease, color 130ms ease',
-                        marginLeft: open ? 8 : 0,
-                      }}
-                      onMouseEnter={e => {
-                        (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
-                        (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
-                      }}
-                      onMouseLeave={e => {
-                        (e.currentTarget as HTMLElement).style.background = 'transparent';
-                        (e.currentTarget as HTMLElement).style.color = SB_TEXT;
-                      }}
-                    >
-                      <SubIcon size={open ? 13 : 17} strokeWidth={1.6} style={{ flexShrink: 0, opacity: 0.7 }} />
-                      <AnimatePresence>
-                        {open && (
-                          <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden' }}>
-                            {subLabel}
-                          </motion.span>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Study subsections */}
-              {showStudySubs && (
-                <div style={{ paddingLeft: open ? 10 : 0 }}>
-                  {STUDY_SUBSECTIONS.map(({ label: subLabel, Icon: SubIcon, route }) => {
-                    const subActive = pathname === route;
-                    return (
-                      <Link
-                        key={route}
-                        href={route}
-                        title={!open ? subLabel : undefined}
-                        style={{
-                          display: 'flex', alignItems: 'center',
-                          gap: 8,
-                          height: open ? 30 : 36,
-                          padding: '0 9px',
-                          borderRadius: open ? 7 : 8,
-                          textDecoration: 'none',
-                          color: subActive ? SB_TEXT_ACTIVE : SB_TEXT,
-                          background: subActive ? 'rgba(255,255,255,0.08)' : 'transparent',
-                          fontSize: 11, fontWeight: subActive ? 500 : 400,
-                          whiteSpace: 'nowrap', overflow: 'hidden',
-                          transition: 'background 130ms ease, color 130ms ease',
-                          marginLeft: open ? 8 : 0,
-                        }}
-                        onMouseEnter={e => {
-                          if (!subActive) {
-                            (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
-                            (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
-                          }
-                        }}
-                        onMouseLeave={e => {
-                          if (!subActive) {
-                            (e.currentTarget as HTMLElement).style.background = 'transparent';
-                            (e.currentTarget as HTMLElement).style.color = SB_TEXT;
-                          }
-                        }}
-                      >
-                        <SubIcon size={open ? 13 : 17} strokeWidth={1.6} style={{ flexShrink: 0, opacity: subActive ? 1 : 0.7 }} />
-                        <AnimatePresence>
-                          {open && (
-                            <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden' }}>
-                              {subLabel}
-                            </motion.span>
-                          )}
-                        </AnimatePresence>
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+        {/* Study subsections — always visible */}
+        {STUDY_SUBSECTIONS.map(({ label, Icon: SubIcon, route }) => {
+          const subActive = pathname === route;
+          return (
+            <Link
+              key={route}
+              href={route}
+              title={!open ? label : undefined}
+              style={{
+                display: 'flex', alignItems: 'center',
+                gap: 10, height: open ? 30 : 36,
+                padding: '0 9px',
+                borderRadius: open ? 7 : 8,
+                textDecoration: 'none',
+                color: subActive ? SB_TEXT_ACTIVE : SB_TEXT,
+                background: subActive ? 'rgba(255,255,255,0.08)' : 'transparent',
+                fontSize: 11, fontWeight: subActive ? 500 : 400,
+                whiteSpace: 'nowrap', overflow: 'hidden',
+                transition: 'background 130ms ease, color 130ms ease, height 250ms ease',
+              }}
+              onMouseEnter={e => {
+                if (!subActive) {
+                  (e.currentTarget as HTMLElement).style.background = SB_HOVER_BG;
+                  (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)';
+                }
+              }}
+              onMouseLeave={e => {
+                if (!subActive) {
+                  (e.currentTarget as HTMLElement).style.background = 'transparent';
+                  (e.currentTarget as HTMLElement).style.color = SB_TEXT;
+                }
+              }}
+            >
+              <SubIcon size={17} strokeWidth={subActive ? 1.75 : 1.6} style={{ flexShrink: 0, opacity: subActive ? 1 : 0.7 }} />
+              <AnimatePresence>
+                {open && (
+                  <motion.span {...LABEL_MOTION} style={{ overflow: 'hidden' }}>
+                    {label}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </Link>
           );
         })}
       </div>
 
+      {/* ── Separator ── */}
+      <Separator open={open} />
+
+      {/* ── Calendar, Analytics ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
+        {NAV_BOTTOM.map(({ href, Icon, label }) => (
+          <NavItem key={href} href={href} Icon={Icon} label={label} />
+        ))}
+      </div>
+
       <div style={{ flex: 1 }} />
 
-      {/* ── Bottom items ── */}
+      {/* ── Groups (coming soon) + Settings ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
+        <NavItem href="/groups" Icon={IconUsers} label="Groups" comingSoon />
+
         {(() => {
           const active = isActive('/settings');
           return (
@@ -321,7 +352,6 @@ export default function LeftSidebar() {
         })()}
       </div>
 
-      {/* ── Bottom padding ── */}
       <div style={{ height: 10 }} />
     </motion.aside>
   );
