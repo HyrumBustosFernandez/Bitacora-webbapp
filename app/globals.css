@@ -346,8 +346,8 @@ div:hover > .task-delete-btn { opacity: 1 !important; }
   .rg-qa { grid-template-columns: repeat(2, 1fr); gap: 6px; }
   .rg-home { grid-template-columns: 1fr; gap: 8px; }
 
-  /* Mobile main padding — accounts for bottom nav */
-  main { padding: 14px !important; padding-bottom: 76px !important; }
+  /* Mobile main padding — accounts for bottom nav + safe area */
+  main { padding: 14px !important; padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)) !important; }
 
   /* Topnav search width */
   .topnav-search { width: 160px !important; }
@@ -361,7 +361,7 @@ div:hover > .task-delete-btn { opacity: 1 !important; }
 
 /* ── Small phones ── */
 @media (max-width: 480px) {
-  main { padding: 10px !important; padding-bottom: 76px !important; }
+  main { padding: 10px !important; padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)) !important; }
   .rg-4 { grid-template-columns: repeat(2, 1fr); gap: 6px; }
 }
 
@@ -445,6 +445,70 @@ div:hover > .task-delete-btn { opacity: 1 !important; }
 .glass-surface {
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
+}
+
+/* ════════════════════════════════════════
+   CALENDAR MOBILE LAYOUT
+   ════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Stack calendar and tasks vertically */
+  .cal-content-layout {
+    flex-direction: column !important;
+    overflow: auto !important;
+  }
+
+  /* Hide calendar card when tasks tab is active */
+  .cal-content-layout[data-tab="tasks"] .cal-card {
+    display: none !important;
+  }
+
+  /* Hide tasks wrap when events tab is active */
+  .cal-content-layout[data-tab="events"] .cal-tasks-wrap {
+    display: none !important;
+  }
+
+  /* Tasks panel takes full width and fills remaining space */
+  .cal-tasks-wrap {
+    flex: 1 !important;
+    min-height: 300px !important;
+  }
+
+  /* Override TasksSidebar inline width/opacity/pointer-events */
+  .cal-tasks-wrap > div {
+    width: 100% !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  /* Hide desktop "My Tasks" toggle button on mobile */
+  .cal-my-tasks-btn {
+    display: none !important;
+  }
+
+  /* Hide the Events|Tasks tab inside the card on mobile */
+  .cal-tab-desktop {
+    display: none !important;
+  }
+
+  /* Show the mobile tab bar */
+  .cal-mobile-tabs {
+    display: flex !important;
+  }
+}
+
+/* Mobile-only calendar tab bar — hidden on desktop */
+.cal-mobile-tabs {
+  display: none;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+/* Carousel section responsive padding */
+@media (max-width: 640px) {
+  .carousel-section {
+    padding: 0 24px 80px !important;
+  }
 }
 
 /* ════════════════════════════════════════

@@ -255,88 +255,135 @@ function AppCarousel() {
   function pause() { if (timerRef.current) clearInterval(timerRef.current); }
   function resume() { timerRef.current = setInterval(next, 4000); }
 
-  return (
-    <div onMouseEnter={pause} onMouseLeave={resume} style={{ position: 'relative' }}>
-      {/* Browser chrome */}
-      <div style={{
-        borderRadius: 20, border: '1px solid rgba(255,255,255,0.10)',
-        overflow: 'hidden', boxShadow: '0 40px 120px rgba(0,0,0,0.75)',
-        background: '#0E0E0E',
-      }}>
-        {/* Title bar */}
-        <div style={{
-          height: 38, background: '#1a1a1a',
-          borderBottom: '1px solid rgba(255,255,255,0.07)',
-          display: 'flex', alignItems: 'center', padding: '0 14px', gap: 6,
-        }}>
-          {['#FF5F57','#FEBC2E','#28C840'].map((c, i) => (
-            <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
-          ))}
-          <div style={{
-            flex: 1, marginLeft: 10, height: 22, borderRadius: 5,
-            background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-          }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(91,91,214,0.6)' }} />
-            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace' }}>
-              paceup.app/{SLIDES[active].route}
-            </span>
-          </div>
-        </div>
+  const arrowBtn: React.CSSProperties = {
+    position: 'absolute', top: '50%', transform: 'translateY(-50%)',
+    width: 40, height: 40, borderRadius: '50%',
+    background: 'rgba(18,18,25,0.85)',
+    border: '1px solid rgba(255,255,255,0.12)',
+    backdropFilter: 'blur(8px)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    cursor: 'pointer', color: 'rgba(255,255,255,0.8)',
+    transition: 'all 150ms ease', zIndex: 10,
+  };
 
-        {/* Slides */}
-        <div style={{ position: 'relative', overflow: 'hidden', minHeight: 300 }}>
-          {SLIDES.map((slide, i) => (
-            <div
-              key={slide.label}
-              style={{
+  return (
+    <div onMouseEnter={pause} onMouseLeave={resume}
+      style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+
+      {/* Phone frame wrapper — arrows positioned relative to this */}
+      <div style={{ position: 'relative', width: '100%', maxWidth: 320 }}>
+
+        {/* Prev arrow */}
+        <button type="button" onClick={prev}
+          style={{ ...arrowBtn, left: -24 }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(91,91,214,0.70)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(91,91,214,0.5)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(18,18,25,0.85)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.12)'; }}
+        >
+          <IconChevronLeft size={18} />
+        </button>
+
+        {/* Phone shell */}
+        <div style={{
+          borderRadius: 44,
+          border: '10px solid rgba(255,255,255,0.13)',
+          overflow: 'hidden',
+          boxShadow: '0 40px 120px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.05) inset',
+          background: '#0E0E0E',
+        }}>
+          {/* Status bar */}
+          <div style={{
+            background: '#0E0E0E', padding: '12px 20px 6px',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '-0.01em' }}>9:41</span>
+            {/* Dynamic island */}
+            <div style={{ width: 88, height: 26, background: '#000', borderRadius: 20 }} />
+            {/* Right icons */}
+            <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+              {/* Signal bars */}
+              <svg width="17" height="12" viewBox="0 0 17 12" fill="none">
+                <rect x="0"    y="6" width="3" height="6"  rx="1" fill="rgba(255,255,255,0.75)"/>
+                <rect x="4.5" y="4" width="3" height="8"  rx="1" fill="rgba(255,255,255,0.75)"/>
+                <rect x="9"   y="2" width="3" height="10" rx="1" fill="rgba(255,255,255,0.75)"/>
+                <rect x="13.5" y="0" width="3" height="12" rx="1" fill="rgba(255,255,255,0.75)"/>
+              </svg>
+              {/* WiFi */}
+              <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+                <circle cx="8" cy="10.5" r="1.5" fill="rgba(255,255,255,0.75)"/>
+                <path d="M4.5 7.5C5.7 6.1 10.3 6.1 11.5 7.5" stroke="rgba(255,255,255,0.75)" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M2 5C4.2 2.3 11.8 2.3 14 5" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              {/* Battery */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <div style={{ width: 22, height: 11, border: '1.5px solid rgba(255,255,255,0.6)', borderRadius: 3, padding: '1.5px', display: 'flex', alignItems: 'center' }}>
+                  <div style={{ width: '78%', height: '100%', background: 'rgba(255,255,255,0.75)', borderRadius: 1.5 }} />
+                </div>
+                <div style={{ width: 2, height: 5, background: 'rgba(255,255,255,0.5)', borderRadius: '0 1px 1px 0' }} />
+              </div>
+            </div>
+          </div>
+
+          {/* Slides */}
+          <div style={{ position: 'relative', overflow: 'hidden', minHeight: 320 }}>
+            {SLIDES.map((slide, i) => (
+              <div key={slide.label} style={{
                 position: i === 0 ? 'relative' : 'absolute',
                 inset: 0,
                 opacity: i === active ? 1 : 0,
                 transition: 'opacity 500ms cubic-bezier(0.4,0,0.2,1)',
                 pointerEvents: i === active ? 'auto' : 'none',
-              }}
-            >
-              {slide.content}
-            </div>
-          ))}
-        </div>
-      </div>
+              }}>
+                {slide.content}
+              </div>
+            ))}
+          </div>
 
-      {/* Prev / Next arrows */}
-      {[{ dir: 'prev', fn: prev, icon: IconChevronLeft }, { dir: 'next', fn: next, icon: IconChevronRight }].map(({ dir, fn, icon: Icon }) => (
-        <button
-          key={dir} type="button" onClick={fn}
-          style={{
-            position: 'absolute', top: '50%',
-            [dir === 'prev' ? 'left' : 'right']: -20,
-            transform: 'translateY(-50%)',
-            width: 40, height: 40, borderRadius: '50%',
-            background: 'rgba(18,18,25,0.85)',
-            border: '1px solid rgba(255,255,255,0.12)',
-            backdropFilter: 'blur(8px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', color: 'rgba(255,255,255,0.8)',
-            transition: 'all 150ms ease', zIndex: 10,
-          }}
+          {/* Mobile bottom nav mockup */}
+          <div style={{
+            background: '#111', borderTop: '1px solid rgba(255,255,255,0.07)',
+            padding: '8px 0 4px',
+            display: 'flex', justifyContent: 'space-around', alignItems: 'center',
+          }}>
+            {[
+              { label: 'Home', active: SLIDES[active].route === 'home' },
+              { label: 'Courses', active: SLIDES[active].route === 'courses' },
+              { label: 'Study', active: false },
+              { label: 'Calendar', active: SLIDES[active].route === 'calendar' },
+              { label: 'Overview', active: SLIDES[active].route === 'overview' },
+            ].map(({ label, active: isActive }) => (
+              <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                <div style={{ width: 20, height: 20, borderRadius: 5, background: isActive ? 'rgba(91,91,214,0.25)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: 14, height: 14, borderRadius: 3, background: isActive ? '#5B5BD6' : 'rgba(255,255,255,0.25)' }} />
+                </div>
+                <span style={{ fontSize: 7, color: isActive ? '#5B5BD6' : 'rgba(255,255,255,0.3)', fontWeight: isActive ? 700 : 400, letterSpacing: '0.02em' }}>{label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Home indicator */}
+          <div style={{ background: '#111', padding: '6px 0 10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 100, height: 4, background: 'rgba(255,255,255,0.2)', borderRadius: 2 }} />
+          </div>
+        </div>
+
+        {/* Next arrow */}
+        <button type="button" onClick={next}
+          style={{ ...arrowBtn, right: -24 }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(91,91,214,0.70)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(91,91,214,0.5)'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(18,18,25,0.85)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.12)'; }}
         >
-          <Icon size={18} />
+          <IconChevronRight size={18} />
         </button>
-      ))}
+      </div>
 
       {/* Slide label + dots */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginTop: 20 }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>{SLIDES[active].label}</div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{SLIDES[active].desc}</div>
-        </div>
+      <div style={{ textAlign: 'center', marginTop: 24 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>{SLIDES[active].label}</div>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{SLIDES[active].desc}</div>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 14 }}>
         {SLIDES.map((_, i) => (
-          <button
-            key={i} type="button" onClick={() => setActive(i)}
+          <button key={i} type="button" onClick={() => setActive(i)}
             style={{
               width: i === active ? 20 : 6, height: 6,
               borderRadius: 3, border: 'none', cursor: 'pointer', padding: 0,
@@ -550,7 +597,7 @@ export default function RootPage() {
         </section>
 
         {/* App carousel */}
-        <section style={{ maxWidth: 1100, margin: '0 auto', padding: '0 48px 100px' }}>
+        <section className="carousel-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '0 48px 100px' }}>
           <AppCarousel />
         </section>
 
