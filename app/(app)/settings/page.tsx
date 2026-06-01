@@ -9,19 +9,19 @@ const DEFAULT_DUOC_URL = 'https://campusvirtual.duoc.cl/';
 
 const BACKGROUNDS = [
   { file: 'none',                    label: 'None'       },
-  { file: 'blob-red.heic',           label: 'Blob Red'   },
-  { file: 'blue_distortion_1.heic',  label: 'Blue Distortion 1' },
-  { file: 'blue_distortion_2.heic',  label: 'Blue Distortion 2' },
-  { file: 'chromatic_light_2.heic',  label: 'Chromatic Light'   },
-  { file: 'cube_mono.heic',          label: 'Cube Mono'  },
-  { file: 'glaze_1.heic',            label: 'Glaze 1'    },
-  { file: 'glaze_1_alt.heic',        label: 'Glaze 1 Alt'},
-  { file: 'glaze_2.heic',            label: 'Glaze 2'    },
-  { file: 'loupe.heic',              label: 'Loupe'      },
-  { file: 'loupe-mono-light.heic',   label: 'Loupe Mono Light' },
-  { file: 'mono_dark_distortion_2.heic', label: 'Mono Dark'  },
-  { file: 'mono_light_distortion_1.heic',label: 'Mono Light' },
-  { file: 'red_distortion_4.heic',   label: 'Red Distortion' },
+  { file: 'blob-red.jpg',            label: 'Blob Red'   },
+  { file: 'blue_distortion_1.jpg',   label: 'Blue Distortion 1' },
+  { file: 'blue_distortion_2.jpg',   label: 'Blue Distortion 2' },
+  { file: 'chromatic_light_2.jpg',   label: 'Chromatic Light'   },
+  { file: 'cube_mono.jpg',           label: 'Cube Mono'  },
+  { file: 'glaze_1.jpg',             label: 'Glaze 1'    },
+  { file: 'glaze_1_alt.jpg',         label: 'Glaze 1 Alt'},
+  { file: 'glaze_2.jpg',             label: 'Glaze 2'    },
+  { file: 'loupe.jpg',               label: 'Loupe'      },
+  { file: 'loupe-mono-light.jpg',    label: 'Loupe Mono Light' },
+  { file: 'mono_dark_distortion_2.jpg', label: 'Mono Dark'  },
+  { file: 'mono_light_distortion_1.jpg',label: 'Mono Light' },
+  { file: 'red_distortion_4.jpg',    label: 'Red Distortion' },
 ];
 
 const INPUT: React.CSSProperties = {
