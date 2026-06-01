@@ -233,13 +233,12 @@ export default function TopNav() {
               <MenuItem
                 icon={IconLogout}
                 label="Log out"
-                disabled
-                rightEl={
-                  <span style={{
-                    fontSize: 9, color: 'var(--text-4)', border: '1px solid var(--border-default)',
-                    borderRadius: 4, padding: '1px 5px', fontWeight: 600,
-                  }}>Soon</span>
-                }
+                danger
+                onClick={() => {
+                  setProfileOpen(false);
+                  localStorage.removeItem('paceup_authed');
+                  router.push('/login');
+                }}
               />
             </div>
           )}
