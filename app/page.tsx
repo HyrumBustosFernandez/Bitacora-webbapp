@@ -5,34 +5,33 @@ import { loadState, type AppState } from '@/lib/storage';
 import GreetingRow from '@/components/dashboard/GreetingRow';
 import AlertBanner from '@/components/dashboard/AlertBanner';
 import StatsRow from '@/components/dashboard/StatsRow';
+import QuickActions from '@/components/dashboard/QuickActions';
 import FocusTodayCard from '@/components/dashboard/FocusTodayCard';
 import OverallProgressCard from '@/components/dashboard/OverallProgressCard';
 import CalendarCard from '@/components/dashboard/CalendarCard';
 import ExternalToolsStrip from '@/components/dashboard/ExternalToolsStrip';
+import TodayAgenda from '@/components/dashboard/TodayAgenda';
+import ExamCountdown from '@/components/dashboard/ExamCountdown';
 
 function Skeleton() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div className="page-container">
       <div style={{ height: 36 }} />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+      <div className="rg-4">
         {[0, 1, 2, 3].map(i => (
-          <div key={i} style={{
+          <div key={i} className="skeleton" style={{
             background: 'var(--bg-surface)',
             border: '1px solid var(--border-subtle)',
-            borderRadius: 12,
-            height: 80,
-            opacity: 0.35,
+            borderRadius: 12, height: 80,
           }} />
         ))}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.9fr) minmax(0, 1fr)', gap: 10 }}>
+      <div className="rg-home">
         {[0, 1].map(i => (
-          <div key={i} style={{
+          <div key={i} className="skeleton" style={{
             background: 'var(--bg-surface)',
             border: '1px solid var(--border-subtle)',
-            borderRadius: 12,
-            height: 400,
-            opacity: 0.35,
+            borderRadius: 12, height: 400,
           }} />
         ))}
       </div>
@@ -54,20 +53,21 @@ export default function Home() {
   if (!mounted) return <Skeleton />;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <div style={{ marginBottom: 10 }}>
+    <div className="page-container">
+      <div style={{ marginBottom: 4 }}>
         <GreetingRow state={appState} />
       </div>
+
       <AlertBanner state={appState} />
+      <ExamCountdown state={appState} />
+
       <StatsRow state={appState} />
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0, 1.9fr) minmax(0, 1fr)',
-        gap: 10,
-        alignItems: 'start',
-      }}>
+      <QuickActions />
+
+      <div className="rg-home">
         {/* Left column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <TodayAgenda state={appState} />
           <FocusTodayCard state={appState} onRefresh={refresh} />
           <OverallProgressCard state={appState} />
         </div>
@@ -75,6 +75,7 @@ export default function Home() {
         {/* Right column */}
         <CalendarCard state={appState} />
       </div>
+
       <ExternalToolsStrip />
     </div>
   );

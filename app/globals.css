@@ -77,32 +77,32 @@
    LIGHT THEME — Premium Calm
    ──────────────────────────────────────── */
 [data-theme="light"] {
-  --bg-page:              #F7F8FC;
+  --bg-page:              #F4F5F9;
   --bg-surface:           #FFFFFF;
-  --bg-elevated:          #F0EFF6;
-  --bg-input:             #FAFAFA;
+  --bg-elevated:          #EEEDF5;
+  --bg-input:             #F8F8FA;
 
-  --border-subtle:        rgba(0, 0, 0, 0.05);
-  --border-default:       rgba(0, 0, 0, 0.09);
-  --border-hover:         rgba(0, 0, 0, 0.15);
-  --border-focus:         rgba(91, 91, 214, 0.45);
-  --border-strong:        rgba(0, 0, 0, 0.20);
+  --border-subtle:        rgba(0, 0, 0, 0.08);
+  --border-default:       rgba(0, 0, 0, 0.12);
+  --border-hover:         rgba(0, 0, 0, 0.22);
+  --border-focus:         rgba(91, 91, 214, 0.50);
+  --border-strong:        rgba(0, 0, 0, 0.26);
 
   --accent:               #5B5BD6;
   --accent-hover:         #4A4AC4;
-  --accent-subtle:        rgba(91, 91, 214, 0.08);
-  --accent-border:        rgba(91, 91, 214, 0.20);
-  --accent-glow:          rgba(91, 91, 214, 0.18);
+  --accent-subtle:        rgba(91, 91, 214, 0.09);
+  --accent-border:        rgba(91, 91, 214, 0.24);
+  --accent-glow:          rgba(91, 91, 214, 0.20);
 
-  --text-1:               #111827;
-  --text-2:               #4B5563;
-  --text-3:               #9CA3AF;
-  --text-4:               #D1D5DB;
+  --text-1:               #0F1117;
+  --text-2:               #374151;
+  --text-3:               #6B7280;
+  --text-4:               #9CA3AF;
 
   --overlay:              rgba(0, 0, 0, 0.45);
-  --shadow-card:          0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.03);
-  --shadow-elevated:      0 4px 16px rgba(0, 0, 0, 0.09), 0 1px 3px rgba(0, 0, 0, 0.04);
-  --shadow-modal:         0 20px 60px rgba(0, 0, 0, 0.14);
+  --shadow-card:          0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-elevated:      0 4px 16px rgba(0, 0, 0, 0.10), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-modal:         0 20px 60px rgba(0, 0, 0, 0.18);
 }
 
 /* ────────────────────────────────────────
@@ -265,8 +265,8 @@ input, textarea, select {
 
 .card:hover {
   border-color: var(--accent-border);
-  box-shadow: var(--shadow-elevated), 0 0 0 1px var(--accent-border), 0 8px 24px var(--accent-glow);
-  transform: translateY(-3px);
+  box-shadow: var(--shadow-elevated), 0 0 0 1px var(--accent-border), 0 6px 18px var(--accent-glow);
+  transform: translateY(-1px);
 }
 
 /* ── Tasks sidebar: show delete button on row hover ── */
@@ -276,12 +276,85 @@ div:hover > .task-delete-btn { opacity: 1 !important; }
 /* ── Calendar separator token ── */
 :root,
 [data-theme="dark"] {
-  --separator: rgb(22, 227, 233);
-  --separator-subtle: rgba(22, 227, 233, 0.18);
+  --separator: rgba(255, 255, 255, 0.08);
+  --separator-subtle: rgba(255, 255, 255, 0.06);
 }
 [data-theme="light"] {
-  --separator: rgb(22, 227, 233);
-  --separator-subtle: rgba(22, 227, 233, 0.22);
+  --separator: rgba(0, 0, 0, 0.08);
+  --separator-subtle: rgba(0, 0, 0, 0.06);
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE LAYOUT UTILITIES
+   ════════════════════════════════════════ */
+
+/* Sidebar visibility */
+.desktop-sidebar { display: flex !important; }
+.mobile-nav      { display: none !important; }
+
+/* Responsive grids — apply className to override inline grid styles */
+.rg-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.rg-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.rg-home { display: grid; grid-template-columns: minmax(0,1.9fr) minmax(0,1fr); gap: 10px; align-items: start; }
+.rg-qa  { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+/* Page container */
+.page-container { display: flex; flex-direction: column; gap: 14px; }
+
+/* ── Tablet ── */
+@media (max-width: 1024px) {
+  .rg-3 { grid-template-columns: repeat(2, 1fr); }
+  .rg-home { grid-template-columns: 1fr; }
+  .rg-qa   { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .desktop-sidebar { display: none !important; }
+  .mobile-nav      { display: flex !important; }
+
+  .rg-4  { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .rg-3  { grid-template-columns: repeat(1, 1fr); gap: 8px; }
+  .rg-qa { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .rg-home { grid-template-columns: 1fr; gap: 8px; }
+
+  /* Mobile main padding — accounts for bottom nav */
+  main { padding: 14px !important; padding-bottom: 76px !important; }
+
+  /* Topnav search width */
+  .topnav-search { width: 160px !important; }
+
+  /* Page gaps */
+  .page-container { gap: 10px; }
+
+  /* Hide desktop footer on mobile */
+  .desktop-footer { display: none !important; }
+}
+
+/* ── Small phones ── */
+@media (max-width: 480px) {
+  main { padding: 10px !important; padding-bottom: 76px !important; }
+  .rg-4 { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+}
+
+/* ════════════════════════════════════════
+   SKELETON ANIMATION
+   ════════════════════════════════════════ */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.55; }
+}
+
+.skeleton {
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+/* ── Reduce motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* ════════════════════════════════════════
@@ -293,6 +366,31 @@ div:hover > .task-delete-btn { opacity: 1 !important; }
   color: var(--text-3);
   text-transform: uppercase;
   letter-spacing: 0.07em;
+}
+
+/* ════════════════════════════════════════
+   COLOR-BLIND MODE
+   ════════════════════════════════════════ */
+/* Replaces red/green with blue/orange for deuteranopia/protanopia */
+[data-colorblind="true"] {
+  --color-green:            #2563EB;
+  --color-green-subtle:     rgba(37, 99, 235, 0.09);
+  --color-green-border:     rgba(37, 99, 235, 0.22);
+  --color-green-text:       #2563EB;
+  --color-red:              #EA580C;
+  --color-red-subtle:       rgba(234, 88, 12, 0.09);
+  --color-red-border:       rgba(234, 88, 12, 0.22);
+  --color-red-text:         #EA580C;
+}
+
+/* ════════════════════════════════════════
+   PRINT STYLES
+   ════════════════════════════════════════ */
+@media print {
+  .desktop-sidebar, .mobile-nav, nav, footer { display: none !important; }
+  main { padding: 0 !important; }
+  body { background: white !important; color: black !important; }
+  .card { box-shadow: none !important; border: 1px solid #ddd !important; }
 }
 
 /* ════════════════════════════════════════
