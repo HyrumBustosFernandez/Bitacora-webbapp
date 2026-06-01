@@ -6,7 +6,7 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   IconLayoutGrid, IconBook2, IconBolt, IconCalendar,
-  IconChartBar, IconUsers, IconSettings2,
+  IconChartBar, IconSettings2,
   IconHome, IconClock, IconFileText, IconStack2, IconTrendingUp, IconBrain,
 } from '@tabler/icons-react';
 import { useTheme } from '@/components/ThemeProvider';
@@ -328,10 +328,8 @@ export default function LeftSidebar() {
 
       <div style={{ flex: 1 }} />
 
-      {/* ── Groups (coming soon) + Preferences ── */}
+      {/* ── Preferences ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
-        <NavItem href="/groups" Icon={IconUsers} label="Groups" comingSoon />
-
         {(() => {
           const active = isActive('/settings');
           return (

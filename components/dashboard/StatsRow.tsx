@@ -1,6 +1,6 @@
 'use client';
 
-import { getGlobalItems, getDaysLeft, getTrackInfo, type AppState } from '@/lib/storage';
+import { getGlobalItems, getDaysLeft, getExamDateLabel, getWeeklyGoal, getWeekDone, type AppState } from '@/lib/storage';
 import { COURSES } from '@/lib/courses';
 
 interface Props { state: AppState }
@@ -8,13 +8,17 @@ interface Props { state: AppState }
 export default function StatsRow({ state }: Props) {
   const { total, done } = getGlobalItems(state);
   const daysLeft        = getDaysLeft();
+  const examLabel       = getExamDateLabel();
+  const weeklyGoal      = getWeeklyGoal();
+  const weekDone        = getWeekDone();
   const todayTarget     = total > 0 && daysLeft > 0
     ? Math.ceil((total - done) / daysLeft)
     : 0;
 
   const donePct    = total > 0 ? Math.round((done / total) * 100) : 0;
   const daysPct    = Math.max(0, Math.min(100, Math.round(((90 - daysLeft) / 90) * 100)));
-  const todayPct   = Math.min(100, todayTarget * 10); // visual approximation
+  const todayPct   = Math.min(100, todayTarget * 10);
+  const weekPct    = weeklyGoal > 0 ? Math.min(100, Math.round((weekDone / weeklyGoal) * 100)) : 0;
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
@@ -33,17 +37,27 @@ export default function StatsRow({ state }: Props) {
       <StatCard
         label="Days left"
         value={String(daysLeft)}
-        sub="until Jun 10"
+        sub={`until ${examLabel}`}
         valueColor="var(--color-amber)"
         barColor="var(--color-amber)"
         barPct={100 - daysPct}
       />
-      <StatCard
-        label="Today"
-        value={String(todayTarget)}
-        sub="items to complete"
-        barPct={todayPct}
-      />
+      {weeklyGoal > 0 ? (
+        <StatCard
+          label="This week"
+          value={`${weekDone}/${weeklyGoal}`}
+          sub="items goal"
+          barColor={weekDone >= weeklyGoal ? 'var(--color-green)' : 'var(--accent)'}
+          barPct={weekPct}
+        />
+      ) : (
+        <StatCard
+          label="Today"
+          value={String(todayTarget)}
+          sub="items to complete"
+          barPct={todayPct}
+        />
+      )}
     </div>
   );
 }
