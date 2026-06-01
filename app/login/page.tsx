@@ -14,7 +14,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (localStorage.getItem('paceup_authed')) router.replace('/');
+    if (localStorage.getItem('paceup_authed')) router.replace('/home');
   }, [router]);
 
   function handleSubmit(e: React.FormEvent) {
@@ -24,7 +24,7 @@ export default function LoginPage() {
     setLoading(true);
     setTimeout(() => {
       localStorage.setItem('paceup_authed', '1');
-      router.push('/');
+      router.push('/home');
     }, 600);
   }
 
