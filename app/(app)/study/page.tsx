@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { COURSES } from '@/lib/courses';
 import { loadAllNotes, type NoteRecord } from '@/lib/notes';
 import PomodoroTimer from '@/components/study/PomodoroTimer';
+import ContextualTip from '@/components/ContextualTip';
 
 function parseModuleId(moduleId: string) {
   const dashW = moduleId.lastIndexOf('-w');
@@ -62,6 +63,11 @@ export default function StudyPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-1)' }}>Study</span>
+
+      <ContextualTip
+        id="study-tip"
+        text="Use the Pomodoro timer to study in focused sessions, take notes per module, and review flashcards. Your streak updates each day you complete a session."
+      />
 
       {/* Streak card */}
       {mounted && (

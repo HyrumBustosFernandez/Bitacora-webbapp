@@ -8,6 +8,7 @@ import WeekView from '@/components/calendar/WeekView';
 import DayView from '@/components/calendar/DayView';
 import CreateEventModal from '@/components/calendar/CreateEventModal';
 import TasksSidebar from '@/components/calendar/TasksSidebar';
+import ContextualTip from '@/components/ContextualTip';
 
 type ViewMode = 'month' | 'week' | 'day';
 type TabMode  = 'events' | 'tasks';
@@ -194,6 +195,11 @@ export default function CalendarPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+
+      <ContextualTip
+        id="calendar-tip"
+        text="Use the Calendar to create events, schedule study sessions, and track deadlines. Switch between Month, Week, and Day views with the controls above."
+      />
 
       {/* ── Page title row ── */}
       <div style={{

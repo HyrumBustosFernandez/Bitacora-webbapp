@@ -6,6 +6,7 @@ import {
   loadState, getTrackInfo, getCourseProgress, getGlobalItems,
   getDaysLeft, type AppState,
 } from '@/lib/storage';
+import ContextualTip from '@/components/ContextualTip';
 
 function Skeleton() {
   return (
@@ -63,6 +64,11 @@ export default function OverviewPage() {
         <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-1)' }}>Overview</span>
         <span style={{ fontSize: 11, color: 'var(--text-2)' }}>Academic progress & catch-up status</span>
       </div>
+
+      <ContextualTip
+        id="overview-tip"
+        text="The Overview shows your overall progress timeline and which courses need the most attention. Courses behind schedule are sorted to the top."
+      />
 
       {/* Catch-up recommendation banner */}
       {isBehind && (
