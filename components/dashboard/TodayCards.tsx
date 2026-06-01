@@ -149,9 +149,12 @@ export default function TodayCards({ state, onRefresh }: Props) {
     }
   }
 
-  const donePct = cards.length > 0
-    ? Math.round(cards.filter(c => c.kind === 'study' && c.isDone).length / cards.filter(c => c.kind === 'study').length * 100)
-    : 0;
+  const COLLAPSE_THRESHOLD = 4;
+  const [expanded, setExpanded] = useState(false);
+  const visibleCards = cards.length > COLLAPSE_THRESHOLD && !expanded
+    ? cards.slice(0, COLLAPSE_THRESHOLD)
+    : cards;
+  const hiddenCount = cards.length - COLLAPSE_THRESHOLD;
 
   return (
     <>
@@ -172,13 +175,32 @@ export default function TodayCards({ state, onRefresh }: Props) {
             <span style={{ fontSize: 12, color: 'var(--text-3)', fontWeight: 500 }}>Nothing scheduled for today</span>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
-            {cards.map(card =>
-              card.kind === 'event'
-                ? <EventTaskCard key={`ev-${card.id}`} card={card} />
-                : <StudyTaskCard key={`st-${card.id}`} card={card} onToggle={() => handleToggle(card)} />
+          <>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
+              {visibleCards.map(card =>
+                card.kind === 'event'
+                  ? <EventTaskCard key={`ev-${card.id}`} card={card} />
+                  : <StudyTaskCard key={`st-${card.id}`} card={card} onToggle={() => handleToggle(card)} />
+              )}
+            </div>
+            {cards.length > COLLAPSE_THRESHOLD && (
+              <button
+                type="button"
+                onClick={() => setExpanded(e => !e)}
+                style={{
+                  alignSelf: 'flex-start', background: 'none', border: 'none',
+                  cursor: 'pointer', padding: '4px 0', fontFamily: 'inherit',
+                  fontSize: 11, fontWeight: 600, color: 'var(--accent)',
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  transition: 'opacity 130ms',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+              >
+                {expanded ? '↑ Show less' : `↓ Show ${hiddenCount} more`}
+              </button>
             )}
-          </div>
+          </>
         )}
       </section>
     </>

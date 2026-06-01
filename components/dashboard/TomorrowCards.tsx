@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { COURSES, type CourseItem, type Course } from '@/lib/courses';
 import { getItemState, type AppState } from '@/lib/storage';
 import { loadEvents, type CalendarEvent } from '@/lib/events';
@@ -125,6 +125,13 @@ export default function TomorrowCards({ state }: Props) {
     return [...events, ...study];
   }, [tomorrowKey, tomorrowAbbr, state]);
 
+  const COLLAPSE_THRESHOLD = 4;
+  const [expanded, setExpanded] = useState(false);
+  const visibleCards = cards.length > COLLAPSE_THRESHOLD && !expanded
+    ? cards.slice(0, COLLAPSE_THRESHOLD)
+    : cards;
+  const hiddenCount = cards.length - COLLAPSE_THRESHOLD;
+
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -142,13 +149,32 @@ export default function TomorrowCards({ state }: Props) {
           <span style={{ fontSize: 12, color: 'var(--text-3)', fontWeight: 500 }}>Nothing scheduled for tomorrow</span>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
-          {cards.map(card =>
-            card.kind === 'event'
-              ? <EventTaskCard key={`ev-${card.id}`} card={card} />
-              : <StudyTaskCard key={`st-${card.id}`} card={card} />
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
+            {visibleCards.map(card =>
+              card.kind === 'event'
+                ? <EventTaskCard key={`ev-${card.id}`} card={card} />
+                : <StudyTaskCard key={`st-${card.id}`} card={card} />
+            )}
+          </div>
+          {cards.length > COLLAPSE_THRESHOLD && (
+            <button
+              type="button"
+              onClick={() => setExpanded(e => !e)}
+              style={{
+                alignSelf: 'flex-start', background: 'none', border: 'none',
+                cursor: 'pointer', padding: '4px 0', fontFamily: 'inherit',
+                fontSize: 11, fontWeight: 600, color: 'var(--accent)',
+                display: 'flex', alignItems: 'center', gap: 4,
+                transition: 'opacity 130ms',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+            >
+              {expanded ? '↑ Show less' : `↓ Show ${hiddenCount} more`}
+            </button>
           )}
-        </div>
+        </>
       )}
     </section>
   );
