@@ -260,24 +260,36 @@ export default function CalendarPage() {
         />
       </div>
 
-      {/* ── Mobile-only tab switcher (always visible, controls which panel shows) ── */}
+      {/* ── Mobile-only tab switcher ── */}
       <div className="cal-mobile-tabs">
-        {([['events', 'Calendar'], ['tasks', 'My Tasks']] as [TabMode, string][]).map(([t, label]) => (
-          <button
-            key={t} type="button"
-            onClick={() => setTab(t)}
-            style={{
-              flex: 1, padding: '9px 0', borderRadius: 9,
-              background: tab === t ? 'var(--accent-subtle)' : 'var(--bg-surface)',
-              border: `1px solid ${tab === t ? 'var(--accent-border)' : 'var(--border-subtle)'}`,
-              fontSize: 13, fontWeight: tab === t ? 600 : 400,
-              color: tab === t ? 'var(--accent)' : 'var(--text-2)',
-              cursor: 'pointer', transition: 'all 180ms cubic-bezier(0.4,0,0.2,1)',
-            }}
-          >
-            {label}
-          </button>
-        ))}
+        <div style={{
+          display: 'flex',
+          background: 'var(--bg-elevated)',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: 100,
+          padding: 4,
+          gap: 2,
+          width: '100%',
+        }}>
+          {([['events', 'Calendar'], ['tasks', 'My Tasks']] as [TabMode, string][]).map(([t, label]) => (
+            <button
+              key={t} type="button"
+              onClick={() => setTab(t)}
+              style={{
+                flex: 1, padding: '8px 0', borderRadius: 100,
+                background: tab === t ? 'var(--accent)' : 'transparent',
+                border: 'none',
+                fontSize: 13, fontWeight: tab === t ? 600 : 400,
+                color: tab === t ? '#fff' : 'var(--text-3)',
+                cursor: 'pointer',
+                transition: 'all 200ms cubic-bezier(0.4,0,0.2,1)',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ── Calendar + Tasks layout ── */}

@@ -30,6 +30,7 @@ export default function MobileNav() {
           margin: 0,
           padding: 0,
           height: 56,
+          width: '100%',
         }}
       >
         {NAV_ITEMS.map(({ href, label, Icon }) => {
