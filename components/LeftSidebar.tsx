@@ -195,11 +195,17 @@ export default function LeftSidebar() {
         </AnimatePresence>
       </Link>
 
-      {/* ── Home, Courses ── */}
+      {/* ── Home ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
-        {NAV_TOP.map(({ href, Icon, label }) => (
-          <NavItem key={href} href={href} Icon={Icon} label={label} />
-        ))}
+        <NavItem href="/home" Icon={IconLayoutGrid} label="Home" />
+      </div>
+
+      {/* ── Separator ── */}
+      <Separator open={open} />
+
+      {/* ── Courses ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
+        <NavItem href="/courses" Icon={IconBook2} label="Courses" />
       </div>
 
       {/* ── Separator ── */}
