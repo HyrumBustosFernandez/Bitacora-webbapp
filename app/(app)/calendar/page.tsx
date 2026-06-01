@@ -45,9 +45,8 @@ export default function CalendarPage() {
   const [tasksVisible,  setTasksVisible] = useState(true);
   const [refreshKey,    setRefreshKey]   = useState(0);
 
-  /* Indicator refs for arc tabs */
+  /* Indicator refs for view toggle */
   const arcGroupRef  = useRef<HTMLDivElement>(null);
-  const arcIndRef    = useRef<HTMLDivElement>(null);
   const viewGroupRef = useRef<HTMLDivElement>(null);
   const viewIndRef   = useRef<HTMLDivElement>(null);
 
@@ -74,13 +73,10 @@ export default function CalendarPage() {
     ind.style.opacity = '1';
   }
 
-  useEffect(() => { positionIndicator(arcGroupRef,  arcIndRef);  }, [tab]);
   useEffect(() => { positionIndicator(viewGroupRef, viewIndRef); }, [view]);
 
-  /* Reposition on mount after layout */
   useEffect(() => {
     setTimeout(() => {
-      positionIndicator(arcGroupRef,  arcIndRef);
       positionIndicator(viewGroupRef, viewIndRef);
     }, 50);
   }, []);
@@ -342,35 +338,30 @@ export default function CalendarPage() {
               </button>
             </div>
 
-            {/* Arc tab — Events | Tasks */}
+            {/* Tab — Events | Tasks */}
             <div
               ref={arcGroupRef}
-              style={{ display: 'flex', alignItems: 'center', flex: 1, justifyContent: 'center', position: 'relative' }}
+              style={{ display: 'flex', alignItems: 'center', flex: 1, justifyContent: 'center', gap: 4 }}
             >
               {(['events', 'tasks'] as TabMode[]).map(t => (
                 <button
                   key={t} type="button"
                   data-active={tab === t ? 'true' : 'false'}
                   onClick={() => setTab(t)}
-                  style={arcTabStyle(tab === t)}
+                  style={{
+                    background: tab === t ? 'var(--accent-subtle)' : 'transparent',
+                    border: tab === t ? '1px solid var(--accent-border)' : '1px solid transparent',
+                    padding: '5px 14px', borderRadius: 7,
+                    fontSize: 12, fontWeight: tab === t ? 600 : 400,
+                    color: tab === t ? 'var(--accent)' : 'var(--text-3)',
+                    cursor: 'pointer',
+                    transition: 'all 180ms cubic-bezier(0.4,0,0.2,1)',
+                    whiteSpace: 'nowrap',
+                  }}
                 >
                   {t.charAt(0).toUpperCase() + t.slice(1)}
                 </button>
               ))}
-              {/* Sliding arc underline — starts hidden until positioned */}
-              <div
-                ref={arcIndRef}
-                style={{
-                  position: 'absolute', bottom: 0, height: 3,
-                  width: 0, left: 0, opacity: 0,
-                  background: 'linear-gradient(90deg, transparent, var(--accent) 20%, #7474E0 50%, var(--accent) 80%, transparent)',
-                  borderRadius: '3px 3px 0 0',
-                  clipPath: 'ellipse(50% 100% at 50% 100%)',
-                  boxShadow: '0 0 8px rgba(91,91,214,0.5)',
-                  transition: 'left 250ms cubic-bezier(0.4,0,0.2,1), width 250ms cubic-bezier(0.4,0,0.2,1), opacity 150ms ease',
-                  pointerEvents: 'none',
-                }}
-              />
             </div>
 
             {/* View toggle pill — Day | Week | Month */}

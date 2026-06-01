@@ -25,6 +25,40 @@ export function setStoredLang(lang: Lang) {
   if (typeof window !== 'undefined') localStorage.setItem(STORAGE_KEY, lang);
 }
 
+/* ── App-level translations ── */
+export type AppStrings = {
+  nav: { home: string; courses: string; study: string; calendar: string; overview: string; settings: string; assistant: string; };
+  today: string;
+  tomorrow: string;
+  todayTip: string;
+  tomorrowTip: string;
+  settings: { appearance: string; theme: string; background: string; language: string; noBackground: string; accessibility: string; };
+};
+
+export const APP: Record<Lang, AppStrings> = {
+  en: {
+    nav: { home: 'Home', courses: 'Courses', study: 'Study', calendar: 'Calendar', overview: 'Overview', settings: 'Settings', assistant: 'AI Assistant' },
+    today: 'Today', tomorrow: 'Tomorrow',
+    todayTip: 'These cards are the study modules scheduled for today. Tap to mark them complete.',
+    tomorrowTip: "These are tomorrow's study modules. Review them so you're ready.",
+    settings: { appearance: 'Appearance', theme: 'Theme', background: 'Background', language: 'Language', noBackground: 'None', accessibility: 'Accessibility' },
+  },
+  es: {
+    nav: { home: 'Inicio', courses: 'Cursos', study: 'Estudio', calendar: 'Calendario', overview: 'Resumen', settings: 'Ajustes', assistant: 'Asistente IA' },
+    today: 'Hoy', tomorrow: 'Mañana',
+    todayTip: 'Estas tarjetas son los módulos de estudio programados para hoy. Toca para marcarlos completos.',
+    tomorrowTip: 'Estos son los módulos de estudio de mañana. Revísalos para estar preparado.',
+    settings: { appearance: 'Apariencia', theme: 'Tema', background: 'Fondo', language: 'Idioma', noBackground: 'Ninguno', accessibility: 'Accesibilidad' },
+  },
+  pt: {
+    nav: { home: 'Início', courses: 'Cursos', study: 'Estudo', calendar: 'Calendário', overview: 'Visão geral', settings: 'Configurações', assistant: 'Assistente IA' },
+    today: 'Hoje', tomorrow: 'Amanhã',
+    todayTip: 'Estes cartões são os módulos de estudo agendados para hoje. Toque para marcá-los como concluídos.',
+    tomorrowTip: 'Estes são os módulos de estudo de amanhã. Revise-os para estar preparado.',
+    settings: { appearance: 'Aparência', theme: 'Tema', background: 'Fundo', language: 'Idioma', noBackground: 'Nenhum', accessibility: 'Acessibilidade' },
+  },
+};
+
 /* ── Landing page translations ── */
 type LandingStrings = {
   badge: string;
