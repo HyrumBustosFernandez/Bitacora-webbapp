@@ -42,8 +42,10 @@ export default function ContextualTip({ id, text }: Props) {
         gap: 10,
         padding: '10px 14px',
         borderRadius: 10,
-        background: 'var(--accent-subtle)',
+        background: 'var(--bg-elevated)',
         border: '1px solid var(--accent-border)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
       }}
     >
       <IconInfoCircle
@@ -51,7 +53,7 @@ export default function ContextualTip({ id, text }: Props) {
         color="var(--accent)"
         style={{ flexShrink: 0, marginTop: 1 }}
       />
-      <span style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.55, flex: 1 }}>
+      <span style={{ fontSize: 12, color: 'var(--text-1)', lineHeight: 1.55, flex: 1 }}>
         {text}
       </span>
       <button
