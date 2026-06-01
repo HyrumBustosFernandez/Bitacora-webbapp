@@ -2,6 +2,51 @@ import { COURSES, START_DATE, TARGET_DATE, type Course } from './courses';
 
 export type AppState = Record<string, string | number | boolean>;
 
+// ── Configurable exam date ───────────────────────────────────────────────────
+
+export function getExamDate(): Date {
+  if (typeof window === 'undefined') return TARGET_DATE;
+  const stored = localStorage.getItem('paceup_exam_date');
+  if (stored) {
+    const d = new Date(stored + 'T23:59:59');
+    if (!isNaN(d.getTime())) return d;
+  }
+  return TARGET_DATE;
+}
+
+// ── Weekly goal ──────────────────────────────────────────────────────────────
+
+function isoWeekKey(d: Date = new Date()): string {
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil(((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+  return `${date.getUTCFullYear()}-W${weekNo}`;
+}
+
+export function getWeeklyGoal(): number {
+  if (typeof window === 'undefined') return 0;
+  return parseInt(localStorage.getItem('paceup_weekly_goal') ?? '0', 10) || 0;
+}
+
+export function getWeekDone(): number {
+  if (typeof window === 'undefined') return 0;
+  try {
+    const raw = JSON.parse(localStorage.getItem('paceup_week_done') ?? '{}');
+    if (raw.weekKey === isoWeekKey()) return raw.count ?? 0;
+  } catch { /* ignore */ }
+  return 0;
+}
+
+function updateWeekDone(delta: 1 | -1): void {
+  if (typeof window === 'undefined') return;
+  const key = isoWeekKey();
+  let count = getWeekDone();
+  count = Math.max(0, count + delta);
+  localStorage.setItem('paceup_week_done', JSON.stringify({ weekKey: key, count }));
+}
+
 // ── Per-course progress storage (stable-ID format) ──────────────────────────
 
 function loadCourseProgress(courseId: string): Record<string, string> {
@@ -123,8 +168,10 @@ export function toggleItemDone(c: Course, wi: number, ii: number): void {
 
   if (current === 'done') {
     delete progress[item.id];
+    updateWeekDone(-1);
   } else {
     progress[item.id] = 'done';
+    updateWeekDone(1);
   }
   saveCourseProgress(c.id, progress);
 }
@@ -157,13 +204,19 @@ export function getGlobalItems(state: AppState): { total: number; done: number }
 
 export function getDayRatio(): number {
   const now = new Date();
-  const total = TARGET_DATE.getTime() - START_DATE.getTime();
+  const examDate = getExamDate();
+  const total = examDate.getTime() - START_DATE.getTime();
   const elapsed = Math.min(Math.max(now.getTime() - START_DATE.getTime(), 0), total);
-  return elapsed / total;
+  return total > 0 ? elapsed / total : 0;
 }
 
 export function getDaysLeft(): number {
-  return Math.max(0, Math.ceil((TARGET_DATE.getTime() - Date.now()) / 86_400_000));
+  return Math.max(0, Math.ceil((getExamDate().getTime() - Date.now()) / 86_400_000));
+}
+
+export function getExamDateLabel(): string {
+  const d = getExamDate();
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 export type TrackStatus = 'ahead' | 'on-track' | 'behind' | 'done';

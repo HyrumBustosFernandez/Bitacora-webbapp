@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { IconSun, IconMoon, IconPrinter, IconEye, IconPhoto, IconCheck } from '@tabler/icons-react';
+import { IconSun, IconMoon, IconPrinter, IconEye, IconPhoto, IconCheck, IconCalendar, IconTarget } from '@tabler/icons-react';
 import { useTheme } from '@/components/ThemeProvider';
 import { type Lang, LANG_LABELS, LANG_FLAGS, APP } from '@/lib/i18n';
+import { TARGET_DATE } from '@/lib/courses';
 
 const DEFAULT_DUOC_URL = 'https://campusvirtual.duoc.cl/';
 
@@ -40,12 +41,17 @@ const SECTION: React.CSSProperties = {
   backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
 };
 
+const DEFAULT_EXAM = TARGET_DATE.toISOString().slice(0, 10);
+
 export default function SettingsPage() {
   const { theme, toggle, bg, setBg, lang, setLang } = useTheme();
   const t = APP[lang];
-  const [duocUrl, setDuocUrl] = useState(DEFAULT_DUOC_URL);
-  const [saved,   setSaved]   = useState(false);
+  const [duocUrl,    setDuocUrl]    = useState(DEFAULT_DUOC_URL);
+  const [saved,      setSaved]      = useState(false);
   const [colorBlind, setColorBlind] = useState(false);
+  const [examDate,   setExamDate]   = useState(DEFAULT_EXAM);
+  const [weekGoal,   setWeekGoal]   = useState('');
+  const [goalSaved,  setGoalSaved]  = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('paceup_duoc_url');
@@ -53,7 +59,21 @@ export default function SettingsPage() {
     const cb = localStorage.getItem('paceup_colorblind') === 'true';
     setColorBlind(cb);
     document.documentElement.setAttribute('data-colorblind', String(cb));
+    const storedExam = localStorage.getItem('paceup_exam_date');
+    if (storedExam) setExamDate(storedExam);
+    const storedGoal = localStorage.getItem('paceup_weekly_goal');
+    if (storedGoal) setWeekGoal(storedGoal);
   }, []);
+
+  function handleSaveGoals() {
+    if (examDate) localStorage.setItem('paceup_exam_date', examDate);
+    else localStorage.removeItem('paceup_exam_date');
+    const g = parseInt(weekGoal, 10);
+    if (g > 0) localStorage.setItem('paceup_weekly_goal', String(g));
+    else localStorage.removeItem('paceup_weekly_goal');
+    setGoalSaved(true);
+    setTimeout(() => setGoalSaved(false), 2000);
+  }
 
   function toggleColorBlind() {
     const next = !colorBlind;
@@ -217,6 +237,60 @@ export default function SettingsPage() {
             Print study plan
           </button>
         </div>
+      </div>
+
+      {/* ── Study Goals ── */}
+      <div style={SECTION}>
+        <span className="label-section">Study Goals</span>
+
+        {/* Exam date */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <IconCalendar size={13} color="var(--text-2)" />
+            <label style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-2)' }}>Exam date</label>
+          </div>
+          <input
+            type="date"
+            value={examDate}
+            onChange={e => setExamDate(e.target.value)}
+            style={INPUT}
+            onFocus={e => (e.target.style.borderColor = 'var(--border-focus)')}
+            onBlur={e  => (e.target.style.borderColor = 'var(--border-default)')}
+          />
+          <span style={{ fontSize: 10, color: 'var(--text-4)' }}>
+            Used for the days-left counter and catch-up calculations across the app.
+          </span>
+        </div>
+
+        {/* Weekly goal */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <IconTarget size={13} color="var(--text-2)" />
+            <label style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-2)' }}>Weekly item goal</label>
+          </div>
+          <input
+            type="number"
+            min="0"
+            max="200"
+            placeholder="e.g. 20"
+            value={weekGoal}
+            onChange={e => setWeekGoal(e.target.value)}
+            style={INPUT}
+            onFocus={e => (e.target.style.borderColor = 'var(--border-focus)')}
+            onBlur={e  => (e.target.style.borderColor = 'var(--border-default)')}
+          />
+          <span style={{ fontSize: 10, color: 'var(--text-4)' }}>
+            How many study items you want to complete per week. Shows a "This Week" card on your dashboard.
+          </span>
+        </div>
+
+        <button
+          type="button" onClick={handleSaveGoals}
+          className={goalSaved ? 'btn btn-secondary' : 'btn btn-primary'}
+          style={{ alignSelf: 'flex-start', ...(goalSaved && { color: 'var(--color-green)', borderColor: 'var(--color-green-border)' }) }}
+        >
+          {goalSaved ? '✓ Saved' : 'Save goals'}
+        </button>
       </div>
 
       {/* ── External Tools ── */}
