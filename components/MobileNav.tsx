@@ -29,7 +29,8 @@ export default function MobileNav() {
           listStyle: 'none',
           margin: 0,
           padding: 0,
-          height: '100%',
+          height: 56,
+          width: '100%',
         }}
       >
         {NAV_ITEMS.map(({ href, label, Icon }) => {
@@ -91,10 +92,9 @@ export default function MobileNav() {
           bottom: 0;
           left: 0;
           right: 0;
-          height: 56px;
+          height: calc(56px + env(safe-area-inset-bottom, 0px));
           background: var(--bg-surface);
           border-top: 1px solid var(--border-subtle);
-          padding-bottom: env(safe-area-inset-bottom, 0px);
           z-index: 100;
           display: none;
         }
