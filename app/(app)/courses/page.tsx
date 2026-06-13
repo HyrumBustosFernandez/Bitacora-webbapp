@@ -36,12 +36,12 @@ function Ring({ pct, accent }: { pct: number; accent: string }) {
   );
 }
 
-function DifficultyBadge({ tag, hours }: { tag: 'cisco' | 'ms' | 'custom'; hours: number }) {
+function DifficultyBadge({ tag, hours }: { tag: Course['tag']; hours: number }) {
   const level  = hours <= 0 ? null : hours <= 6 ? 'Easy' : hours <= 10 ? 'Medium' : 'Hard';
   const color  = hours <= 6 ? 'var(--color-green)' : hours <= 10 ? 'var(--color-amber)' : 'var(--color-red)';
   const bg     = hours <= 6 ? 'var(--color-green-subtle)' : hours <= 10 ? 'var(--color-amber-subtle)' : 'var(--color-red-subtle)';
   const border = hours <= 6 ? 'var(--color-green-border)' : hours <= 10 ? 'var(--color-amber-border)' : 'var(--color-red-border)';
-  const platformLabel = tag === 'cisco' ? 'Cisco' : tag === 'ms' ? 'MS Learn' : 'Custom';
+  const platformLabel = tag === 'cisco' ? 'Cisco' : tag === 'ms' ? 'MS Learn' : tag === 'stem' ? 'STEM' : tag === 'humanities' ? 'Humanities' : tag === 'social' ? 'Social Sciences' : 'Custom';
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
       {level && (
