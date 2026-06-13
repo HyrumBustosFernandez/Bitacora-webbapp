@@ -7,15 +7,15 @@ import {
   IconBook2,
   IconBolt,
   IconCalendar,
-  IconChartBar,
+  IconNotes,
 } from '@tabler/icons-react';
 
 const NAV_ITEMS = [
-  { href: '/', label: 'Home', Icon: IconLayoutGrid },
-  { href: '/courses', label: 'Courses', Icon: IconBook2 },
-  { href: '/study', label: 'Study', Icon: IconBolt },
-  { href: '/calendar', label: 'Calendar', Icon: IconCalendar },
-  { href: '/analytics', label: 'Overview', Icon: IconChartBar },
+  { href: '/home',     label: 'Home',     Icon: IconLayoutGrid },
+  { href: '/courses',  label: 'Courses',  Icon: IconBook2      },
+  { href: '/study',    label: 'Study',    Icon: IconBolt       },
+  { href: '/notes',    label: 'Notes',    Icon: IconNotes      },
+  { href: '/calendar', label: 'Calendar', Icon: IconCalendar   },
 ] as const;
 
 export default function MobileNav() {
@@ -35,7 +35,7 @@ export default function MobileNav() {
       >
         {NAV_ITEMS.map(({ href, label, Icon }) => {
           const isActive =
-            href === '/' ? pathname === '/' : pathname.startsWith(href);
+            href === '/home' ? pathname === '/home' : pathname.startsWith(href);
 
           return (
             <li

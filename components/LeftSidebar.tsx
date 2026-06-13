@@ -8,6 +8,7 @@ import {
   IconLayoutGrid, IconBook2, IconBolt, IconCalendar,
   IconChartBar, IconSettings2,
   IconHome, IconClock, IconFileText, IconStack2, IconTrendingUp, IconBrain,
+  IconNotes,
 } from '@tabler/icons-react';
 import { useTheme } from '@/components/ThemeProvider';
 
@@ -216,6 +217,14 @@ export default function LeftSidebar() {
         {NAV_CALENDAR.map(({ href, Icon, label }) => (
           <NavItem key={href} href={href} Icon={Icon} label={label} />
         ))}
+      </div>
+
+      {/* ── Separator ── */}
+      <Separator open={open} />
+
+      {/* ── Notes ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 1, padding: '0 6px' }}>
+        <NavItem href="/notes" Icon={IconNotes} label="Notes" />
       </div>
 
       {/* ── Separator ── */}
