@@ -527,3 +527,38 @@ div:hover > .task-delete-btn { opacity: 1 !important; }
   background: rgba(255, 255, 255, 0.13);
   color: #ffffff !important;
 }
+
+/* ════════════════════════════════════════
+   NOTES PAGE
+   ════════════════════════════════════════ */
+
+/* Reveal folder ••• button on row hover */
+div:has(> .folder-menu-btn):hover .folder-menu-btn {
+  opacity: 1 !important;
+}
+
+/* Desktop: all three panels always visible */
+.notes-panel-hidden,
+.notes-panel-visible {
+  display: flex !important;
+}
+
+/* Mobile: panel navigation */
+@media (max-width: 640px) {
+  .notes-panel-hidden {
+    display: none !important;
+  }
+  .notes-panel-visible {
+    display: flex !important;
+    width: 100% !important;
+    flex: 1 !important;
+  }
+  .mobile-only {
+    display: block !important;
+  }
+}
+
+/* Hide mobile-only back buttons on desktop */
+.mobile-only {
+  display: none;
+}
