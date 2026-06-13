@@ -48,10 +48,10 @@ function SlideHome() {
       <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '10px 12px' }}>
         <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Today's Tasks</div>
         {[
-          { text: 'Review OSI Model layers', done: true,  tag: 'CCST' },
-          { text: 'Practice subnetting /24–/28', done: true,  tag: 'CCST' },
-          { text: 'Read Azure Identity chapter', done: false, tag: 'AZ-900' },
-          { text: 'Watch DNS lab recording', done: false, tag: 'CCST' },
+          { text: 'Review derivatives & chain rule', done: true,  tag: 'Calc' },
+          { text: 'Complete kinematics problem set', done: true,  tag: 'Physics' },
+          { text: 'Read WWI causes chapter', done: false, tag: 'History' },
+          { text: 'Draft argumentative essay outline', done: false, tag: 'English' },
         ].map(({ text, done, tag }) => (
           <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
             <div style={{ width: 14, height: 14, borderRadius: 4, flexShrink: 0, border: done ? 'none' : '1.5px solid rgba(255,255,255,0.2)', background: done ? '#5B5BD6' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -70,10 +70,10 @@ function SlideCalendar() {
   const days = ['Mo','Tu','We','Th','Fr','Sa','Su'];
   const today = 3;
   const events = [
-    { time: '9:00 AM',  title: 'CCST Lab Practice',    color: '#5B5BD6', dur: '1h' },
-    { time: '11:30 AM', title: 'Subnetting Quiz',       color: '#F59E0B', dur: '45m' },
-    { time: '2:00 PM',  title: 'AZ-900 Study Session',  color: '#22C55E', dur: '2h' },
-    { time: '4:30 PM',  title: 'Mock Exam Simulation',  color: '#EF4444', dur: '1.5h' },
+    { time: '9:00 AM',  title: 'Calculus Study Session', color: '#5B5BD6', dur: '1h' },
+    { time: '11:30 AM', title: 'Physics Quiz Prep',      color: '#F59E0B', dur: '45m' },
+    { time: '2:00 PM',  title: 'History Essay Review',   color: '#22C55E', dur: '2h' },
+    { time: '4:30 PM',  title: 'Psych Midterm Prep',     color: '#EF4444', dur: '1.5h' },
   ];
   return (
     <div style={{ background: '#0E0E0E', padding: '20px 20px 16px', fontFamily: 'inherit' }}>
@@ -116,10 +116,10 @@ function SlideCalendar() {
 
 function SlideCourses() {
   const courses = [
-    { name: 'CCST Networking',        pct: 68, color: '#5B5BD6', tag: 'Cisco', items: 34 },
-    { name: 'AZ-900 Fundamentals',    pct: 42, color: '#22C55E', tag: 'Azure', items: 28 },
-    { name: 'Network+ Prep',          pct: 15, color: '#F59E0B', tag: 'CompTIA', items: 55 },
-    { name: 'SC-900 Security',        pct: 5,  color: '#EF4444', tag: 'Azure', items: 20 },
+    { name: 'Calculus I',             pct: 68, color: '#5B5BD6', tag: 'Math', items: 34 },
+    { name: 'General Physics I',      pct: 42, color: '#22C55E', tag: 'Science', items: 28 },
+    { name: 'World History',          pct: 15, color: '#F59E0B', tag: 'Humanities', items: 55 },
+    { name: 'English Composition',    pct: 5,  color: '#EF4444', tag: 'Language', items: 20 },
   ];
   return (
     <div style={{ background: '#0E0E0E', padding: '20px 20px 16px', fontFamily: 'inherit' }}>
@@ -169,9 +169,9 @@ function SlideOverview() {
       {/* progress rings row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
         {[
-          { label: 'CCST', pct: 68, color: '#5B5BD6' },
-          { label: 'AZ-900', pct: 42, color: '#22C55E' },
-          { label: 'Net+', pct: 15, color: '#F59E0B' },
+          { label: 'Calc', pct: 68, color: '#5B5BD6' },
+          { label: 'Physics', pct: 42, color: '#22C55E' },
+          { label: 'History', pct: 15, color: '#F59E0B' },
         ].map(({ label, pct, color }) => (
           <div key={label} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '10px', textAlign: 'center' }}>
             <svg width="48" height="48" viewBox="0 0 48 48" style={{ display: 'block', margin: '0 auto 6px' }}>
@@ -191,9 +191,9 @@ function SlideOverview() {
 
 function SlideAI() {
   const msgs = [
-    { role: 'user', text: 'Explain the difference between TCP and UDP simply.' },
-    { role: 'ai',   text: 'TCP is like a phone call — it confirms every packet arrived in order. UDP is like sending postcards — faster, but no guarantee they all arrive. Use TCP for reliability (web, email), UDP for speed (video, gaming).' },
-    { role: 'user', text: 'Give me 3 practice questions on subnetting.' },
+    { role: 'user', text: "Explain Newton's 1st and 2nd laws simply." },
+    { role: 'ai',   text: "1st law: an object stays at rest or in motion unless a force acts on it. 2nd law: force = mass × acceleration (F=ma). Together they explain why you slide forward when a car brakes and why heavier objects need more force to accelerate." },
+    { role: 'user', text: 'Give me 3 practice questions on derivatives.' },
   ];
   return (
     <div style={{ background: '#0E0E0E', padding: '20px 20px 16px', fontFamily: 'inherit' }}>
@@ -201,7 +201,7 @@ function SlideAI() {
         <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(91,91,214,0.15)', border: '1px solid rgba(91,91,214,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>✦</div>
         <div>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#F0EEF8' }}>AI Study Assistant</div>
-          <div style={{ fontSize: 9, color: '#5B5BD6' }}>CCST · AZ-900 context loaded</div>
+          <div style={{ fontSize: 9, color: '#5B5BD6' }}>Calculus · Physics context loaded</div>
         </div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
@@ -260,9 +260,9 @@ function SlideHomeMobile() {
       <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '8px 10px' }}>
         <div style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Today's Tasks</div>
         {[
-          { text: 'Review OSI Model layers', done: true,  tag: 'CCST' },
-          { text: 'Practice subnetting /24–/28', done: true,  tag: 'CCST' },
-          { text: 'Read Azure Identity chapter', done: false, tag: 'AZ-900' },
+          { text: 'Review derivatives & chain rule', done: true,  tag: 'Calc' },
+          { text: 'Complete kinematics problem set', done: true,  tag: 'Physics' },
+          { text: 'Read WWI causes chapter', done: false, tag: 'History' },
         ].map(({ text, done, tag }) => (
           <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
             <div style={{ width: 13, height: 13, borderRadius: 3, flexShrink: 0, border: done ? 'none' : '1.5px solid rgba(255,255,255,0.2)', background: done ? '#5B5BD6' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -281,9 +281,9 @@ function SlideCalendarMobile() {
   const days = ['Mo','Tu','We','Th','Fr','Sa','Su'];
   const today = 3;
   const events = [
-    { time: '9:00 AM',  title: 'CCST Lab Practice',   color: '#5B5BD6', dur: '1h' },
-    { time: '11:30 AM', title: 'Subnetting Quiz',      color: '#F59E0B', dur: '45m' },
-    { time: '2:00 PM',  title: 'AZ-900 Study Session', color: '#22C55E', dur: '2h' },
+    { time: '9:00 AM',  title: 'Calculus Study Session', color: '#5B5BD6', dur: '1h' },
+    { time: '11:30 AM', title: 'Physics Quiz Prep',      color: '#F59E0B', dur: '45m' },
+    { time: '2:00 PM',  title: 'History Essay Review',   color: '#22C55E', dur: '2h' },
   ];
   return (
     <div style={{ background: '#0E0E0E', padding: '14px 14px 12px', fontFamily: 'inherit' }}>
@@ -323,9 +323,9 @@ function SlideCalendarMobile() {
 
 function SlideCoursesMobile() {
   const courses = [
-    { name: 'CCST Networking',     pct: 68, color: '#5B5BD6', tag: 'Cisco' },
-    { name: 'AZ-900 Fundamentals', pct: 42, color: '#22C55E', tag: 'Azure' },
-    { name: 'Network+ Prep',       pct: 15, color: '#F59E0B', tag: 'CompTIA' },
+    { name: 'Calculus I',          pct: 68, color: '#5B5BD6', tag: 'Math' },
+    { name: 'General Physics I',   pct: 42, color: '#22C55E', tag: 'Science' },
+    { name: 'World History',       pct: 15, color: '#F59E0B', tag: 'Humanities' },
   ];
   return (
     <div style={{ background: '#0E0E0E', padding: '14px 14px 12px', fontFamily: 'inherit' }}>
@@ -370,9 +370,9 @@ function SlideOverviewMobile() {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 6 }}>
         {[
-          { label: 'CCST', pct: 68, color: '#5B5BD6' },
-          { label: 'AZ-900', pct: 42, color: '#22C55E' },
-          { label: 'Net+', pct: 15, color: '#F59E0B' },
+          { label: 'Calc', pct: 68, color: '#5B5BD6' },
+          { label: 'Physics', pct: 42, color: '#22C55E' },
+          { label: 'History', pct: 15, color: '#F59E0B' },
         ].map(({ label, pct, color }) => (
           <div key={label} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '8px', textAlign: 'center' }}>
             <svg width="42" height="42" viewBox="0 0 48 48" style={{ display: 'block', margin: '0 auto 4px' }}>
@@ -392,9 +392,9 @@ function SlideOverviewMobile() {
 
 function SlideAIMobile() {
   const msgs = [
-    { role: 'user', text: 'Explain TCP vs UDP simply.' },
-    { role: 'ai',   text: 'TCP is like a phone call — confirms every packet arrived. UDP is like postcards — faster, no delivery guarantee.' },
-    { role: 'user', text: 'Give me subnetting practice questions.' },
+    { role: 'user', text: "Explain Newton's Laws simply." },
+    { role: 'ai',   text: "1st: objects stay at rest or in motion unless a force acts. 2nd: F=ma — force equals mass times acceleration. 3rd: every action has an equal and opposite reaction." },
+    { role: 'user', text: 'Give me calculus practice questions.' },
   ];
   return (
     <div style={{ background: '#0E0E0E', padding: '14px 14px 12px', fontFamily: 'inherit' }}>
@@ -402,7 +402,7 @@ function SlideAIMobile() {
         <div style={{ width: 26, height: 26, borderRadius: 7, background: 'rgba(91,91,214,0.15)', border: '1px solid rgba(91,91,214,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>✦</div>
         <div>
           <div style={{ fontSize: 12, fontWeight: 700, color: '#F0EEF8' }}>AI Study Assistant</div>
-          <div style={{ fontSize: 8, color: '#5B5BD6' }}>CCST · AZ-900 context loaded</div>
+          <div style={{ fontSize: 8, color: '#5B5BD6' }}>Calculus · Physics context loaded</div>
         </div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
