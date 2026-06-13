@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   IconLayoutGrid, IconBook2, IconBolt, IconCalendar,
   IconChartBar, IconSettings2,
-  IconHome, IconClock, IconFileText, IconStack2, IconTrendingUp, IconBrain,
+  IconHome, IconStack2, IconBrain,
   IconNotes,
 } from '@tabler/icons-react';
 import { useTheme } from '@/components/ThemeProvider';
@@ -34,11 +34,8 @@ const NAV_CALENDAR = [
 ];
 
 const STUDY_SUBSECTIONS = [
-  { label: 'Timer',       Icon: IconHome,       route: '/study'            },
-  { label: 'Quick Study', Icon: IconBolt,       route: '/study/quick'      },
-  { label: 'Notes',       Icon: IconFileText,   route: '/study/notes'      },
-  { label: 'Flashcards',  Icon: IconStack2,     route: '/study/flashcards' },
-  { label: 'Progress',    Icon: IconTrendingUp, route: '/study/progress'   },
+  { label: 'Timer',      Icon: IconHome,   route: '/study'            },
+  { label: 'Flashcards', Icon: IconStack2, route: '/study/flashcards' },
 ];
 
 const LABEL_MOTION = {
