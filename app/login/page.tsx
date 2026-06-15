@@ -20,7 +20,7 @@ export default function LoginPage() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
-    if (!email || !password) { setError('Please fill in all fields.'); return; }
+
     setLoading(true);
     setTimeout(() => {
       localStorage.setItem('paceup_authed', '1');
